@@ -479,6 +479,13 @@ select option{background:#1e293b}
 .col-total-yours-lbl{font-size:0.65rem;color:var(--t3)}
 .col-total-yours-val{font-size:1rem;font-weight:800}
 .col-src{font-size:0.6rem;color:var(--t4);margin-top:0.75rem;line-height:1.5;font-style:italic}
+.col-inline-wrap{display:flex;align-items:center;gap:3px}
+.col-inline-wrap span{font-size:0.65rem;color:var(--t3);white-space:nowrap}
+.col-inline-inp{width:68px;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.3rem 0.35rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;text-align:right}
+.col-inline-inp:focus{outline:none;border-color:var(--blue)}
+.col-from-profile{font-size:0.58rem;color:var(--teal);margin-top:0.1rem;opacity:0.8}
+.col-add-profile{font-size:0.62rem;color:var(--t3);cursor:pointer;text-decoration:underline dotted}
+.col-pets-note{font-size:0.65rem;color:var(--t3);margin-top:0.25rem;font-style:italic}
 .col-rent-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.35rem;margin-top:0.4rem}
 .col-rent-cell{background:rgba(255,255,255,0.03);border-radius:6px;padding:0.3rem 0.4rem;text-align:center}
 .col-rent-cell .rc-type{font-size:0.6rem;color:var(--t3);font-weight:600}
@@ -1694,6 +1701,7 @@ select option{background:#1e293b}
         <div class="col-total-right">
           <div class="col-total-yours-lbl">Your actual spend</div>
           <div class="col-total-yours-val" id="col-total-yours">—</div>
+          <div class="col-pets-note" id="col-pets-note"></div>
         </div>
       </div>
     </div>
@@ -3008,6 +3016,10 @@ async function runGOT() {
     oldTax: W.oldTax, newTax: W.newTax,
     taxRegime: W.taxRegime || 'new',
     healthScore: W.healthScore,
+    // Cost of Living context
+    colCity: colState.city, colLifestyleClass: colState.cls,
+    colActualSpend: getColUserSpend(),
+    colMonthlyTotal: getColUserTotal(),
   };
 
   try {
@@ -3832,7 +3844,7 @@ const COL_CATS = [
 ];
 
 // State for COL module
-let colState = { city: 'Hyderabad', cls: 'Medium' };
+let colState = { city: 'Hyderabad', cls: 'Medium', userSpend: {} };
 
 function initCOL() {
   // Pre-fill city from user profile if it matches a known city
@@ -3885,6 +3897,88 @@ function showColDetectBanner() {
   banner.style.display = W.totalExpenses > 0 ? 'block' : 'none';
 }
 
+function getColUserSpend() {
+  const us = colState.userSpend || {};
+  return {
+    rent:   W.rent || W.homeLoanEMI || 0,
+    groc:   W.groceries || 0,
+    trans:  W.transport || 0,
+    dining: +us.dining || 0,
+    health: +us.health || 0,
+    edu:    +us.edu    || 0,
+    ent:    +us.ent    !== undefined && +us.ent >= 0 ? +us.ent : (W.subTotal || 0),
+    dom:    +us.dom    || 0,
+    pets:   W.petExpense || 0,   // from profile, no benchmark
+  };
+}
+
+function getColUserTotal() {
+  const s = getColUserSpend();
+  return s.rent + s.groc + s.trans + s.dining + s.health + s.edu + s.ent + s.dom + s.pets;
+}
+
+// Profile-sourced keys — shown as static (edit in profile)
+const COL_PROFILE_KEYS = new Set(['rent', 'groc', 'trans']);
+
+function onColSpendInput(key, val) {
+  colState.userSpend = colState.userSpend || {};
+  colState.userSpend[key] = +val;
+  // Update vs bar for this key
+  const { city, cls } = colState;
+  const d = COL_DATA[city]?.[cls];
+  if (d && d[key]) {
+    const pct = Math.min(100, Math.round(+val / d[key] * 100));
+    const col  = pct <= 105 ? 'var(--green)' : pct <= 130 ? 'var(--amber)' : 'var(--red)';
+    const fill = $('col-fill-' + key);
+    if (fill) { fill.style.width = pct + '%'; fill.style.background = col; }
+  }
+  updateColSummary();
+}
+
+function updateColSummary() {
+  const { city, cls } = colState;
+  const data = COL_DATA[city];
+  if (!data) return;
+  const d = data[cls];
+  const totalMid = d.groc + d.trans + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
+  function rng(v) { return [Math.round(v*0.82), Math.round(v*1.18)]; }
+  function inrK(v) {
+    if (v >= 100000) return '₹' + (v/100000).toFixed(1) + 'L';
+    if (v >= 1000)   return '₹' + Math.round(v/1000) + 'K';
+    return '₹' + v;
+  }
+  const [tLo, tHi] = rng(totalMid);
+  const userTotal = getColUserTotal();
+  const pets = W.petExpense || 0;
+
+  const totalYoursEl = $('col-total-yours');
+  if (totalYoursEl) {
+    if (userTotal > 0) {
+      const col = userTotal < tLo*0.85 ? 'var(--green)' : userTotal > tHi*1.15 ? 'var(--red)' : 'var(--amber)';
+      totalYoursEl.innerHTML = `<span style="color:${col}">${inrK(userTotal)}</span>`;
+    } else { totalYoursEl.textContent = '—'; }
+  }
+  const petsNote = $('col-pets-note');
+  if (petsNote) petsNote.textContent = pets > 0 ? `incl. ${inrK(pets)}/mo pets (from profile)` : '';
+
+  const nudge = $('col-nudge');
+  const nudgeTxt = $('col-nudge-text');
+  if (nudge && nudgeTxt) {
+    if (userTotal > 0) {
+      if (userTotal > tHi * 1.15) {
+        nudge.style.display = 'flex';
+        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo exceeds the ${cls} class range for ${city}. Your lifestyle may be ${cls === 'Elite' ? 'above Elite' : 'one tier higher'} — or there's room to optimise.`;
+      } else if (userTotal < tLo * 0.85) {
+        nudge.style.display = 'flex';
+        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo is below the ${cls} baseline for ${city}. You have significant savings headroom — consider boosting investments.`;
+      } else {
+        nudge.style.display = 'flex';
+        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo is within the ${cls} class range for ${city}.`;
+      }
+    } else { nudge.style.display = 'none'; }
+  }
+}
+
 function renderCOL() {
   const { city, cls } = colState;
   const data = COL_DATA[city];
@@ -3901,92 +3995,91 @@ function renderCOL() {
   const body = $('col-breakdown-body');
   if (!body) return;
 
-  // Compute user's actual spend in each category (best-effort mapping from profile)
-  const userSpend = {
-    rent:   W.rent || W.homeLoanEMI || 0,
-    groc:   W.groceries || 0,
-    trans:  W.transport || 0,
-    dining: 0, // dining is bundled in habitsTotal — we can't isolate
-    health: 0,
-    edu:    0,
-    ent:    W.subTotal || 0,
-    dom:    0,
-  };
+  const userSpend = getColUserSpend();
 
-  // Range ±18% around mid value
   function rng(v) { return [Math.round(v*0.82), Math.round(v*1.18)]; }
   function inrK(v) {
     if (v >= 100000) return '₹' + (v/100000).toFixed(1) + 'L';
-    if (v >= 1000) return '₹' + Math.round(v/1000) + 'K';
+    if (v >= 1000)   return '₹' + Math.round(v/1000) + 'K';
     return '₹' + v;
   }
 
-  // Total mid
-  const totalMid = d.groc + d.trans + d.dining + d.health + d.edu + d.ent + d.dom;
-  // For total rent, use 2BHK as representative
-  const totalWithRent2 = totalMid + d.r2;
-  const [tLo, tHi] = rng(totalWithRent2);
-  const userTotal = W.totalExpenses || 0;
+  const totalMid = d.groc + d.trans + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
+  const [tLo, tHi] = rng(totalMid);
+  const totalRangeEl = $('col-total-range');
+  if (totalRangeEl) totalRangeEl.textContent = inrK(tLo) + ' – ' + inrK(tHi) + '/mo';
 
   body.innerHTML = COL_CATS.map(cat => {
     if (cat.isRent) {
       const r = [d.r1, d.r2, d.r3];
       const yours = userSpend.rent;
       const vsHtml = yours > 0 ? buildVsBar(yours, d.r2) : '';
+      const rightHtml = yours > 0
+        ? `<div class="col-cat-yours" style="color:${vsColor(yours,d.r1,d.r2)}">${inrK(yours)}</div>
+           <div class="col-from-profile">from profile</div>${vsHtml}`
+        : `<div class="col-add-profile" onclick="switchTab('me')">set in profile</div>`;
       return `<div class="col-cat-row">
         <div class="col-cat-left">
           <div class="col-cat-name">${cat.label}</div>
           <div class="col-rent-grid">
-            ${['1BHK','2BHK','3BHK'].map((t,i) => `<div class="col-rent-cell"><div class="rc-type">${t}</div><div class="rc-val">${inrK(r[i])}</div></div>`).join('')}
+            ${['1BHK','2BHK','3BHK'].map((t,i)=>`<div class="col-rent-cell"><div class="rc-type">${t}</div><div class="rc-val">${inrK(r[i])}</div></div>`).join('')}
           </div>
           <div class="col-cat-range" style="margin-top:0.35rem">${cat.sub}</div>
         </div>
-        <div class="col-cat-right">
-          ${yours > 0 ? `<div class="col-cat-yours" style="color:${vsColor(yours,d.r1,d.r2)}">${inrK(yours)}</div><div class="col-cat-label">your rent</div>${vsHtml}` : '<div class="col-cat-label" style="font-size:0.65rem;color:var(--t3)">not set</div>'}
-        </div>
+        <div class="col-cat-right">${rightHtml}</div>
       </div>`;
     }
+
     const mid = d[cat.key];
     const [lo, hi] = rng(mid);
     const yours = userSpend[cat.key];
+    const isProfile = COL_PROFILE_KEYS.has(cat.key);
+
+    let rightHtml;
+    if (isProfile) {
+      // Static from profile
+      rightHtml = yours > 0
+        ? `<div class="col-cat-yours" style="color:${vsColor(yours,lo,hi)}">${inrK(yours)}</div>
+           <div class="col-from-profile">from profile</div>
+           ${buildVsBar(yours, mid)}`
+        : `<div class="col-add-profile" onclick="switchTab('me')">set in profile</div>`;
+    } else {
+      // Editable inline input
+      const barPct = yours > 0 ? Math.min(100, Math.round(yours/mid*100)) : 0;
+      const barCol = barPct <= 105 ? 'var(--green)' : barPct <= 130 ? 'var(--amber)' : 'var(--red)';
+      rightHtml = `<div class="col-inline-wrap">
+        <span>₹</span>
+        <input class="col-inline-inp" type="number" id="col-inp-${cat.key}" placeholder="0"
+               value="${yours > 0 ? yours : ''}" oninput="onColSpendInput('${cat.key}',+this.value)">
+        <span>/mo</span>
+      </div>
+      <div class="col-vs-bar" style="margin-top:0.4rem"><div class="col-vs-fill" id="col-fill-${cat.key}" style="width:${barPct}%;background:${barCol}"></div></div>`;
+    }
+
     return `<div class="col-cat-row">
       <div class="col-cat-left">
         <div class="col-cat-name">${cat.label}</div>
         <div class="col-cat-range">${inrK(lo)} – ${inrK(hi)}/mo · ${cat.sub}</div>
       </div>
-      <div class="col-cat-right">
-        ${yours > 0 ? `<div class="col-cat-yours" style="color:${vsColor(yours,lo,hi)}">${inrK(yours)}</div><div class="col-cat-label">yours</div>${buildVsBar(yours,mid)}` : `<div class="col-cat-label">${inrK(mid)}<br>typical</div>`}
-      </div>
+      <div class="col-cat-right">${rightHtml}</div>
     </div>`;
   }).join('');
 
-  // Total
-  const totalRangeEl = $('col-total-range');
-  const totalYoursEl = $('col-total-yours');
-  if (totalRangeEl) totalRangeEl.textContent = inrK(tLo) + ' – ' + inrK(tHi) + '/mo';
-  if (totalYoursEl) {
-    if (userTotal > 0) {
-      const col = userTotal < tLo*0.9 ? 'var(--green)' : userTotal > tHi*1.1 ? 'var(--red)' : 'var(--amber)';
-      totalYoursEl.innerHTML = `<span style="color:${col}">${inrK(userTotal)}</span>`;
-    } else {
-      totalYoursEl.textContent = '—';
-    }
+  // Pets row (from profile, no benchmark)
+  if (W.petExpense > 0) {
+    body.innerHTML += `<div class="col-cat-row">
+      <div class="col-cat-left">
+        <div class="col-cat-name">Pets & Personal Care</div>
+        <div class="col-cat-range">from profile · no city benchmark available</div>
+      </div>
+      <div class="col-cat-right">
+        <div class="col-cat-yours" style="color:var(--t2)">${inrK(W.petExpense)}</div>
+        <div class="col-from-profile">from profile</div>
+      </div>
+    </div>`;
   }
 
-  // Nudge
-  const nudge = $('col-nudge');
-  const nudgeTxt = $('col-nudge-text');
-  if (nudge && nudgeTxt && userTotal > 0) {
-    if (userTotal > tHi * 1.1) {
-      nudge.style.display = 'flex';
-      nudgeTxt.textContent = `Your spending of ${inrK(userTotal)}/mo is above the ${cls} class range for ${city}. Either your lifestyle class is actually higher, or there's room to optimise.`;
-    } else if (userTotal < tLo * 0.85) {
-      nudge.style.display = 'flex';
-      nudgeTxt.textContent = `Your spending of ${inrK(userTotal)}/mo is below the ${cls} class baseline for ${city}. You may have significant savings headroom.`;
-    } else {
-      nudge.style.display = 'none';
-    }
-  }
+  updateColSummary();
 }
 
 function vsColor(val, lo, hi) {
