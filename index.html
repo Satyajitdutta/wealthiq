@@ -2330,7 +2330,9 @@ const pmt = (rate, nper, pv, fv) => {
 const fvSIP = (monthly, r, months) => monthly * (Math.pow(1+r, months) - 1) / r;
 const sipForGoal = (target, existing, years, ret = 0.12) => {
   if (years <= 0 || target <= 0) return 0;
-  return Math.max(0, -pmt(ret/12, years*12, existing, -target));
+  // PV = -existing (you invest today), FV = target (you receive later)
+  // PMT returns negative (outflow), so negate it to get monthly investment amount
+  return Math.max(0, -pmt(ret/12, years*12, -existing, target));
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2971,7 +2973,11 @@ function renderGoalRings(visibleIds) {
 
 function setActiveGoal(id) {
   activeGoalId = id;
+  renderedGoalId = null; // force full re-render of detail panel
   calcGoals();
+  // Show FIRE calculator only when Retirement goal is selected
+  const fc = $('fire-card');
+  if (fc) fc.style.display = id === 'retirement' ? 'block' : 'none';
 }
 
 function renderGoalDetail(id) {
@@ -2988,7 +2994,7 @@ function renderGoalDetail(id) {
         <h4>${def.name.replace('\n', ' ')}</h4>
         <div class="gd-sip">
           <div class="gd-sip-v" id="gd-sip-v">—</div>
-          <div class="gd-sip-l">monthly SIP</div>
+          <div class="gd-sip-l">monthly SIP needed</div>
         </div>
       </div>
       <div class="gd-stat"><span class="gsl">Target Corpus</span><span class="gsv" id="gd-corpus">—</span></div>
@@ -2996,6 +3002,7 @@ function renderGoalDetail(id) {
       <div class="gd-stat"><span class="gsl">Time Horizon</span><span class="gsv" id="gd-horizon">—</span></div>
       <div class="gd-stat"><span class="gsl">Progress</span><span class="gsv" id="gd-progress" style="color:${def.color}">—</span></div>
       <div class="gd-stat" id="gd-delay-row" style="display:none;padding-top:0.5rem"><span class="gsl" style="color:var(--amber)">If delayed 1 year</span><span class="gsv" style="color:var(--amber)" id="gd-delay-val"></span></div>
+      <div style="font-size:0.62rem;color:var(--t3);margin-top:0.4rem;font-style:italic" id="gd-sip-note"></div>
       ${editable ? `
         <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
           <div class="field" style="flex:1"><label>Target (₹)</label><input type="number" id="gd-inp-target" placeholder="0" oninput="onGoalFieldChange('${id}','target',+this.value)"></div>
@@ -3032,6 +3039,11 @@ function updateGoalStats(id) {
   const delVal = $('gd-delay-val');
   if (delRow) delRow.style.display = extra > 0 ? 'flex' : 'none';
   if (delVal && extra > 0) delVal.textContent = 'SIP goes up by ' + inr(extra);
+  // SIP explanation line
+  const sipNote = $('gd-sip-note');
+  if (sipNote && corpus > 0 && gs.years > 0) {
+    sipNote.textContent = `To reach ${inrL(corpus)} in ${gs.years} yrs at 12% p.a. — starting from ${inrL(gs.saved)} saved`;
+  }
 }
 
 // Called by editable inputs — updates state and recomputes without re-rendering DOM
