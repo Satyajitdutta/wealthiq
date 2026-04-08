@@ -1496,6 +1496,7 @@ select option{background:#1e293b}
     <div class="gtl">Total Monthly SIP Needed</div>
     <div class="gtv" id="goals-total-sip">—</div>
     <div class="gts" id="goals-total-sub">across all active goals</div>
+    <div id="goals-sip-breakdown" style="margin-top:0.6rem;text-align:left;border-top:1px solid rgba(255,255,255,0.08);padding-top:0.6rem;display:none"></div>
   </div>
 
   <div class="card" id="fire-card">
@@ -2908,10 +2909,27 @@ function calcGoals() {
     renderedGoalId = activeGoalId;
   }
 
-  // Total SIP
+  // Total SIP + per-goal breakdown
+  const activeSIPs = visibleIds.filter(id => GOAL_STATE[id].sip > 0);
   const totalSIP = visibleIds.reduce((sum, id) => sum + (GOAL_STATE[id].sip || 0), 0);
   $('goals-total-sip').textContent = inr(totalSIP) + '/month';
   $('goals-total-sub').textContent = `across ${visibleIds.length} goals`;
+  const bkEl = $('goals-sip-breakdown');
+  if (bkEl) {
+    if (activeSIPs.length > 0) {
+      bkEl.style.display = 'block';
+      bkEl.innerHTML = activeSIPs.map(id => {
+        const def = GOAL_DEFS.find(g => g.id === id);
+        const gs  = GOAL_STATE[id];
+        return `<div style="display:flex;justify-content:space-between;font-size:0.68rem;padding:0.18rem 0;color:var(--t2)">
+          <span>${def.icon} ${def.name.replace('\n',' ')}</span>
+          <span style="font-weight:700;color:var(--text)">${inr(gs.sip)}/mo</span>
+        </div>`;
+      }).join('');
+    } else {
+      bkEl.style.display = 'none';
+    }
+  }
 
   // FIRE card
   $('fire-number').textContent = inrL(W.fireNumber);
@@ -2986,7 +3004,12 @@ function renderGoalDetail(id) {
   const gs = GOAL_STATE[id];
   if (!def || !gs) { area.innerHTML = ''; return; }
 
-  const editable = id !== 'emergency' && id !== 'retirement';
+  // Emergency Fund: fully auto-computed from profile, no manual inputs
+  // Retirement: target auto-computed (FIRE number), but years + saved are editable
+  // All others: all three fields editable
+  const fullyAuto   = id === 'emergency';
+  const targetAuto  = id === 'retirement'; // target locked to FIRE number, years+saved editable
+
   area.innerHTML = `
     <div class="goal-detail open">
       <div class="gd-head">
@@ -2997,24 +3020,24 @@ function renderGoalDetail(id) {
           <div class="gd-sip-l">monthly SIP needed</div>
         </div>
       </div>
-      <div class="gd-stat"><span class="gsl">Target Corpus</span><span class="gsv" id="gd-corpus">—</span></div>
+      <div class="gd-stat"><span class="gsl">Target Corpus</span><span class="gsv" id="gd-corpus">—</span>${targetAuto ? '<span style="font-size:0.58rem;color:var(--t3);margin-left:0.35rem">(FIRE 25×)</span>' : ''}</div>
       <div class="gd-stat"><span class="gsl">Already Saved</span><span class="gsv" id="gd-saved">—</span></div>
       <div class="gd-stat"><span class="gsl">Time Horizon</span><span class="gsv" id="gd-horizon">—</span></div>
       <div class="gd-stat"><span class="gsl">Progress</span><span class="gsv" id="gd-progress" style="color:${def.color}">—</span></div>
       <div class="gd-stat" id="gd-delay-row" style="display:none;padding-top:0.5rem"><span class="gsl" style="color:var(--amber)">If delayed 1 year</span><span class="gsv" style="color:var(--amber)" id="gd-delay-val"></span></div>
       <div style="font-size:0.62rem;color:var(--t3);margin-top:0.4rem;font-style:italic" id="gd-sip-note"></div>
-      ${editable ? `
+      ${!fullyAuto ? `
         <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
-          <div class="field" style="flex:1"><label>Target (₹)</label><input type="number" id="gd-inp-target" placeholder="0" oninput="onGoalFieldChange('${id}','target',+this.value)"></div>
-          <div class="field" style="flex:1"><label>Years</label><input type="number" id="gd-inp-years" min="1" max="40" placeholder="5" oninput="onGoalFieldChange('${id}','years',+this.value)"></div>
+          ${!targetAuto ? `<div class="field" style="flex:1"><label>Target (₹)</label><input type="number" id="gd-inp-target" placeholder="0" oninput="onGoalFieldChange('${id}','target',+this.value)"></div>` : ''}
+          <div class="field" style="flex:1"><label>Years to goal</label><input type="number" id="gd-inp-years" min="1" max="50" placeholder="10" oninput="onGoalFieldChange('${id}','years',+this.value)"></div>
         </div>
-        <div class="field" style="margin-top:0.5rem"><label>Already Saved (₹)</label><input type="number" id="gd-inp-saved" placeholder="0" oninput="onGoalFieldChange('${id}','saved',+this.value)"></div>
-      ` : ''}
+        <div class="field" style="margin-top:0.5rem"><label>Already Saved (₹) <em style="font-style:normal;font-size:0.6rem;color:var(--t3)">${targetAuto ? 'PF+NPS+MF+FD auto-loaded from profile' : ''}</em></label><input type="number" id="gd-inp-saved" placeholder="0" oninput="onGoalFieldChange('${id}','saved',+this.value)"></div>
+      ` : `<div style="font-size:0.68rem;color:var(--t3);margin-top:0.6rem">Auto-computed from your profile expenses. Update expenses in My Profile to change this.</div>`}
     </div>`;
 
-  // Fill inputs with current values (after DOM is created)
-  if (editable) {
-    const ti = $('gd-inp-target'); if (ti) ti.value = gs.target || '';
+  // Populate inputs
+  if (!fullyAuto) {
+    if (!targetAuto) { const ti = $('gd-inp-target'); if (ti) ti.value = gs.target || ''; }
     const yi = $('gd-inp-years');  if (yi) yi.value = gs.years  || '';
     const si = $('gd-inp-saved');  if (si) si.value = gs.saved  || '';
   }
