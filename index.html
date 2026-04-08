@@ -178,6 +178,29 @@ select option{background:#1e293b}
 .tax-gap .tgl{font-size:0.72rem;color:var(--t2);margin-bottom:0.15rem}
 .tax-gap .tgv{font-size:1.1rem;font-weight:700;color:var(--purple)}
 .tax-gap .tgs{font-size:0.72rem;color:var(--t3);margin-top:0.1rem}
+/* ── TAX DEDUCTIONS — smart input redesign ───────────────────── */
+.tax-section{padding:0.75rem 0;border-bottom:1px solid var(--bd)}
+.tax-section:last-child{border-bottom:none}
+.tax-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.55rem}
+.tax-section-hdr span:first-child{font-size:0.8rem;font-weight:700;color:var(--text)}
+.tax-limit-badge{font-size:0.62rem;color:var(--t3);background:rgba(255,255,255,0.05);border-radius:5px;padding:0.15rem 0.45rem}
+.tax-auto-badge{font-size:0.6rem;color:var(--teal);background:rgba(6,182,212,0.1);border-radius:5px;padding:0.15rem 0.45rem}
+.tax-prog-wrap{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;margin-bottom:0.3rem}
+.tax-prog-fill{height:100%;border-radius:3px;transition:width 0.4s;background:var(--blue)}
+.tax-prog-lbl{font-size:0.65rem;color:var(--t3);margin-bottom:0.55rem}
+.tax-inp-row{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.3rem 0}
+.tax-inp-row label{font-size:0.73rem;color:var(--t2);flex:1;min-width:0;line-height:1.35}
+.tax-inp-row label em{display:block;font-size:0.62rem;color:var(--t3);font-style:normal}
+.tax-amt-wrap{display:flex;align-items:center;gap:0.25rem;flex-shrink:0}
+.tax-amt-wrap span{font-size:0.75rem;color:var(--t3)}
+.tax-amt-wrap input{width:80px;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.35rem 0.4rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;text-align:right}
+.tax-freq-sel{background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.32rem 0.35rem;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:0.65rem;cursor:pointer}
+.tax-freq-fixed{font-size:0.65rem;color:var(--t3);white-space:nowrap}
+.tax-gap-hint{font-size:0.7rem;color:var(--amber);background:rgba(245,158,11,0.07);border-radius:7px;padding:0.4rem 0.6rem;margin-top:0.4rem;line-height:1.5}
+.tax-auto-result{font-size:0.7rem;color:var(--t2);margin-top:0.35rem;line-height:1.5;font-style:italic}
+.tax-check-row{display:flex;align-items:flex-start;gap:0.5rem;margin-top:0.3rem;cursor:pointer}
+.tax-check-row input{margin-top:2px;flex-shrink:0}
+.tax-check-row span{font-size:0.7rem;color:var(--t2);line-height:1.4}
 
 /* ── GOAL RINGS ──────────────────────────────────────────────────── */
 .goals-scroll{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.75rem}
@@ -1161,12 +1184,149 @@ select option{background:#1e293b}
   </div>
 
   <div class="card">
-    <div class="card-hdr"><div class="pill" style="background:var(--blue)"></div><h3>Tax Deductions</h3><span class="badge" id="t-gap-badge" style="background:rgba(139,92,246,0.15);color:var(--purple)">Loading...</span></div>
-    <div class="body">
-      <div class="info-note">Enter deductions to compare regimes. <strong>New Regime is India's default</strong> from FY2024-25 — only ₹75,000 standard deduction applies.</div>
-      <div id="ded-rows">
-        <!-- Rendered by JS -->
+    <div class="card-hdr"><div class="pill" style="background:var(--blue)"></div><h3>Your Deductions</h3><span class="badge" id="t-gap-badge" style="background:rgba(139,92,246,0.15);color:var(--purple)">—</span></div>
+    <div class="body" style="padding-top:0.25rem">
+
+      <!-- 80C -->
+      <div class="tax-section">
+        <div class="tax-section-hdr">
+          <span>80C Investments</span><span class="tax-limit-badge">Limit ₹1,50,000/yr</span>
+        </div>
+        <div class="tax-prog-wrap"><div class="tax-prog-fill" id="tp-80c" style="width:0%"></div></div>
+        <div class="tax-prog-lbl" id="tpl-80c">₹0 of ₹1,50,000 used</div>
+        <div class="tax-inp-row">
+          <label>EPF / PF contribution<em>your monthly share + employer share</em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-epf" placeholder="0" oninput="onTaxInput()"><span class="tax-freq-fixed">/month</span>
+          </div>
+        </div>
+        <div class="tax-inp-row">
+          <label>Other 80C<em>ELSS SIP, PPF deposit, LIC premium, etc.</em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-80c-amt" placeholder="0" oninput="onTaxInput()">
+            <select id="ti-80c-freq" class="tax-freq-sel" onchange="onTaxInput()">
+              <option value="monthly">/month</option>
+              <option value="quarterly">/quarter</option>
+              <option value="halfyear">/6 months</option>
+              <option value="annual" selected>/year</option>
+            </select>
+          </div>
+        </div>
+        <div class="tax-gap-hint" id="tgh-80c" style="display:none"></div>
       </div>
+
+      <!-- 80D Health Insurance -->
+      <div class="tax-section">
+        <div class="tax-section-hdr">
+          <span>80D — Health Insurance</span><span class="tax-limit-badge">Limit ₹25,000/yr</span>
+        </div>
+        <div class="tax-inp-row">
+          <label>Your premium<em>self + spouse + children</em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-80d-amt" placeholder="0" oninput="onTaxInput()">
+            <select id="ti-80d-freq" class="tax-freq-sel" onchange="onTaxInput()">
+              <option value="monthly">/month</option>
+              <option value="quarterly">/quarter</option>
+              <option value="halfyear">/6 months</option>
+              <option value="annual" selected>/year</option>
+            </select>
+          </div>
+        </div>
+        <div class="tax-inp-row">
+          <label>Parents' premium<em>extra ₹25,000 deduction (₹50,000 if senior)</em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-80d-parent" placeholder="0" oninput="onTaxInput()">
+            <select id="ti-80d-pfq" class="tax-freq-sel" onchange="onTaxInput()">
+              <option value="monthly">/month</option>
+              <option value="quarterly">/quarter</option>
+              <option value="halfyear">/6 months</option>
+              <option value="annual" selected>/year</option>
+            </select>
+          </div>
+        </div>
+        <label class="tax-check-row">
+          <input type="checkbox" id="ti-80d-senior" onchange="onTaxInput()">
+          <span>Parents are senior citizens (60+) — their limit increases to ₹50,000</span>
+        </label>
+      </div>
+
+      <!-- HRA -->
+      <div class="tax-section">
+        <div class="tax-section-hdr">
+          <span>HRA — House Rent Allowance</span><span class="tax-auto-badge" id="hra-auto-lbl">auto from profile</span>
+        </div>
+        <div class="tax-inp-row">
+          <label>Monthly rent you pay<em id="ti-hra-rent-hint"></em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-hra-rent" placeholder="0" oninput="onTaxInput()"><span class="tax-freq-fixed">/month</span>
+          </div>
+        </div>
+        <div class="tax-inp-row">
+          <label>HRA received in salary<em>check your salary slip</em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-hra-recv" placeholder="0" oninput="onTaxInput()"><span class="tax-freq-fixed">/month</span>
+          </div>
+        </div>
+        <div class="tax-auto-result" id="thr-hra"></div>
+      </div>
+
+      <!-- Home Loan -->
+      <div class="tax-section">
+        <div class="tax-section-hdr">
+          <span>Home Loan Interest (Sec 24b)</span><span class="tax-limit-badge">Limit ₹2,00,000/yr</span>
+        </div>
+        <div class="tax-inp-row">
+          <label>Monthly EMI<em id="ti-emi-hint"></em></label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-hl-emi" placeholder="0" oninput="onTaxInput()"><span class="tax-freq-fixed">/month</span>
+          </div>
+        </div>
+        <div class="tax-inp-row">
+          <label>Outstanding loan balance</label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-hl-bal" placeholder="0" oninput="onTaxInput()">
+          </div>
+        </div>
+        <div class="tax-inp-row">
+          <label>Interest rate</label>
+          <div class="tax-amt-wrap">
+            <input type="number" id="ti-hl-rate" placeholder="8.5" step="0.1" style="width:56px" oninput="onTaxInput()"><span class="tax-freq-fixed">% p.a.</span>
+          </div>
+        </div>
+        <div class="tax-auto-result" id="thr-hl"></div>
+      </div>
+
+      <!-- NPS -->
+      <div class="tax-section">
+        <div class="tax-section-hdr">
+          <span>NPS Additional (80CCD(1B))</span><span class="tax-limit-badge">Limit ₹50,000/yr</span>
+        </div>
+        <div class="tax-inp-row">
+          <label>NPS contribution</label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-nps-amt" placeholder="0" oninput="onTaxInput()">
+            <select id="ti-nps-freq" class="tax-freq-sel" onchange="onTaxInput()">
+              <option value="monthly">/month</option>
+              <option value="annual" selected>/year</option>
+            </select>
+          </div>
+        </div>
+        <div class="tax-gap-hint" id="tgh-nps" style="display:none"></div>
+      </div>
+
+      <!-- Other -->
+      <div class="tax-section" style="border-bottom:none">
+        <div class="tax-section-hdr">
+          <span>Other Deductions</span><span style="font-size:0.62rem;color:var(--t3)">80E, 80G, 80TTA etc.</span>
+        </div>
+        <div class="tax-inp-row">
+          <label>Annual amount</label>
+          <div class="tax-amt-wrap">
+            <span>₹</span><input type="number" id="ti-other" placeholder="0" oninput="onTaxInput()"><span class="tax-freq-fixed">/year</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2162,25 +2322,153 @@ function getNudge(savingsRate, emergencyMonths, emiPct, income, surplus) {
 /* ═══════════════════════════════════════════════════════════════
    TAX CALCULATOR
 ═══════════════════════════════════════════════════════════════ */
-const DEDS = [
-  { id: 'ded80c', label: '80C — ELSS, PPF, EPF, LIC', max: 150000, key: 'ded80c', save_rate: null },
-  { id: 'ded80d', label: '80D — Health Insurance', max: 25000, key: 'ded80d', save_rate: null },
-  { id: 'dedNPS', label: '80CCD(1B) — NPS Extra', max: 50000, key: 'dedNPS', save_rate: null },
-  { id: 'dedHRA', label: 'HRA Exemption', max: 0, key: 'dedHRA', save_rate: null },
-  { id: 'dedHomeLoan', label: 'Home Loan Interest', max: 200000, key: 'dedHomeLoan', save_rate: null },
-  { id: 'dedOther', label: 'Other (80E, 80G etc.)', max: 0, key: 'dedOther', save_rate: null },
-];
+// Convert periodic amount to annual
+function toAnnual(amt, freq) {
+  const a = +amt || 0;
+  if (freq === 'monthly')   return a * 12;
+  if (freq === 'quarterly') return a * 4;
+  if (freq === 'halfyear')  return a * 2;
+  return a; // annual
+}
 
-function initDedRows() {
-  const container = $('ded-rows');
-  if (!container) return;
-  container.innerHTML = DEDS.map(d => `
-    <div class="ded-row">
-      <div class="ded-label">${d.label}</div>
-      <input type="number" value="${W[d.key]||0}" placeholder="0" style="width:90px;flex-shrink:0;font-size:0.8rem;padding:0.35rem 0.5rem;text-align:right" oninput="W.${d.key}=+this.value;calcTax();calcHealth()">
-      ${d.max > 0 ? `<div class="ded-bar-wrap"><div class="ded-bar-fill" id="dbar-${d.key}" style="background:var(--blue);width:33%"></div></div><div class="ded-save" id="dsave-${d.key}"></div>` : '<div style="flex:1"></div><div class="ded-save" id="dsave-'+d.key+'"></div>'}
-    </div>
-  `).join('');
+// Approximate marginal tax rate for gap-saving hints
+function marginalRate() {
+  const inc = (W.annualSalary || 0) - (W.taxRegime === 'old' ? 75000 : 75000);
+  if (W.taxRegime === 'new') {
+    if (inc <= 800000)  return 0.05;
+    if (inc <= 1200000) return 0.10;
+    if (inc <= 1600000) return 0.15;
+    if (inc <= 2000000) return 0.20;
+    return 0.30;
+  }
+  if (inc <= 500000)  return 0.05;
+  if (inc <= 1000000) return 0.20;
+  return 0.30;
+}
+
+function initTaxInputs() {
+  // Auto-fill rent from profile
+  const rentHint = $('ti-hra-rent-hint');
+  if (W.rent > 0) {
+    const el = $('ti-hra-rent');
+    if (el && !el.value) el.value = W.rent;
+    if (rentHint) rentHint.textContent = 'auto-filled from profile (' + inr(W.rent) + '/mo)';
+  }
+  // Auto-fill home loan EMI from profile
+  const emiHint = $('ti-emi-hint');
+  if (W.homeLoanEMI > 0) {
+    const el = $('ti-hl-emi');
+    if (el && !el.value) el.value = W.homeLoanEMI;
+    if (emiHint) emiHint.textContent = 'auto-filled from profile (' + inr(W.homeLoanEMI) + '/mo)';
+  }
+  // Default interest rate
+  const rateEl = $('ti-hl-rate');
+  if (rateEl && !rateEl.value) rateEl.value = '8.5';
+  // Restore saved deduction values into new fields (backward compat)
+  if (W.ded80c > 0) { const e = $('ti-80c-amt'); if(e && !e.value) { e.value = W.ded80c; const f=$('ti-80c-freq'); if(f) f.value='annual'; } }
+  if (W.ded80d > 0) { const e = $('ti-80d-amt'); if(e && !e.value) { e.value = W.ded80d; const f=$('ti-80d-freq'); if(f) f.value='annual'; } }
+  if (W.dedNPS  > 0) { const e = $('ti-nps-amt'); if(e && !e.value) { e.value = W.dedNPS; const f=$('ti-nps-freq'); if(f) f.value='annual'; } }
+  if (W.dedHRA  > 0) { /* HRA is computed — nothing to restore */ }
+  if (W.dedHomeLoan > 0) { /* Recomputed from balance+rate */ }
+  if (W.dedOther > 0) { const e = $('ti-other'); if(e && !e.value) e.value = W.dedOther; }
+  onTaxInput();
+}
+
+// Legacy stub so old references don't break
+function initDedRows() { initTaxInputs(); }
+
+function onTaxInput() {
+  // ── 80C ─────────────────────────────────────────────────────
+  const epfAnnual   = (+($('ti-epf')?.value || 0)) * 12;
+  const other80cAmt = +($('ti-80c-amt')?.value || 0);
+  const other80cAnn = toAnnual(other80cAmt, $('ti-80c-freq')?.value || 'annual');
+  const total80c    = Math.min(epfAnnual + other80cAnn, 150000);
+  W.ded80c = total80c;
+
+  const pct80c = Math.round(total80c / 150000 * 100);
+  const bar80c = $('tp-80c');
+  if (bar80c) { bar80c.style.width = Math.min(100, pct80c) + '%'; bar80c.style.background = pct80c >= 100 ? 'var(--green)' : 'var(--blue)'; }
+  const lbl80c = $('tpl-80c');
+  if (lbl80c) lbl80c.textContent = inr(total80c) + ' of ₹1,50,000 used (' + pct80c + '%)';
+
+  const gap80c = Math.max(0, 150000 - total80c);
+  const hint80c = $('tgh-80c');
+  if (hint80c) {
+    if (gap80c > 500) {
+      const mo = Math.ceil(gap80c / 12);
+      const save = Math.round(gap80c * marginalRate() * 1.04); // +4% cess
+      hint80c.style.display = 'block';
+      hint80c.innerHTML = `₹${gap80c.toLocaleString('en-IN')} limit unused → add <strong>₹${mo.toLocaleString('en-IN')}/month</strong> in ELSS to save <strong>₹${save.toLocaleString('en-IN')}</strong> more in tax`;
+    } else {
+      hint80c.style.display = 'block';
+      hint80c.innerHTML = '<span style="color:var(--green)">✓ 80C limit fully utilised</span>';
+    }
+  }
+
+  // ── 80D ─────────────────────────────────────────────────────
+  const selfPrem    = toAnnual(+($('ti-80d-amt')?.value || 0), $('ti-80d-freq')?.value || 'annual');
+  const parentPrem  = toAnnual(+($('ti-80d-parent')?.value || 0), $('ti-80d-pfq')?.value || 'annual');
+  const seniorCheck = $('ti-80d-senior')?.checked || false;
+  const parentLimit = seniorCheck ? 50000 : 25000;
+  W.ded80d = Math.min(selfPrem, 25000) + Math.min(parentPrem, parentLimit);
+
+  // ── HRA ─────────────────────────────────────────────────────
+  const rentMo   = +($('ti-hra-rent')?.value || 0) || W.rent || 0;
+  const hraRecvMo = +($('ti-hra-recv')?.value || 0);
+  const basicAnn  = (W.annualSalary || 0) * 0.40; // approx 40% of gross
+  const metro     = (W.cityTier || 1) === 1;
+  const hraExempt = hraRecvMo > 0 ? Math.max(0, Math.min(
+    hraRecvMo * 12,
+    rentMo * 12 - basicAnn * 0.10,
+    basicAnn * (metro ? 0.50 : 0.40)
+  )) : 0;
+  W.dedHRA = hraExempt;
+  const hraEl = $('thr-hra');
+  if (hraEl) {
+    if (hraExempt > 0)
+      hraEl.innerHTML = `Exemption: <strong style="color:var(--green)">${inr(Math.round(hraExempt))}/yr</strong> — min(HRA received, rent−10% basic, ${metro?'50%':'40%'} of basic)`;
+    else if (hraRecvMo > 0)
+      hraEl.textContent = 'No HRA exemption — your rent doesn\'t exceed 10% of basic salary';
+    else
+      hraEl.textContent = 'Enter HRA you receive in your salary slip to calculate exemption';
+  }
+
+  // ── Home Loan Interest ───────────────────────────────────────
+  const hlBal  = +($('ti-hl-bal')?.value || 0);
+  const hlRate = +($('ti-hl-rate')?.value || 8.5);
+  const hlInterest = hlBal > 0 ? hlBal * (hlRate / 100) : 0;
+  W.dedHomeLoan = Math.min(hlInterest, 200000);
+  const hlEl = $('thr-hl');
+  if (hlEl) {
+    if (hlInterest > 0)
+      hlEl.innerHTML = `Annual interest: <strong>${inr(Math.round(hlInterest))}</strong> → deduction: <strong style="color:var(--green)">${inr(W.dedHomeLoan)}</strong>${hlInterest > 200000 ? ' <em>(capped at ₹2L)</em>' : ''}`;
+    else if (W.homeLoanEMI > 0)
+      hlEl.textContent = 'Enter outstanding balance + rate to calculate interest deduction';
+    else
+      hlEl.textContent = 'No home loan in profile — enter details if applicable';
+  }
+
+  // ── NPS ─────────────────────────────────────────────────────
+  W.dedNPS = Math.min(toAnnual(+($('ti-nps-amt')?.value || 0), $('ti-nps-freq')?.value || 'annual'), 50000);
+  const npsGap = Math.max(0, 50000 - W.dedNPS);
+  const npsHint = $('tgh-nps');
+  if (npsHint) {
+    if (npsGap > 500) {
+      const mo = Math.ceil(npsGap / 12);
+      const save = Math.round(npsGap * marginalRate() * 1.04);
+      npsHint.style.display = 'block';
+      npsHint.innerHTML = `₹${npsGap.toLocaleString('en-IN')} limit unused → add <strong>₹${mo.toLocaleString('en-IN')}/month</strong> to NPS to save <strong>₹${save.toLocaleString('en-IN')}</strong> more in tax`;
+    } else {
+      npsHint.style.display = 'block';
+      npsHint.innerHTML = '<span style="color:var(--green)">✓ NPS limit fully utilised</span>';
+    }
+  }
+
+  // ── Other ────────────────────────────────────────────────────
+  W.dedOther = +($('ti-other')?.value || 0);
+
+  calcTax();
+  calcHealth();
 }
 
 function oldRegimeTax(income, age) {
@@ -2279,34 +2567,24 @@ function calcTax() {
     $('t-rec-text').textContent = 'Both regimes have equal tax liability';
   }
 
-  // Deduction bars
-  const marginalRate = grossInc > 1000000 ? 0.30 : grossInc > 500000 ? 0.20 : 0.05;
-  let totalPotentialSaving = 0;
-  DEDS.forEach(d => {
-    if (!d.max) return;
-    const used = Math.min(W[d.key] || 0, d.max);
-    const remaining = d.max - used;
-    const potSave = remaining * marginalRate;
-    totalPotentialSaving += potSave;
-    const barEl = $('dbar-' + d.key);
-    const saveEl = $('dsave-' + d.key);
-    if (barEl) {
-      const pct = Math.round(used / d.max * 100);
-      barEl.style.width = pct + '%';
-      barEl.style.background = pct >= 90 ? 'var(--green)' : pct >= 50 ? 'var(--blue)' : 'var(--amber)';
-    }
-    if (saveEl && remaining > 0) {
-      saveEl.textContent = `Save ${inr(potSave)}`;
-      saveEl.style.color = 'var(--green)';
-    } else if (saveEl) {
-      saveEl.textContent = '✓ Full';
-      saveEl.style.color = 'var(--t3)';
-    }
-  });
+  // Total potential tax saving from unused limits (old regime only)
+  const mRate = grossInc > 1000000 ? 0.30 : grossInc > 500000 ? 0.20 : 0.05;
+  const unused80c  = Math.max(0, 150000 - (W.ded80c  || 0));
+  const unusedNPS  = Math.max(0, 50000  - (W.dedNPS  || 0));
+  const unused80d  = Math.max(0, 25000  - (W.ded80d  || 0));
+  const unusedHL   = Math.max(0, 200000 - (W.dedHomeLoan || 0));
+  const totalUnused = unused80c + unusedNPS + unused80d + unusedHL;
+  const totalPotentialSaving = Math.round(totalUnused * mRate * 1.04);
 
-  $('t-gap-badge').textContent = inr(totalPotentialSaving) + ' more to save';
-  $('t-gap-val').textContent = inr(totalPotentialSaving);
-  $('t-gap-sub').textContent = `Fill 80C + NPS 80CCD(1B) to unlock this additional saving`;
+  const gapBadge = $('t-gap-badge');
+  if (gapBadge) gapBadge.textContent = totalPotentialSaving > 0 ? inr(totalPotentialSaving) + ' more to save' : '✓ Optimised';
+  const gapVal = $('t-gap-val');
+  if (gapVal) gapVal.textContent = inr(totalPotentialSaving);
+  const gapSub = $('t-gap-sub');
+  const parts = [];
+  if (unused80c > 0) parts.push(`₹${unused80c.toLocaleString('en-IN')} unused in 80C`);
+  if (unusedNPS > 0) parts.push(`₹${unusedNPS.toLocaleString('en-IN')} unused in NPS`);
+  if (gapSub) gapSub.textContent = parts.length ? parts.join(' · ') : 'All deduction limits fully utilised';
 
   const minTax = Math.min(W.oldTax, W.newTax);
   $('t-takehome-old').textContent = inr(Math.round((salary - W.oldTax) / 12));
