@@ -208,6 +208,10 @@ select option{background:#1e293b}
 .tax-qualify summary::-webkit-details-marker{display:none}
 .tax-qualify ul{margin:0;padding:0.1rem 0.6rem 0.55rem 1.6rem;list-style:disc}
 .tax-qualify ul li{font-size:0.66rem;color:var(--t2);padding:0.15rem 0;line-height:1.4}
+.fire-info-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:rgba(139,92,246,0.25);color:var(--purple);font-size:0.6rem;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;line-height:1}
+.fire-explainer{font-size:0.68rem;color:var(--t2);background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.2);border-radius:9px;padding:0.65rem 0.75rem;line-height:1.6;margin:0.3rem 0 0.5rem}
+.fire-explainer strong{color:var(--text)}
+.fire-explainer em{display:block;margin-top:0.4rem;color:var(--t3)}
 
 /* ── GOAL RINGS ──────────────────────────────────────────────────── */
 .goals-scroll{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.75rem}
@@ -1121,7 +1125,12 @@ select option{background:#1e293b}
       <div class="stat-row"><span class="sl">Term Insurance</span><span class="sv" id="h-term-status">—</span></div>
       <div class="stat-row"><span class="sl">Health Insurance</span><span class="sv" id="h-health-status">—</span></div>
       <div class="stat-row"><span class="sl">Emergency Fund</span><span class="sv" id="h-emergency-status">—</span></div>
-      <div class="stat-row"><span class="sl">FIRE Number</span><span class="sv" id="h-fire-number">—</span></div>
+      <div class="stat-row"><span class="sl">FIRE Number <span class="fire-info-icon" onclick="toggleFireExplainer()" title="What is this?">?</span></span><span class="sv" id="h-fire-number">—</span></div>
+      <div class="fire-explainer" id="fire-explainer" style="display:none">
+        <strong>FIRE = Financial Independence, Retire Early</strong><br>
+        The <strong>25× rule</strong> says: if your investments are 25 times your annual expenses, they can sustain you indefinitely — because a well-diversified portfolio historically returns ~4%/yr (the "Safe Withdrawal Rate"). Withdraw 4% of ₹1 Cr = ₹4 L/yr = your expenses covered forever, without touching the principal.<br><br>
+        <em>Your FIRE Number = your current annual expenses × 25</em>
+      </div>
       <div class="stat-row"><span class="sl">FIRE Progress</span><span class="sv" id="h-fire-progress">—</span></div>
     </div>
   </div>
@@ -1455,6 +1464,11 @@ select option{background:#1e293b}
   <div class="card" id="fire-card">
     <div class="card-hdr"><div class="pill" style="background:var(--purple)"></div><h3>FIRE Calculator</h3><span class="badge" style="background:rgba(139,92,246,0.15);color:var(--purple)">Financial Independence</span></div>
     <div class="body">
+      <div class="fire-explainer" style="display:block;margin-bottom:0.75rem">
+        <strong>FIRE = Financial Independence, Retire Early</strong><br>
+        The <strong>25× rule:</strong> invest until your corpus = 25× your annual expenses. At that point, a 4% annual withdrawal covers your lifestyle indefinitely — backed by decades of market data (Trinity Study). Your money works; you stop having to.<br>
+        <em style="color:var(--t3)">FIRE Number = Annual expenses × 25</em>
+      </div>
       <div class="stat-row"><span class="sl">FIRE Number (25× rule)</span><span class="sv" id="fire-number">—</span></div>
       <div class="stat-row"><span class="sl">Your current portfolio</span><span class="sv" id="fire-portfolio">—</span></div>
       <div class="stat-row"><span class="sl">FIRE progress</span><span class="sv amber" id="fire-pct">—</span></div>
@@ -3163,6 +3177,11 @@ function loadWrcState() {
 
 let WRC = loadWrcState();
 function saveWrcState() { try { localStorage.setItem('wiq_wrc', JSON.stringify(WRC)); } catch(e) {} }
+
+function toggleFireExplainer() {
+  const el = document.getElementById('fire-explainer');
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
 
 function initWeeklyReport() {
   const auto = Math.round((W.monthlySavings || 0) / 4.33);
