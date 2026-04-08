@@ -2859,6 +2859,7 @@ const GOAL_STATE = {
 };
 
 let activeGoalId = 'retirement';
+let renderedGoalId = null; // tracks which goal is currently in the detail panel
 
 function calcGoals() {
   const income = W.totalIncome || (W.monthlyIncome + W.partnerIncome);
@@ -2897,9 +2898,13 @@ function calcGoals() {
 
   // Render rings
   renderGoalRings(visibleIds);
-  // Only do a full re-render of detail if the active goal changed; otherwise just update stats
-  if ($('gd-sip-v')) updateGoalStats(activeGoalId);
-  else renderGoalDetail(activeGoalId);
+  // Full re-render when switching goals; in-place update when same goal recalculates
+  if ($('gd-sip-v') && renderedGoalId === activeGoalId) {
+    updateGoalStats(activeGoalId);
+  } else {
+    renderGoalDetail(activeGoalId);
+    renderedGoalId = activeGoalId;
+  }
 
   // Total SIP
   const totalSIP = visibleIds.reduce((sum, id) => sum + (GOAL_STATE[id].sip || 0), 0);
