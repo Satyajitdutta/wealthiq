@@ -90,8 +90,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .screens{flex:1;overflow:hidden;position:relative}
 .screen{position:absolute;inset:0;overflow-y:auto;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s}
 .screen.active{display:block;opacity:1;transform:translateY(0)}
-.tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0;font-weight:600;transition:color 0.2s;padding:0.4rem 0;min-width:0}
+.tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:1 0 42px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0;font-weight:600;transition:color 0.2s;padding:0.4rem 0.2rem;min-width:42px}
 .tab svg{width:22px;height:22px;transition:stroke 0.2s}
 .tab svg{width:20px;height:20px;transition:stroke 0.2s}
 .tab.active{color:var(--blue)}
@@ -491,6 +492,32 @@ select option{background:#1e293b}
 .col-rent-cell .rc-type{font-size:0.6rem;color:var(--t3);font-weight:600}
 .col-rent-cell .rc-val{font-size:0.72rem;font-weight:800;color:var(--text);margin-top:0.1rem}
 
+/* ── MODULE 5-7: GROW SCREEN ─────────────────────────────────── */
+.gw-percentile-wrap{position:relative;height:44px;margin:0.75rem 0 0.25rem}
+.gw-pct-track{height:12px;border-radius:6px;overflow:hidden;display:flex;margin-top:16px}
+.gw-pct-seg{height:100%;flex:1}
+.gw-pct-ptr{position:absolute;top:0;display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);transition:left 0.4s}
+.gw-pct-ptr-line{width:2px;height:28px;background:var(--text);border-radius:1px;margin-top:0}
+.gw-pct-ptr-lbl{font-size:0.6rem;font-weight:800;color:var(--text);white-space:nowrap;background:var(--c3);border-radius:4px;padding:0.05rem 0.3rem;border:1px solid var(--bd2)}
+.gw-pct-labels{display:flex;justify-content:space-between;font-size:0.58rem;color:var(--t3);margin-top:0.25rem}
+.gw-gap-pill{display:inline-flex;align-items:center;gap:0.35rem;padding:0.4rem 0.75rem;border-radius:30px;font-size:0.72rem;font-weight:700;margin-top:0.5rem}
+.gw-path-badge{display:inline-block;padding:0.25rem 0.75rem;border-radius:20px;font-size:0.78rem;font-weight:800;margin-bottom:0.5rem}
+.gw-chart-wrap{width:100%;overflow:hidden;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--bd);margin:0.75rem 0}
+.gw-chart-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.5rem}
+.gw-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:2px}
+.gw-leg-item{display:flex;gap:0.35rem;align-items:flex-start;font-size:0.65rem;color:var(--t2)}
+.gw-skill-card{background:var(--c2);border:1px solid var(--bd);border-radius:10px;padding:0.75rem;margin-bottom:0.65rem}
+.gw-skill-card:last-child{margin-bottom:0}
+.gw-skill-title{font-size:0.8rem;font-weight:800;color:var(--text);margin-bottom:0.15rem}
+.gw-skill-meta{font-size:0.65rem;color:var(--t3);margin-bottom:0.5rem}
+.gw-skill-rows{display:flex;flex-direction:column;gap:0.3rem}
+.gw-skill-row{display:flex;justify-content:space-between;font-size:0.7rem}
+.gw-skill-rl{color:var(--t2)}
+.gw-skill-rv{font-weight:700;color:var(--text)}
+.gw-gov-badge{display:inline-block;font-size:0.58rem;font-weight:700;color:var(--green);background:rgba(34,197,94,0.12);border-radius:5px;padding:0.1rem 0.4rem;margin-top:0.4rem}
+.gw-enroll-btn{display:block;text-align:center;margin-top:0.6rem;padding:0.4rem;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:7px;font-size:0.7rem;font-weight:700;color:var(--blue);cursor:pointer}
+.gw-offer-wrap{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:0.75rem;margin-top:0.5rem}
+
 /* ── MODULE 1: HEALTH SCORE ENHANCEMENTS ─────────────────────── */
 .h-bench-row{display:flex;align-items:center;justify-content:space-between;padding:0.55rem 1rem 0.65rem;border-top:1px solid var(--bd);gap:0.75rem;flex-wrap:wrap}
 .hbr-badge{font-size:0.73rem;color:var(--t2);line-height:1.4}
@@ -673,6 +700,9 @@ select option{background:#1e293b}
     </button>
     <button class="dsb-item dsb-got" id="dsb-got" onclick="switchTab('got','GOT Advisor')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>AI Advisor
+    </button>
+    <button class="dsb-item" id="dsb-grow" onclick="switchTab('grow','Grow')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Salary &amp; Skills
     </button>
   </nav>
   <div class="dsb-afford-btn">
@@ -1640,6 +1670,99 @@ select option{background:#1e293b}
 
 </div><!-- /screen-got -->
 
+<!-- ── SCREEN: GROW (MODULES 5 + 6 + 7) ──────────────────────── -->
+<div class="screen" id="screen-grow">
+
+  <div class="card">
+    <div class="card-hdr"><div class="pill" style="background:var(--green)"></div><h3>Your Career Profile</h3><span class="badge" style="background:rgba(34,197,94,0.12);color:var(--green)">Salary Grid</span></div>
+    <div class="body">
+      <div class="row2">
+        <div class="field">
+          <label>Your Role</label>
+          <select id="gw-role" onchange="onGrowInput()" style="margin-top:0.25rem;width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.45rem 0.5rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem">
+            <option value="">Select role…</option>
+            <option>Software Engineer</option><option>Product Manager</option>
+            <option>Data Analyst</option><option>Operations Manager</option>
+            <option>Finance &amp; Accounts</option><option>HR</option>
+            <option>Sales &amp; BD</option><option>Marketing</option>
+            <option>BPO / Customer Service</option><option>Healthcare Professional</option>
+            <option>Teacher / Trainer</option><option>Government Employee</option>
+            <option>Gig / Freelance</option><option>Business Owner</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Industry</label>
+          <select id="gw-industry" onchange="onGrowInput()" style="margin-top:0.25rem;width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.45rem 0.5rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem">
+            <option value="">Select industry…</option>
+            <option>IT / Tech</option><option>BFSI</option><option>Healthcare</option>
+            <option>Manufacturing</option><option>Retail / E-commerce</option>
+            <option>GCC / MNC</option><option>Government / PSU</option>
+            <option>Startup</option><option>BPO / KPO</option><option>Education</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2" style="margin-top:0.5rem">
+        <div class="field">
+          <label>Years of Experience</label>
+          <input type="number" id="gw-exp" min="0" max="45" placeholder="e.g. 8" oninput="onGrowInput()" style="margin-top:0.25rem">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <select id="gw-city" onchange="onGrowInput()" style="margin-top:0.25rem;width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.45rem 0.5rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem">
+            <option value="">Select city…</option>
+            <option>Bangalore</option><option>Mumbai</option><option>Delhi</option>
+            <option>Hyderabad</option><option>Chennai</option><option>Pune</option>
+            <option>Kolkata</option><option>Ahmedabad</option><option>Kochi</option>
+            <option>Chandigarh</option><option>Jaipur</option><option>Indore</option>
+            <option>Lucknow</option><option>Surat</option><option>Nagpur</option>
+            <option>Visakhapatnam</option><option>Coimbatore</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module 5: Salary Benchmarking result -->
+  <div class="card" id="gw-salary-card" style="display:none">
+    <div class="card-hdr"><div class="pill" style="background:var(--blue)"></div><h3>Market Salary Benchmark</h3><span class="badge" style="background:rgba(59,130,246,0.12);color:var(--blue)">Module 5</span></div>
+    <div class="body" id="gw-salary-body"></div>
+  </div>
+
+  <!-- Offer Letter Evaluator -->
+  <div class="card" id="gw-offer-card" style="display:none">
+    <div class="card-hdr"><div class="pill" style="background:var(--amber)"></div><h3>Offer Letter Evaluator</h3><span class="badge" style="background:rgba(245,158,11,0.12);color:var(--amber)">Should I move?</span></div>
+    <div class="body">
+      <div class="row2">
+        <div class="field"><label>New Offer CTC <em>₹ per year</em></label><input type="number" id="gw-offer-ctc" placeholder="0" oninput="renderOfferEval()"></div>
+        <div class="field">
+          <label>New City</label>
+          <select id="gw-offer-city" onchange="renderOfferEval()" style="width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.45rem 0.5rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem">
+            <option value="">Same city</option>
+            <option>Bangalore</option><option>Mumbai</option><option>Delhi</option>
+            <option>Hyderabad</option><option>Chennai</option><option>Pune</option>
+            <option>Kolkata</option><option>Ahmedabad</option><option>Kochi</option>
+            <option>Jaipur</option><option>Indore</option><option>Lucknow</option>
+          </select>
+        </div>
+      </div>
+      <div id="gw-offer-result" style="margin-top:0.5rem"></div>
+    </div>
+  </div>
+
+  <!-- Module 6: Two-Path Plan -->
+  <div class="card" id="gw-path-card" style="display:none">
+    <div class="card-hdr"><div class="pill" style="background:var(--purple)"></div><h3>Your Two-Path Plan</h3><span class="badge" style="background:rgba(139,92,246,0.12);color:var(--purple)">Module 6</span></div>
+    <div class="body" id="gw-path-body"></div>
+  </div>
+
+  <!-- Module 7: Skill ROI -->
+  <div class="card" id="gw-skill-card" style="display:none">
+    <div class="card-hdr"><div class="pill" style="background:var(--teal)"></div><h3>Skill Up — ROI Calculator</h3><span class="badge" style="background:rgba(6,182,212,0.12);color:var(--teal)">Module 7</span></div>
+    <div class="body" id="gw-skill-body"></div>
+  </div>
+
+</div><!-- /screen-grow -->
+
 <!-- ── SCREEN: COST OF LIVING INDEX (MODULE 4) ────────────────── -->
 <div class="screen" id="screen-col">
 
@@ -1805,6 +1928,10 @@ select option{background:#1e293b}
   <button class="tab got-tab" id="tab-got" onclick="switchTab('got','GOT Advisor')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     AI
+  </button>
+  <button class="tab" id="tab-grow" onclick="switchTab('grow','Grow')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    Grow
   </button>
 </div>
 
@@ -1992,6 +2119,7 @@ function getProfileData() {
     groceries:W.groceries, transport:W.transport, petExpense:W.petExpense,
     monthlySavings:W.monthlySavings, emergencyFund:W.emergencyFund,
     pf:W.pf, nps:W.nps, mf:W.mf, fd:W.fd, termCover:W.termCover, healthCover:W.healthCover, healthPremium:W.healthPremium, parentHealthPremium:W.parentHealthPremium,
+    role:W.role, industry:W.industry, expYears:W.expYears,
     annualSalary:W.annualSalary, ltcg:W.ltcg, taxOtherInc:W.taxOtherInc,
     ded80c:W.ded80c, ded80d:W.ded80d, dedNPS:W.dedNPS, dedHRA:W.dedHRA, dedHomeLoan:W.dedHomeLoan, dedOther:W.dedOther
   };
@@ -2168,6 +2296,7 @@ const W = {
   monthlySavings: 12000, emergencyFund: 50000,
   pf: 0, nps: 0, mf: 0, fd: 0,
   termCover: 0, healthCover: 0, healthPremium: 0, parentHealthPremium: 0,
+  role: '', industry: '', expYears: 0,
   // Tax
   annualSalary: 900000, ltcg: 0, taxOtherInc: 0,
   ded80c: 50000, ded80d: 10000, dedNPS: 0, dedHRA: 0, dedHomeLoan: 0, dedOther: 0,
@@ -3137,7 +3266,7 @@ function updateChildrenFields() {
 /* ═══════════════════════════════════════════════════════════════
    TAB SWITCHING
 ═══════════════════════════════════════════════════════════════ */
-const TAB_TITLES = {me:'My Profile',dash:'Dashboard',health:'Health Score',tax:'Tax Optimizer',goals:'Goals Planner',leaks:'Money Leaks',col:'Cost of Living',got:'GOT Advisor'};
+const TAB_TITLES = {me:'My Profile',dash:'Dashboard',health:'Health Score',tax:'Tax Optimizer',goals:'Goals Planner',leaks:'Money Leaks',col:'Cost of Living',got:'GOT Advisor',grow:'Grow — Salary & Skills'};
 function switchTab(name, title) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -3151,6 +3280,7 @@ function switchTab(name, title) {
   if (name === 'col')  setTimeout(initCOL,  0);
   if (name === 'dash') setTimeout(renderDash, 0);
   if (name === 'tax')  setTimeout(initTaxInputs, 0);
+  if (name === 'grow') setTimeout(initGrow, 0);
   // On desktop the scroll container is .screens, not the screen itself
   const screensEl = document.querySelector('.screens');
   if (screensEl && window.innerWidth >= 1024) screensEl.scrollTop = 0;
@@ -4095,6 +4225,343 @@ function buildVsBar(yours, mid) {
 }
 
 // COL init is called directly from switchTab via the col-tab onclick
+
+/* ═══════════════════════════════════════════════════════════════
+   MODULES 5 + 6 + 7 — GROW: SALARY GRID + TWO-PATH + SKILL ROI
+═══════════════════════════════════════════════════════════════ */
+
+// ── MODULE 5 DATA ────────────────────────────────────────────────
+// Base P50 salary in ₹ lakhs p.a. by [Role][ExpBand 0-4]
+const SALARY_BASE = {
+  'Software Engineer':      [6,  14, 25, 45, 70],
+  'Product Manager':        [8,  18, 35, 60, 90],
+  'Data Analyst':           [5,  12, 22, 38, 58],
+  'Operations Manager':     [5,  10, 18, 32, 52],
+  'Finance & Accounts':     [4,   8, 15, 28, 45],
+  'HR':                     [4,   7, 13, 24, 40],
+  'Sales & BD':             [5,  10, 18, 30, 50],
+  'Marketing':              [5,  10, 18, 30, 48],
+  'BPO / Customer Service': [3,   5,  8, 14, 22],
+  'Healthcare Professional':[4,   8, 15, 28, 50],
+  'Teacher / Trainer':      [3,   5,  9, 16, 28],
+  'Government Employee':    [4,   6, 10, 18, 30],
+  'Gig / Freelance':        [3,   8, 18, 35, 60],
+  'Business Owner':         [5,  12, 25, 50,100],
+};
+
+const IND_MULT = {
+  'IT / Tech':1.25,'BFSI':1.20,'Healthcare':1.05,'Manufacturing':1.00,
+  'Retail / E-commerce':1.10,'GCC / MNC':1.35,'Government / PSU':0.95,
+  'Startup':1.15,'BPO / KPO':0.90,'Education':0.85
+};
+
+const CITY_MULT_GROW = {
+  Bangalore:1.30,Mumbai:1.25,Delhi:1.20,Hyderabad:1.15,Chennai:1.10,Pune:1.10,
+  Kolkata:0.95,Ahmedabad:0.90,Kochi:0.90,Chandigarh:0.88,Jaipur:0.85,
+  Indore:0.83,Lucknow:0.82,Surat:0.85,Nagpur:0.82,Visakhapatnam:0.80,Coimbatore:0.82
+};
+
+function getExpBandIdx(yrs) {
+  if (yrs <  3) return 0;
+  if (yrs <  7) return 1;
+  if (yrs < 12) return 2;
+  if (yrs < 20) return 3;
+  return 4;
+}
+
+function getSalaryGrid(role, industry, expYrs, city) {
+  const base  = (SALARY_BASE[role] || SALARY_BASE['Operations Manager'])[getExpBandIdx(expYrs)];
+  const iMult = IND_MULT[industry]      || 1.0;
+  const cMult = CITY_MULT_GROW[city]    || 1.0;
+  const p50   = +(base * iMult * cMult).toFixed(1);
+  return { p25: +(p50*0.72).toFixed(1), p50, p75: +(p50*1.32).toFixed(1), p90: +(p50*1.65).toFixed(1) };
+}
+
+// ── MODULE 7 DATA ────────────────────────────────────────────────
+const SKILL_RECS = {
+  'Software Engineer': [
+    { skill:'Cloud (AWS/Azure/GCP)', cert:'AWS Solutions Architect – Associate', platform:'AWS', cost:25000, gov:'NASSCOM FutureSkills Prime', weeks:12, hike:[18,30] },
+    { skill:'AI / Machine Learning', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:6, hike:[15,28] },
+    { skill:'DevSecOps / Kubernetes', cert:'CKA – Certified Kubernetes Admin', platform:'CNCF', cost:18000, gov:null, weeks:10, hike:[12,22] },
+  ],
+  'Product Manager': [
+    { skill:'AI Product Strategy', cert:'AI for PMs – Coursera / Reforge', platform:'Coursera', cost:8000, gov:null, weeks:8, hike:[20,35] },
+    { skill:'Data Analytics', cert:'Google Data Analytics Certificate', platform:'Google', cost:0, gov:null, weeks:10, hike:[12,20] },
+  ],
+  'Data Analyst': [
+    { skill:'Machine Learning', cert:'IBM Data Science Professional', platform:'Coursera', cost:6000, gov:'NASSCOM FutureSkills Prime', weeks:16, hike:[25,40] },
+    { skill:'Power BI / Tableau', cert:'Microsoft PL-300 Power BI Analyst', platform:'Microsoft', cost:0, gov:null, weeks:6, hike:[12,18] },
+  ],
+  'Operations Manager': [
+    { skill:'Process Automation (RPA)', cert:'UiPath RPA Developer Foundation', platform:'UiPath', cost:5000, gov:null, weeks:8, hike:[15,25] },
+    { skill:'Lean Six Sigma', cert:'Six Sigma Green Belt – KPMG', platform:'KPMG', cost:12000, gov:null, weeks:10, hike:[10,20] },
+    { skill:'AI for Ops', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:5, hike:[10,18] },
+  ],
+  'Finance & Accounts': [
+    { skill:'Financial Modelling', cert:'CFA Investment Foundations', platform:'CFA Institute', cost:0, gov:null, weeks:12, hike:[15,25] },
+    { skill:'Power BI for Finance', cert:'Microsoft PL-300 Power BI', platform:'Microsoft', cost:0, gov:null, weeks:5, hike:[10,18] },
+    { skill:'AI in Finance', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:6, hike:[12,20] },
+  ],
+  'HR': [
+    { skill:'People Analytics', cert:'People Analytics – Wharton / Coursera', platform:'Coursera', cost:5000, gov:null, weeks:8, hike:[15,22] },
+    { skill:'AI Tools for HR', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:5, hike:[10,18] },
+  ],
+  'Sales & BD': [
+    { skill:'CRM & Salesforce', cert:'Salesforce Certified Administrator', platform:'Salesforce', cost:8000, gov:null, weeks:10, hike:[18,28] },
+    { skill:'Digital Sales', cert:'Google Digital Marketing & Ecommerce', platform:'Google', cost:0, gov:null, weeks:8, hike:[12,20] },
+  ],
+  'Marketing': [
+    { skill:'Performance Marketing', cert:'Meta Marketing Professional Certificate', platform:'Meta', cost:0, gov:null, weeks:6, hike:[15,25] },
+    { skill:'AI in Marketing', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:5, hike:[12,20] },
+    { skill:'Content & SEO', cert:'HubSpot Content Marketing', platform:'HubSpot', cost:0, gov:null, weeks:4, hike:[10,18] },
+  ],
+  'BPO / Customer Service': [
+    { skill:'AI CX Tools', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:5, hike:[20,35] },
+    { skill:'Transition to Data Analyst', cert:'Google Data Analytics Certificate', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:10, hike:[40,60] },
+  ],
+  'Healthcare Professional': [
+    { skill:'Health Informatics', cert:'JHU Health Informatics – Coursera', platform:'Coursera', cost:9000, gov:null, weeks:12, hike:[15,25] },
+    { skill:'Telemedicine & Digital Health', cert:'WHO Digital Health Certificate', platform:'OpenWHO', cost:0, gov:null, weeks:6, hike:[10,20] },
+  ],
+  'Teacher / Trainer': [
+    { skill:'Ed-Tech Instruction', cert:'Google for Education Trainer', platform:'Google', cost:0, gov:'PMKVY', weeks:4, hike:[20,35] },
+    { skill:'Career Counselling', cert:'IACP Certified Career Counsellor', platform:'IACP', cost:8000, gov:null, weeks:8, hike:[15,25] },
+  ],
+  'Government Employee': [
+    { skill:'Digital Governance', cert:'NIELIT CCC Certificate', platform:'NIELIT', cost:500, gov:'NIELIT', weeks:3, hike:[5,12] },
+    { skill:'Project Management', cert:'PMP – PMI', platform:'PMI', cost:0, gov:'PMKVY', weeks:12, hike:[10,20] },
+  ],
+  'Gig / Freelance': [
+    { skill:'AI Tools for Freelancers', cert:'Google AI Essentials', platform:'Google', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:5, hike:[25,45] },
+    { skill:'Platform Certification', cert:'Upwork Skill Certification', platform:'Upwork', cost:0, gov:null, weeks:3, hike:[20,40] },
+  ],
+  'Business Owner': [
+    { skill:'AI for Business', cert:'Microsoft Copilot for Business', platform:'Microsoft', cost:0, gov:'NASSCOM FutureSkills Prime', weeks:4, hike:[15,30] },
+    { skill:'Financial Management', cert:'Business Finance – Coursera/IIBF', platform:'Coursera', cost:5000, gov:null, weeks:8, hike:[10,20] },
+  ],
+};
+
+// ── MODULE 5 RENDER ──────────────────────────────────────────────
+function renderSalaryResult(grid, userLPA, city, role, industry, expYrs) {
+  function lk(v) { return v >= 10 ? v.toFixed(0) + 'L' : v.toFixed(1) + 'L'; }
+  const band = ['0–3 yrs','3–7 yrs','7–12 yrs','12–20 yrs','20+ yrs'][getExpBandIdx(expYrs)];
+  const gapLPA  = userLPA - grid.p50;
+  const gapPct  = grid.p50 > 0 ? Math.round(Math.abs(gapLPA) / grid.p50 * 100) : 0;
+  const above   = gapLPA >= 0;
+  const showGap = gapPct > 15;
+  // Percentile position of user (clamped 0-100)
+  const pctPos  = Math.min(100, Math.max(0, (userLPA - grid.p25) / (grid.p90 - grid.p25) * 100));
+  const gapHTML = showGap
+    ? `<div class="gw-gap-pill" style="background:${above?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'};color:${above?'var(--green)':'var(--red)'}">
+        ${above ? '▲' : '▼'} You earn ${lk(Math.abs(gapLPA))} ${above?'above':'below'} market median (${gapPct}%)
+       </div>`
+    : `<div class="gw-gap-pill" style="background:rgba(34,197,94,0.07);color:var(--green)">✓ Your salary is within market range</div>`;
+  return `
+    <div style="font-size:0.7rem;color:var(--t3);margin-bottom:0.35rem">${role} · ${industry} · ${band} · ${city}</div>
+    <div class="gw-percentile-wrap">
+      <div class="gw-pct-ptr" id="gw-ptr" style="left:${pctPos}%">
+        <div class="gw-pct-ptr-lbl">₹${lk(userLPA)} you</div>
+        <div class="gw-pct-ptr-line"></div>
+      </div>
+      <div class="gw-pct-track">
+        <div class="gw-pct-seg" style="background:rgba(239,68,68,0.35)"></div>
+        <div class="gw-pct-seg" style="background:rgba(245,158,11,0.35)"></div>
+        <div class="gw-pct-seg" style="background:rgba(34,197,94,0.35)"></div>
+        <div class="gw-pct-seg" style="background:rgba(99,102,241,0.45)"></div>
+      </div>
+      <div class="gw-pct-labels"><span>P25 ₹${lk(grid.p25)}</span><span>P50 ₹${lk(grid.p50)}</span><span>P75 ₹${lk(grid.p75)}</span><span>P90 ₹${lk(grid.p90)}</span></div>
+    </div>
+    ${gapHTML}
+    <div style="font-size:0.62rem;color:var(--t3);margin-top:0.65rem;font-style:italic">Source: AmbitionBox, Glassdoor India, TeamLease Salary Survey. Updated Q1 2025.</div>
+    ${showGap && !above ? `<div style="font-size:0.7rem;color:var(--amber);margin-top:0.4rem">Earning ₹${lk(Math.abs(gapLPA))} less/yr than peers → see Two-Path Plan below</div>` : ''}
+    ${showGap && above  ? `<div style="font-size:0.7rem;color:var(--green);margin-top:0.4rem">Great position. Focus on cost optimisation and wealth building.</div>` : ''}
+  `;
+}
+
+// ── MODULE 6 RENDER ──────────────────────────────────────────────
+function projectWealth(monthlyInvest, extraFromMonth, extraStartMonth, months) {
+  const r = 12 / 12 / 100; // 12% p.a. monthly
+  const corpus0 = (W.pf||0) + (W.nps||0) + (W.mf||0) + (W.fd||0);
+  let c = corpus0, pts = [];
+  for (let m = 0; m <= months; m++) {
+    pts.push(+(c/100000).toFixed(1)); // in lakhs
+    const inv = monthlyInvest + (m >= extraStartMonth ? extraFromMonth : 0);
+    c = c * (1+r) + inv;
+  }
+  return pts;
+}
+
+function drawGrowChart(line1, line2, line3) {
+  const W_SVG = 320, H_SVG = 140, PAD = { t:10, r:10, b:30, l:40 };
+  const allVals = [...line1, ...line2, ...line3];
+  const maxV = Math.max(...allVals) * 1.05 || 10;
+  const months = line1.length - 1;
+  function sx(m) { return PAD.l + (m / months) * (W_SVG - PAD.l - PAD.r); }
+  function sy(v) { return PAD.t + (1 - v / maxV) * (H_SVG - PAD.t - PAD.b); }
+  function path(pts, color, dash='') {
+    const d = pts.map((v,i) => `${i===0?'M':'L'}${sx(i).toFixed(1)},${sy(v).toFixed(1)}`).join(' ');
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  // Y axis labels
+  const yTicks = [0, maxV*0.5, maxV].map(v => {
+    const label = v >= 100 ? (v/100).toFixed(0)+'Cr' : v.toFixed(0)+'L';
+    return `<text x="${PAD.l-5}" y="${sy(v)+4}" text-anchor="end" font-size="9" fill="#64748b">${label}</text>`;
+  }).join('');
+  // X axis labels
+  const xTicks = [0,12,24,36,48,60].map(m =>
+    `<text x="${sx(m)}" y="${H_SVG-PAD.b+14}" text-anchor="middle" font-size="9" fill="#64748b">${m}m</text>`
+  ).join('');
+  return `<svg viewBox="0 0 ${W_SVG} ${H_SVG}" style="width:100%;height:auto;display:block">
+    <line x1="${PAD.l}" y1="${PAD.t}" x2="${PAD.l}" y2="${H_SVG-PAD.b}" stroke="#1e293b" stroke-width="1"/>
+    <line x1="${PAD.l}" y1="${H_SVG-PAD.b}" x2="${W_SVG-PAD.r}" y2="${H_SVG-PAD.b}" stroke="#1e293b" stroke-width="1"/>
+    ${yTicks}${xTicks}
+    ${path(line1,'#64748b','4 3')}
+    ${path(line2,'#3b82f6')}
+    ${path(line3,'#22c55e')}
+  </svg>`;
+}
+
+function renderPathPlan(grid, userLPA) {
+  const ratio = grid.p50 > 0 ? userLPA / grid.p50 : 1;
+  let path, pathColor, pathDesc;
+  if (ratio >= 1.0) {
+    path = 'A'; pathColor = 'var(--blue)';
+    pathDesc = 'Your salary is at or above market median. Focus on <strong>cost optimisation and wealth acceleration</strong>.';
+  } else if (ratio >= 0.75) {
+    path = 'C'; pathColor = 'var(--purple)';
+    pathDesc = 'Your salary is below median. <strong>Both paths simultaneously</strong> — cut costs now while building skills for a salary jump.';
+  } else {
+    path = 'B'; pathColor = 'var(--amber)';
+    pathDesc = 'Significant salary gap. <strong>Upskilling is your fastest lever</strong> — a targeted certification can close this gap in 6–9 months.';
+  }
+
+  const leakSaving   = Math.round(((W.subTotal||0) + (W.habitsTotal||0)) * 0.5); // assume 50% reducible
+  const taxSaving    = Math.round(Math.abs((W.oldTax||0) - (W.newTax||0)) / 12);
+  const optBoost     = leakSaving + taxSaving;
+  const salaryJump   = Math.round(userLPA * 0.20 / 12 * 100000); // 20% hike monthly
+  const currentSave  = W.monthlySavings || 0;
+
+  const line1 = projectWealth(currentSave, 0, 999, 60);
+  const line2 = projectWealth(currentSave, optBoost, 0, 60);
+  const line3 = projectWealth(currentSave, optBoost + salaryJump, 8, 60); // hike from month 9
+
+  function lk(v) { return v >= 10 ? v.toFixed(0) + 'L' : v.toFixed(1) + 'L'; }
+  const yr5 = [(line3[60]-line1[60]).toFixed(0)];
+
+  return `
+    <div class="gw-path-badge" style="background:${pathColor}22;color:${pathColor}">Path ${path}</div>
+    <div style="font-size:0.75rem;color:var(--t2);line-height:1.55;margin-bottom:0.75rem">${pathDesc}</div>
+    <div class="gw-chart-legend">
+      <div class="gw-leg-item"><div class="gw-leg-dot" style="background:#64748b"></div><span>Do Nothing</span></div>
+      <div class="gw-leg-item"><div class="gw-leg-dot" style="background:#3b82f6"></div><span>Cost Optimise (+₹${(optBoost/1000).toFixed(0)}K/mo from month 1)</span></div>
+      <div class="gw-leg-item"><div class="gw-leg-dot" style="background:#22c55e"></div><span>Upskill + Optimise (+₹${(salaryJump/1000).toFixed(0)}K/mo from month 9)</span></div>
+    </div>
+    <div class="gw-chart-wrap">${drawGrowChart(line1, line2, line3)}</div>
+    <div class="stat-row"><span class="sl">5-yr wealth delta (Do Nothing vs Upskill)</span><span class="sv green">+₹${lk(+(line3[60]-line1[60]))} lakhs</span></div>
+    <div style="font-size:0.62rem;color:var(--t3);margin-top:0.4rem">Projections at 12% p.a. CAGR. Salary hike impact from month 9 post-certification.</div>
+    ${path==='A' ? '' : '<div style="font-size:0.72rem;color:var(--teal);margin-top:0.5rem;font-weight:600">→ Scroll down for Skill Up ROI cards</div>'}
+  `;
+}
+
+// ── MODULE 7 RENDER ──────────────────────────────────────────────
+function renderSkillRecs(role, userLPA) {
+  const recs = SKILL_RECS[role] || SKILL_RECS['Operations Manager'];
+  function lk(v) { return v >= 100 ? (v/100).toFixed(1)+'Cr' : v.toFixed(0)+'L'; }
+  return recs.map(r => {
+    const hikeAmt  = userLPA * (r.hike[0]/2 + r.hike[1]/2) / 100; // midpoint hike in lakhs
+    const newSal   = userLPA + hikeAmt;
+    const monthly  = Math.round(hikeAmt * 100000 / 12);
+    const yr5delta = projectWealth(monthly, 0, 0, 60)[60];
+    const yr10delta= projectWealth(monthly, 0, 0, 120)[120];
+    const breakEven= r.cost > 0 ? Math.ceil(r.cost / monthly) : 0;
+    const govLine  = r.gov ? `<div class="gw-gov-badge">🏛 Free via ${r.gov} — apply before paying</div>` : '';
+    return `<div class="gw-skill-card">
+      <div class="gw-skill-title">${r.skill}</div>
+      <div class="gw-skill-meta">${r.cert} · ${r.platform} · ${r.weeks} weeks at 5 hrs/week</div>
+      <div class="gw-skill-rows">
+        <div class="gw-skill-row"><span class="gw-skill-rl">Course cost</span><span class="gw-skill-rv">${r.cost === 0 ? '₹0 — Free' : '₹'+r.cost.toLocaleString('en-IN')}</span></div>
+        <div class="gw-skill-row"><span class="gw-skill-rl">Expected salary hike</span><span class="gw-skill-rv">+${r.hike[0]}% to +${r.hike[1]}%</span></div>
+        <div class="gw-skill-row"><span class="gw-skill-rl">New salary range</span><span class="gw-skill-rv">₹${lk(userLPA*(1+r.hike[0]/100))} – ₹${lk(userLPA*(1+r.hike[1]/100))}</span></div>
+        ${r.cost > 0 ? `<div class="gw-skill-row"><span class="gw-skill-rl">Breakeven after hike</span><span class="gw-skill-rv">${breakEven} months</span></div>` : ''}
+        <div class="gw-skill-row"><span class="gw-skill-rl">5-year wealth delta</span><span class="gw-skill-rv" style="color:var(--green)">+₹${lk(yr5delta)} lakhs</span></div>
+        <div class="gw-skill-row"><span class="gw-skill-rl">10-year wealth delta</span><span class="gw-skill-rv" style="color:var(--green)">+₹${lk(yr10delta)} lakhs</span></div>
+      </div>
+      ${govLine}
+    </div>`;
+  }).join('');
+}
+
+// ── OFFER LETTER EVALUATOR ───────────────────────────────────────
+function renderOfferEval() {
+  const newCTC  = +($('gw-offer-ctc')?.value||0);
+  const newCity = $('gw-offer-city')?.value || '';
+  const el      = $('gw-offer-result');
+  if (!el || !newCTC) return;
+  const curCity  = $('gw-city')?.value || colState.city || 'Hyderabad';
+  const curCTC   = W.annualSalary || 600000;
+  const curMult  = CITY_MULT_GROW[curCity]  || 1.0;
+  const newMult  = CITY_MULT_GROW[newCity]  || curMult;
+  const ppa_cur  = curCTC / curMult;
+  const ppa_new  = newCTC / newMult;
+  const ppa_gain = ppa_new - ppa_cur;
+  const pct      = curCTC > 0 ? Math.round(ppa_gain / ppa_cur * 100) : 0;
+  function inrL(v) { return '₹'+(v/100000).toFixed(1)+'L'; }
+  const col  = ppa_gain >= 0 ? 'var(--green)' : 'var(--red)';
+  const sign = ppa_gain >= 0 ? '+' : '';
+  el.innerHTML = `<div class="gw-offer-wrap">
+    <div class="stat-row"><span class="sl">Current CTC (real purchasing power)</span><span class="sv">${inrL(ppa_cur)}/yr</span></div>
+    <div class="stat-row"><span class="sl">New offer (real purchasing power)</span><span class="sv">${inrL(ppa_new)}/yr</span></div>
+    <div class="stat-row"><span class="sl">Net real gain / loss</span><span class="sv" style="color:${col}">${sign}${inrL(ppa_gain)}/yr (${sign}${pct}%)</span></div>
+    <div style="font-size:0.68rem;color:var(--t3);margin-top:0.4rem">Adjusted for cost-of-living difference between ${curCity||'current city'} and ${newCity||'new city'}.</div>
+  </div>`;
+}
+
+// ── GROW INIT + INPUT HANDLER ────────────────────────────────────
+function initGrow() {
+  // Auto-fill from profile / colState
+  const roleEl = $('gw-role');
+  const indEl  = $('gw-industry');
+  const expEl  = $('gw-exp');
+  const cityEl = $('gw-city');
+  if (roleEl && W.role)     roleEl.value = W.role;
+  if (indEl  && W.industry) indEl.value  = W.industry;
+  if (expEl  && W.expYears) expEl.value  = W.expYears;
+  if (cityEl) {
+    const profCity = W.city || colState.city || '';
+    const knownCity = Object.keys(CITY_MULT_GROW).find(c => c.toLowerCase() === profCity.toLowerCase());
+    if (knownCity) cityEl.value = knownCity;
+  }
+  onGrowInput();
+}
+
+function onGrowInput() {
+  const role    = $('gw-role')?.value     || '';
+  const industry= $('gw-industry')?.value || '';
+  const expYrs  = +($('gw-exp')?.value    || 0);
+  const city    = $('gw-city')?.value     || '';
+  // Persist to W
+  W.role = role; W.industry = industry; W.expYears = expYrs;
+  if (!role || !industry || !city) {
+    $('gw-salary-card').style.display = 'none';
+    $('gw-path-card').style.display   = 'none';
+    $('gw-skill-card').style.display  = 'none';
+    $('gw-offer-card').style.display  = 'none';
+    return;
+  }
+  const grid    = getSalaryGrid(role, industry, expYrs, city);
+  const userLPA = (W.annualSalary || 0) / 100000;
+  // Module 5
+  const sc = $('gw-salary-card'); sc.style.display = 'block';
+  $('gw-salary-body').innerHTML = renderSalaryResult(grid, userLPA, city, role, industry, expYrs);
+  // Module 6
+  const pc = $('gw-path-card'); pc.style.display = 'block';
+  $('gw-path-body').innerHTML = renderPathPlan(grid, userLPA);
+  // Module 7
+  const sk = $('gw-skill-card'); sk.style.display = 'block';
+  $('gw-skill-body').innerHTML = renderSkillRecs(role, userLPA);
+  // Offer evaluator
+  $('gw-offer-card').style.display = 'block';
+}
 
 /* ═══════════════════════════════════════════════════════════════
    MODULE 3 — INCOME VS EXPENSES DASHBOARD
