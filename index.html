@@ -2897,7 +2897,9 @@ function calcGoals() {
 
   // Render rings
   renderGoalRings(visibleIds);
-  renderGoalDetail(activeGoalId);
+  // Only do a full re-render of detail if the active goal changed; otherwise just update stats
+  if ($('gd-sip-v')) updateGoalStats(activeGoalId);
+  else renderGoalDetail(activeGoalId);
 
   // Total SIP
   const totalSIP = visibleIds.reduce((sum, id) => sum + (GOAL_STATE[id].sip || 0), 0);
@@ -2973,33 +2975,82 @@ function renderGoalDetail(id) {
   const gs = GOAL_STATE[id];
   if (!def || !gs) { area.innerHTML = ''; return; }
 
-  const corpus = gs.target;
-  const sip = gs.sip;
-  const delay1yr = sipForGoal(corpus, gs.saved, Math.max(0.5, gs.years - 1));
-  const extraIfDelay = Math.round(delay1yr - sip);
-
+  const editable = id !== 'emergency' && id !== 'retirement';
   area.innerHTML = `
     <div class="goal-detail open">
       <div class="gd-head">
         <div class="gd-icon">${def.icon}</div>
         <h4>${def.name.replace('\n', ' ')}</h4>
         <div class="gd-sip">
-          <div class="gd-sip-v">${inr(sip)}/mo</div>
+          <div class="gd-sip-v" id="gd-sip-v">—</div>
           <div class="gd-sip-l">monthly SIP</div>
         </div>
       </div>
-      <div class="gd-stat"><span class="gsl">Target Corpus</span><span class="gsv">${inrL(corpus)}</span></div>
-      <div class="gd-stat"><span class="gsl">Already Saved</span><span class="gsv">${inrL(gs.saved)}</span></div>
-      <div class="gd-stat"><span class="gsl">Time Horizon</span><span class="gsv">${gs.years} years</span></div>
-      <div class="gd-stat"><span class="gsl">Progress</span><span class="gsv" style="color:${def.color}">${gs.progress}%</span></div>
-      ${extraIfDelay > 0 ? `<div class="gd-stat" style="padding-top:0.5rem"><span class="gsl" style="color:var(--amber)">If delayed 1 year</span><span class="gsv" style="color:var(--amber)">SIP goes up by ${inr(extraIfDelay)}</span></div>` : ''}
-      ${id !== 'emergency' && id !== 'retirement' ? `
+      <div class="gd-stat"><span class="gsl">Target Corpus</span><span class="gsv" id="gd-corpus">—</span></div>
+      <div class="gd-stat"><span class="gsl">Already Saved</span><span class="gsv" id="gd-saved">—</span></div>
+      <div class="gd-stat"><span class="gsl">Time Horizon</span><span class="gsv" id="gd-horizon">—</span></div>
+      <div class="gd-stat"><span class="gsl">Progress</span><span class="gsv" id="gd-progress" style="color:${def.color}">—</span></div>
+      <div class="gd-stat" id="gd-delay-row" style="display:none;padding-top:0.5rem"><span class="gsl" style="color:var(--amber)">If delayed 1 year</span><span class="gsv" style="color:var(--amber)" id="gd-delay-val"></span></div>
+      ${editable ? `
         <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
-          <div class="field" style="flex:1"><label>Target (₹)</label><input type="number" value="${gs.target}" oninput="GOAL_STATE['${id}'].target=+this.value;calcGoals()"></div>
-          <div class="field" style="flex:1"><label>Years</label><input type="number" value="${gs.years}" min="1" max="40" oninput="GOAL_STATE['${id}'].years=+this.value;calcGoals()"></div>
+          <div class="field" style="flex:1"><label>Target (₹)</label><input type="number" id="gd-inp-target" placeholder="0" oninput="onGoalFieldChange('${id}','target',+this.value)"></div>
+          <div class="field" style="flex:1"><label>Years</label><input type="number" id="gd-inp-years" min="1" max="40" placeholder="5" oninput="onGoalFieldChange('${id}','years',+this.value)"></div>
         </div>
+        <div class="field" style="margin-top:0.5rem"><label>Already Saved (₹)</label><input type="number" id="gd-inp-saved" placeholder="0" oninput="onGoalFieldChange('${id}','saved',+this.value)"></div>
       ` : ''}
     </div>`;
+
+  // Fill inputs with current values (after DOM is created)
+  if (editable) {
+    const ti = $('gd-inp-target'); if (ti) ti.value = gs.target || '';
+    const yi = $('gd-inp-years');  if (yi) yi.value = gs.years  || '';
+    const si = $('gd-inp-saved');  if (si) si.value = gs.saved  || '';
+  }
+  updateGoalStats(id);
+}
+
+// Update only the stat displays — never touches the input elements
+function updateGoalStats(id) {
+  const def = GOAL_DEFS.find(g => g.id === id);
+  const gs  = GOAL_STATE[id];
+  if (!def || !gs) return;
+  const sip      = gs.sip;
+  const corpus   = gs.target;
+  const delay1yr = sipForGoal(corpus, gs.saved, Math.max(0.5, gs.years - 1));
+  const extra    = Math.round(delay1yr - sip);
+  const sipEl = $('gd-sip-v');       if (sipEl)  sipEl.textContent  = inr(sip) + '/mo';
+  const corEl = $('gd-corpus');      if (corEl)  corEl.textContent  = inrL(corpus);
+  const savEl = $('gd-saved');       if (savEl)  savEl.textContent  = inrL(gs.saved);
+  const horEl = $('gd-horizon');     if (horEl)  horEl.textContent  = gs.years + ' years';
+  const proEl = $('gd-progress');    if (proEl)  proEl.textContent  = gs.progress + '%';
+  const delRow = $('gd-delay-row');
+  const delVal = $('gd-delay-val');
+  if (delRow) delRow.style.display = extra > 0 ? 'flex' : 'none';
+  if (delVal && extra > 0) delVal.textContent = 'SIP goes up by ' + inr(extra);
+}
+
+// Called by editable inputs — updates state and recomputes without re-rendering DOM
+function onGoalFieldChange(id, field, val) {
+  const gs = GOAL_STATE[id];
+  if (!gs) return;
+  gs[field] = val;
+  gs.sip      = sipForGoal(gs.target, gs.saved, gs.years);
+  gs.progress = gs.target > 0 ? Math.min(100, Math.round(gs.saved / gs.target * 100)) : 0;
+  updateGoalStats(id);
+  // Update the ring for this goal
+  const totalSIP = GOAL_DEFS.filter(g => {
+    if (g.always) return true;
+    if (g.stages && g.stages.includes(W.lifeStage)) return true;
+    return GOAL_STATE[g.id].active;
+  }).reduce((s, g) => s + (GOAL_STATE[g.id].sip || 0), 0);
+  const ts = $('goals-total-sip'); if (ts) ts.textContent = inr(totalSIP) + '/month';
+  // Update ring arc for this goal
+  const pct = gs.progress;
+  const ringFill = document.querySelector(`#ring-${id} .ring-progress`);
+  if (ringFill) {
+    const c = 2 * Math.PI * 30;
+    ringFill.style.strokeDasharray = `${c * pct / 100} ${c}`;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
