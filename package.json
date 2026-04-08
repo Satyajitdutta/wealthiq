@@ -1,0 +1,9 @@
+{
+  "name": "pithonix-wealthiq",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pithonix WealthIQ — India's first AI financial intelligence platform",
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}
