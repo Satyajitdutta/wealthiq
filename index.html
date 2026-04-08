@@ -90,9 +90,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .screens{flex:1;overflow:hidden;position:relative}
 .screen{position:absolute;inset:0;overflow-y:auto;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s}
 .screen.active{display:block;opacity:1;transform:translateY(0)}
-.tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tabbar::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.58rem;font-weight:600;transition:color 0.2s;padding:0.4rem 0.25rem}
+.tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--t3);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0;font-weight:600;transition:color 0.2s;padding:0.4rem 0;min-width:0}
+.tab svg{width:22px;height:22px;transition:stroke 0.2s}
 .tab svg{width:20px;height:20px;transition:stroke 0.2s}
 .tab.active{color:var(--blue)}
 .tab.active svg{stroke:var(--blue)}
@@ -997,6 +997,13 @@ select option{background:#1e293b}
 
   <!-- Free cash / surplus box -->
   <div id="dash-surplus-wrap"></div>
+
+  <!-- Edit prompt -->
+  <div style="text-align:center;padding:0.5rem 0 0.25rem">
+    <button onclick="switchTab('me','My Profile')" style="background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.35);color:var(--blue);border-radius:10px;padding:0.55rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;width:100%">
+      Edit Profile to update these numbers →
+    </button>
+  </div>
 
 </div><!-- /screen-dash -->
 
@@ -3761,7 +3768,7 @@ function renderDash() {
           Annual surplus: <strong style="color:var(--text)">${inrL(freeCash*12)}</strong><br>
           If invested at 12% p.a.: <strong style="color:var(--text)">${inrL(freeCash*12)}/yr → ${inrL(r10yr)} in 10 years</strong>
         </div>
-        ${freeCash > 0 ? `<div class="dash-invest-hint">→ Redirect this to SIP for maximum compounding impact</div>` : ''}
+        ${freeCash > 0 ? `<button onclick="switchTab('goals','Goals Planner')" style="margin-top:0.6rem;width:100%;background:rgba(6,182,212,0.12);border:1.5px solid rgba(6,182,212,0.35);color:var(--teal);border-radius:9px;padding:0.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">→ Set a SIP Goal &amp; track it</button>` : ''}
       </div>`;
     }
   }
