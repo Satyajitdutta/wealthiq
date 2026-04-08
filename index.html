@@ -201,6 +201,13 @@ select option{background:#1e293b}
 .tax-check-row{display:flex;align-items:flex-start;gap:0.5rem;margin-top:0.3rem;cursor:pointer}
 .tax-check-row input{margin-top:2px;flex-shrink:0}
 .tax-check-row span{font-size:0.7rem;color:var(--t2);line-height:1.4}
+.tax-qualify{margin-top:0.5rem;border-radius:7px;background:rgba(255,255,255,0.03);border:1px solid var(--bd)}
+.tax-qualify summary{font-size:0.68rem;color:var(--teal);padding:0.4rem 0.6rem;cursor:pointer;list-style:none;display:flex;align-items:center;gap:0.35rem;user-select:none}
+.tax-qualify summary::before{content:'▶';font-size:0.5rem;transition:transform 0.2s;flex-shrink:0}
+.tax-qualify[open] summary::before{transform:rotate(90deg)}
+.tax-qualify summary::-webkit-details-marker{display:none}
+.tax-qualify ul{margin:0;padding:0.1rem 0.6rem 0.55rem 1.6rem;list-style:disc}
+.tax-qualify ul li{font-size:0.66rem;color:var(--t2);padding:0.15rem 0;line-height:1.4}
 
 /* ── GOAL RINGS ──────────────────────────────────────────────────── */
 .goals-scroll{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.75rem}
@@ -883,6 +890,10 @@ select option{background:#1e293b}
         <div class="field"><label>Term Insurance Cover <em>₹ sum assured</em></label><input type="number" id="p-term" value="0" placeholder="0" oninput="W.termCover=+this.value;recalcAll()"></div>
         <div class="field"><label>Health Insurance <em>₹ sum insured</em></label><input type="number" id="p-health-ins" value="0" placeholder="0" oninput="W.healthCover=+this.value;recalcAll()"></div>
       </div>
+      <div class="row2">
+        <div class="field"><label>Health Premium <em>annual premium paid ₹</em></label><input type="number" id="p-health-prem" value="0" placeholder="0" oninput="W.healthPremium=+this.value;recalcAll()"></div>
+        <div class="field"><label>Parents' Health Premium <em>annual ₹ (for 80D)</em></label><input type="number" id="p-parent-health-prem" value="0" placeholder="0" oninput="W.parentHealthPremium=+this.value;recalcAll()"></div>
+      </div>
     </div>
   </div>
 
@@ -1192,7 +1203,21 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>80C Investments</span><span class="tax-limit-badge">Limit ₹1,50,000/yr</span>
         </div>
-        <div class="tax-prog-wrap"><div class="tax-prog-fill" id="tp-80c" style="width:0%"></div></div>
+        <details class="tax-qualify">
+          <summary>What qualifies under 80C?</summary>
+          <ul>
+            <li>EPF / PF — employee's contribution</li>
+            <li>ELSS Mutual Funds (3-year lock-in)</li>
+            <li>PPF deposit (max ₹1.5L/yr)</li>
+            <li>LIC / ULIP premium</li>
+            <li>5-Year Tax Saver FD (lock-in 5 yrs)</li>
+            <li>NSC — National Savings Certificate</li>
+            <li>Home loan principal repayment</li>
+            <li>Tuition fees (up to 2 children)</li>
+            <li>Sukanya Samriddhi Yojana</li>
+          </ul>
+        </details>
+        <div class="tax-prog-wrap" style="margin-top:0.5rem"><div class="tax-prog-fill" id="tp-80c" style="width:0%"></div></div>
         <div class="tax-prog-lbl" id="tpl-80c">₹0 of ₹1,50,000 used</div>
         <div class="tax-inp-row">
           <label>EPF / PF contribution<em>your monthly share + employer share</em></label>
@@ -1220,8 +1245,17 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>80D — Health Insurance</span><span class="tax-limit-badge">Limit ₹25,000/yr</span>
         </div>
-        <div class="tax-inp-row">
-          <label>Your premium<em>self + spouse + children</em></label>
+        <details class="tax-qualify">
+          <summary>What qualifies under 80D?</summary>
+          <ul>
+            <li>Health insurance premium — self, spouse, children (up to ₹25,000/yr)</li>
+            <li>Parents' health insurance premium — up to ₹25,000/yr (₹50,000 if 60+)</li>
+            <li>Preventive health check-up — up to ₹5,000 (within the overall limit)</li>
+            <li>Employer-sponsored premium also counts if deducted from salary</li>
+          </ul>
+        </details>
+        <div class="tax-inp-row" style="margin-top:0.5rem">
+          <label>Your premium<em>self + spouse + children — auto from profile</em></label>
           <div class="tax-amt-wrap">
             <span>₹</span><input type="number" id="ti-80d-amt" placeholder="0" oninput="onTaxInput()">
             <select id="ti-80d-freq" class="tax-freq-sel" onchange="onTaxInput()">
@@ -1255,6 +1289,16 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>HRA — House Rent Allowance</span><span class="tax-auto-badge" id="hra-auto-lbl">auto from profile</span>
         </div>
+        <details class="tax-qualify">
+          <summary>Who can claim HRA?</summary>
+          <ul>
+            <li>HRA must be a component in your CTC / salary slip</li>
+            <li>You must be living in rented accommodation</li>
+            <li>Cannot claim if you own a house in the same city</li>
+            <li>Rent receipts required; landlord PAN mandatory above ₹1L/yr</li>
+            <li>Metro cities (Delhi, Mumbai, Chennai, Kolkata): 50% of basic; others: 40%</li>
+          </ul>
+        </details>
         <div class="tax-inp-row">
           <label>Monthly rent you pay<em id="ti-hra-rent-hint"></em></label>
           <div class="tax-amt-wrap">
@@ -1275,6 +1319,15 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>Home Loan Interest (Sec 24b)</span><span class="tax-limit-badge">Limit ₹2,00,000/yr</span>
         </div>
+        <details class="tax-qualify">
+          <summary>What qualifies under Sec 24b?</summary>
+          <ul>
+            <li>Interest paid on home loan — self-occupied: max ₹2,00,000/yr</li>
+            <li>Let-out / rented property: full interest deductible (no cap)</li>
+            <li>Only the interest portion counts — principal repayment goes to 80C</li>
+            <li>Pre-construction interest claimed in 5 equal instalments from possession year</li>
+          </ul>
+        </details>
         <div class="tax-inp-row">
           <label>Monthly EMI<em id="ti-emi-hint"></em></label>
           <div class="tax-amt-wrap">
@@ -1301,6 +1354,15 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>NPS Additional (80CCD(1B))</span><span class="tax-limit-badge">Limit ₹50,000/yr</span>
         </div>
+        <details class="tax-qualify">
+          <summary>What qualifies under 80CCD(1B)?</summary>
+          <ul>
+            <li>Only NPS Tier 1 voluntary contributions</li>
+            <li>This is over and above the ₹1.5L 80C limit — additional ₹50,000</li>
+            <li>NPS Tier 2 contributions do NOT qualify</li>
+            <li>Both salaried and self-employed can claim this</li>
+          </ul>
+        </details>
         <div class="tax-inp-row">
           <label>NPS contribution</label>
           <div class="tax-amt-wrap">
@@ -1319,6 +1381,16 @@ select option{background:#1e293b}
         <div class="tax-section-hdr">
           <span>Other Deductions</span><span style="font-size:0.62rem;color:var(--t3)">80E, 80G, 80TTA etc.</span>
         </div>
+        <details class="tax-qualify">
+          <summary>What comes under Other deductions?</summary>
+          <ul>
+            <li>80E — Education loan interest (no upper limit; up to 8 assessment years)</li>
+            <li>80G — Donations to approved charities (50% or 100% of donation)</li>
+            <li>80TTA — Savings account interest up to ₹10,000 (for non-seniors)</li>
+            <li>80TTB — Bank/post office interest up to ₹50,000 (senior citizens only)</li>
+            <li>80GG — Rent paid deduction for those NOT receiving HRA in salary</li>
+          </ul>
+        </details>
         <div class="tax-inp-row">
           <label>Annual amount</label>
           <div class="tax-amt-wrap">
@@ -1332,7 +1404,7 @@ select option{background:#1e293b}
 
   <div class="tax-rec" id="t-rec" style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2)">
     <div class="trt">Recommendation</div>
-    <div class="trv" id="t-rec-text">New Regime is default — enter your salary to compare</div>
+    <div class="trv" id="t-rec-text">New Regime is employer default since FY 2024-25 — enter your salary above to compare</div>
   </div>
 
   <div class="tax-compare">
@@ -1897,7 +1969,7 @@ function getProfileData() {
     rent:W.rent, homeLoanEMI:W.homeLoanEMI, carEMI:W.carEMI, creditCard:W.creditCard, otherEMI:W.otherEMI,
     groceries:W.groceries, transport:W.transport, petExpense:W.petExpense,
     monthlySavings:W.monthlySavings, emergencyFund:W.emergencyFund,
-    pf:W.pf, nps:W.nps, mf:W.mf, fd:W.fd, termCover:W.termCover, healthCover:W.healthCover,
+    pf:W.pf, nps:W.nps, mf:W.mf, fd:W.fd, termCover:W.termCover, healthCover:W.healthCover, healthPremium:W.healthPremium, parentHealthPremium:W.parentHealthPremium,
     annualSalary:W.annualSalary, ltcg:W.ltcg, taxOtherInc:W.taxOtherInc,
     ded80c:W.ded80c, ded80d:W.ded80d, dedNPS:W.dedNPS, dedHRA:W.dedHRA, dedHomeLoan:W.dedHomeLoan, dedOther:W.dedOther
   };
@@ -1942,7 +2014,7 @@ function populateInputs() {
     'p-emi':W.otherEMI,'p-groceries':W.groceries,'p-transport':W.transport,'p-pets':W.petExpense,
     'p-savings':W.monthlySavings,'p-emergency':W.emergencyFund,
     'p-pf':W.pf,'p-nps':W.nps,'p-mf':W.mf,'p-fd':W.fd,
-    'p-term':W.termCover,'p-health-ins':W.healthCover,
+    'p-term':W.termCover,'p-health-ins':W.healthCover,'p-health-prem':W.healthPremium,'p-parent-health-prem':W.parentHealthPremium,
     'p-parent-age':W.parentAge,'p-parent-support':W.parentSupport,'p-overseas-income':W.overseasIncome,
     't-salary':W.annualSalary,'t-ltcg':W.ltcg,'t-other-inc':W.taxOtherInc,
     't-80c':W.ded80c,'t-80d':W.ded80d,'t-nps':W.dedNPS,'t-hra':W.dedHRA,'t-homeloan':W.dedHomeLoan,'t-other':W.dedOther
@@ -2073,7 +2145,7 @@ const W = {
   // Savings
   monthlySavings: 12000, emergencyFund: 50000,
   pf: 0, nps: 0, mf: 0, fd: 0,
-  termCover: 0, healthCover: 0,
+  termCover: 0, healthCover: 0, healthPremium: 0, parentHealthPremium: 0,
   // Tax
   annualSalary: 900000, ltcg: 0, taxOtherInc: 0,
   ded80c: 50000, ded80d: 10000, dedNPS: 0, dedHRA: 0, dedHomeLoan: 0, dedOther: 0,
@@ -2347,29 +2419,38 @@ function marginalRate() {
 }
 
 function initTaxInputs() {
-  // Auto-fill rent from profile
+  // Auto-fill rent from profile — always sync, no guard
   const rentHint = $('ti-hra-rent-hint');
-  if (W.rent > 0) {
-    const el = $('ti-hra-rent');
-    if (el && !el.value) el.value = W.rent;
+  const rentEl = $('ti-hra-rent');
+  if (W.rent > 0 && rentEl) {
+    rentEl.value = W.rent;
     if (rentHint) rentHint.textContent = 'auto-filled from profile (' + inr(W.rent) + '/mo)';
   }
-  // Auto-fill home loan EMI from profile
+  // Auto-fill home loan EMI from profile — always sync, no guard
   const emiHint = $('ti-emi-hint');
-  if (W.homeLoanEMI > 0) {
-    const el = $('ti-hl-emi');
-    if (el && !el.value) el.value = W.homeLoanEMI;
+  const emiEl = $('ti-hl-emi');
+  if (W.homeLoanEMI > 0 && emiEl) {
+    emiEl.value = W.homeLoanEMI;
     if (emiHint) emiHint.textContent = 'auto-filled from profile (' + inr(W.homeLoanEMI) + '/mo)';
   }
   // Default interest rate
   const rateEl = $('ti-hl-rate');
   if (rateEl && !rateEl.value) rateEl.value = '8.5';
-  // Restore saved deduction values into new fields (backward compat)
+  // Auto-fill 80D from health premiums in profile
+  if (W.healthPremium > 0) {
+    const e = $('ti-80d-amt'); const f = $('ti-80d-freq');
+    if (e) e.value = W.healthPremium;
+    if (f) f.value = 'annual';
+  }
+  if (W.parentHealthPremium > 0) {
+    const e = $('ti-80d-parent'); const f = $('ti-80d-pfq');
+    if (e) e.value = W.parentHealthPremium;
+    if (f) f.value = 'annual';
+  }
+  // Restore saved deduction values (backward compat — only if no profile premium)
   if (W.ded80c > 0) { const e = $('ti-80c-amt'); if(e && !e.value) { e.value = W.ded80c; const f=$('ti-80c-freq'); if(f) f.value='annual'; } }
-  if (W.ded80d > 0) { const e = $('ti-80d-amt'); if(e && !e.value) { e.value = W.ded80d; const f=$('ti-80d-freq'); if(f) f.value='annual'; } }
+  if (W.ded80d > 0 && !W.healthPremium) { const e = $('ti-80d-amt'); if(e && !e.value) { e.value = W.ded80d; const f=$('ti-80d-freq'); if(f) f.value='annual'; } }
   if (W.dedNPS  > 0) { const e = $('ti-nps-amt'); if(e && !e.value) { e.value = W.dedNPS; const f=$('ti-nps-freq'); if(f) f.value='annual'; } }
-  if (W.dedHRA  > 0) { /* HRA is computed — nothing to restore */ }
-  if (W.dedHomeLoan > 0) { /* Recomputed from balance+rate */ }
   if (W.dedOther > 0) { const e = $('ti-other'); if(e && !e.value) e.value = W.dedOther; }
   onTaxInput();
 }
@@ -2560,11 +2641,17 @@ function calcTax() {
   $('t-new-w').style.display = best === 'new' ? 'inline-block' : 'none';
 
   if (saving > 0) {
-    $('t-rec-text').textContent = (best === 'old' ? 'Old' : 'New') + ` Regime saves you ${inr(saving)} this year`;
-    $('t-rec').style.borderColor = best === 'old' ? 'rgba(245,158,11,0.3)' : 'rgba(34,197,94,0.25)';
-    $('t-rec').style.background = best === 'old' ? 'rgba(245,158,11,0.06)' : 'rgba(34,197,94,0.05)';
+    if (best === 'old') {
+      $('t-rec-text').textContent = `Old Regime saves you ${inr(saving)} this year — declare to your employer before April, else New Regime applies by default`;
+      $('t-rec').style.borderColor = 'rgba(245,158,11,0.3)';
+      $('t-rec').style.background  = 'rgba(245,158,11,0.06)';
+    } else {
+      $('t-rec-text').textContent = `New Regime saves you ${inr(saving)} — your employer's default, no action needed`;
+      $('t-rec').style.borderColor = 'rgba(34,197,94,0.25)';
+      $('t-rec').style.background  = 'rgba(34,197,94,0.05)';
+    }
   } else {
-    $('t-rec-text').textContent = 'Both regimes have equal tax liability';
+    $('t-rec-text').textContent = 'Both regimes have equal tax — New Regime applies by default (employer default)';
   }
 
   // Total potential tax saving from unused limits (old regime only)
@@ -3037,6 +3124,7 @@ function switchTab(name, title) {
   if (dsb) dsb.classList.add('active');
   if (name === 'col')  setTimeout(initCOL,  0);
   if (name === 'dash') setTimeout(renderDash, 0);
+  if (name === 'tax')  setTimeout(initTaxInputs, 0);
   // On desktop the scroll container is .screens, not the screen itself
   const screensEl = document.querySelector('.screens');
   if (screensEl && window.innerWidth >= 1024) screensEl.scrollTop = 0;
