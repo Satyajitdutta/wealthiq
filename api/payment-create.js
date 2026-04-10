@@ -1,11 +1,15 @@
-// Create Cashfree order and return payment session ID
+// Create Cashfree order for module purchase or Full View subscription
 import { getAuth } from './_auth.js';
 
+// Subscription = full_view (monthly), others = pay-per-use
 const PLANS = {
-  basic:        { amount: 49,   label: 'Basic' },
-  essential:    { amount: 299,  label: 'Essential' },
-  intelligence: { amount: 699,  label: 'Intelligence' },
-  family:       { amount: 999,  label: 'Family' }
+  tax_optimizer:  { amount: 50,  label: 'Tax Optimizer',      subscription: false },
+  goal_planner:   { amount: 150, label: 'Goal Planner',       subscription: false },
+  money_leaks:    { amount: 150, label: 'Money Leaks',        subscription: false },
+  cost_living:    { amount: 200, label: 'Cost of Living',     subscription: false },
+  expert_view:    { amount: 250, label: 'Expert View (AI)',   subscription: false },
+  salary_skills:  { amount: 400, label: 'Salary & Skills',    subscription: false },
+  full_view:      { amount: 699, label: 'Full View',          subscription: true  }
 };
 
 async function readBody(req) {
@@ -34,7 +38,7 @@ export default async function handler(req, res) {
 
   const appId     = (process.env.CASHFREE_APP_ID     || '').trim();
   const secretKey = (process.env.CASHFREE_SECRET_KEY || '').trim();
-  const cfEnv     = (process.env.CASHFREE_ENV        || 'production').trim(); // 'sandbox' or 'production'
+  const cfEnv     = (process.env.CASHFREE_ENV        || 'production').trim();
   if (!appId || !secretKey) { res.status(500).json({ error: 'Cashfree not configured' }); return; }
 
   const baseUrl = cfEnv === 'sandbox'
@@ -60,12 +64,12 @@ export default async function handler(req, res) {
         customer_details: {
           customer_id:    user.email.replace(/[^a-z0-9]/gi, '_').slice(0, 50),
           customer_email: user.email,
-          customer_phone: '9999999999'   // placeholder — not collected in app
+          customer_phone: '9999999999'
         },
         order_meta: {
-          notify_url: `https://pithonix-wealthiq.vercel.app/api/payment-verify`
+          notify_url: `https://wealth.pithonix.ai/api/payment-verify`
         },
-        order_note: `WealthIQ ${planInfo.label} plan`
+        order_note: `WealthIQ ${planInfo.label}`
       })
     });
 
@@ -78,6 +82,7 @@ export default async function handler(req, res) {
       paymentSessionId: order.payment_session_id,
       amount:           planInfo.amount,
       planLabel:        planInfo.label,
+      subscription:     planInfo.subscription,
       email:            user.email,
       env:              cfEnv
     });

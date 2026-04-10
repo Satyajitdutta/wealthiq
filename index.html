@@ -426,6 +426,16 @@ select option{background:#1e293b}
 .hsr .hl{color:var(--t2)}
 .hsr .hv{font-weight:700;color:var(--text)}
 .disclaimer{font-size:0.61rem;color:var(--t4);margin-top:0.5rem;line-height:1.4;font-style:italic}
+/* ── MODULE 8: HABIT → WEALTH ROWS ──────────────────────────── */
+.h2w-row{display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0;border-bottom:1px solid var(--bd)}
+.h2w-row:last-child{border-bottom:none}
+.h2w-left{display:flex;align-items:center;gap:0.45rem}
+.h2w-icon{font-size:1.1rem;line-height:1}
+.h2w-name{font-size:0.75rem;color:var(--t2);font-weight:500}
+.h2w-mo{font-size:0.63rem;color:var(--t3);margin-top:0.05rem}
+.h2w-right{text-align:right}
+.h2w-val{font-size:0.95rem;font-weight:800;color:var(--green)}
+.h2w-lbl{font-size:0.59rem;color:var(--t3)}
 /* ── MODULE 3: INCOME VS EXPENSES DASHBOARD ─────────────────── */
 .dash-income-block{background:linear-gradient(135deg,rgba(34,197,94,0.10),rgba(6,182,212,0.06));border:1px solid rgba(34,197,94,0.2);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:0.75rem}
 .dash-income-total{font-size:2rem;font-weight:800;color:var(--green);letter-spacing:-0.5px}
@@ -623,6 +633,132 @@ select option{background:#1e293b}
 .dsb-footer{padding:0.75rem 1rem;border-top:1px solid var(--bd);flex-shrink:0}
 .dsb-footer-brand{font-size:0.72rem;font-weight:700;color:var(--t3)}
 .dsb-footer-tag{font-size:0.58rem;color:var(--t4);margin-top:0.1rem;letter-spacing:0.3px;text-transform:uppercase}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN v2 — Fi.money / Jupiter inspired premium upgrade
+═══════════════════════════════════════════════════════════════ */
+
+/* Background depth — subtle radial glow */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 40% at 20% -10%,rgba(59,130,246,0.08) 0%,transparent 70%),
+             radial-gradient(ellipse 60% 30% at 80% 100%,rgba(99,102,241,0.06) 0%,transparent 70%)}
+.app{z-index:1}
+
+/* Cards — elevation + premium border */
+.card{
+  box-shadow:0 2px 16px rgba(0,0,0,0.35),0 1px 3px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.04);
+  border-color:rgba(255,255,255,0.09);
+  transition:box-shadow 0.2s}
+.card-hdr{
+  background:linear-gradient(135deg,rgba(17,24,39,0.95) 0%,rgba(13,20,38,0.9) 100%);
+  border-bottom-color:rgba(255,255,255,0.07)}
+
+/* KPI chips — depth + hover */
+.kpi{
+  background:linear-gradient(135deg,#131d30 0%,#0e1622 100%);
+  box-shadow:0 2px 12px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.1);
+  transition:transform 0.15s,box-shadow 0.15s}
+.kpi:active{transform:scale(0.97);box-shadow:0 1px 6px rgba(0,0,0,0.3)}
+
+/* Tab bar — frosted glass + shadow */
+.tabbar{
+  background:rgba(8,13,26,0.88);
+  box-shadow:0 -1px 0 rgba(255,255,255,0.07),0 -8px 40px rgba(0,0,0,0.5)}
+.tab{position:relative}
+/* Active tab glow indicator */
+.tab.active::after{
+  content:'';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+  width:20px;height:2.5px;border-radius:2px;
+  background:linear-gradient(90deg,var(--blue),var(--teal));
+  box-shadow:0 0 8px rgba(59,130,246,0.7)}
+.tab.got-tab.active::after{
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  box-shadow:0 0 8px rgba(139,92,246,0.7)}
+
+/* Header — elevated */
+.hdr{box-shadow:0 1px 0 rgba(255,255,255,0.06),0 4px 24px rgba(0,0,0,0.4)}
+
+/* Screen — smoother transitions */
+.screen{transition:opacity 0.28s cubic-bezier(0.4,0,0.2,1),transform 0.28s cubic-bezier(0.4,0,0.2,1)}
+
+/* Progress bars — gradient fills everywhere */
+.ded-bar-fill{background:linear-gradient(90deg,var(--blue),var(--teal)) !important}
+.tax-prog-fill{background:linear-gradient(90deg,var(--indigo),var(--blue)) !important}
+.goal-progress-fill,.gd-progress-fill{background:linear-gradient(90deg,var(--blue),var(--teal)) !important}
+.col-vs-fill{transition:width 0.45s cubic-bezier(0.4,0,0.2,1) !important}
+
+/* Buttons — glow */
+.auth-btn{box-shadow:0 4px 20px rgba(59,130,246,0.35),0 2px 8px rgba(0,0,0,0.3)}
+.auth-btn:active{box-shadow:0 2px 8px rgba(59,130,246,0.2)}
+.plan-upgrade{box-shadow:0 3px 14px rgba(59,130,246,0.3)}
+.afford-go{box-shadow:0 2px 10px rgba(59,130,246,0.25)}
+
+/* Stage pills — active glow */
+.stage-pill.active{
+  background:linear-gradient(135deg,rgba(59,130,246,0.18),rgba(99,102,241,0.12));
+  box-shadow:0 0 14px rgba(59,130,246,0.2),inset 0 1px 0 rgba(59,130,246,0.15)}
+
+/* Goal chips — active glow */
+.goal-chip.active{box-shadow:0 0 12px rgba(59,130,246,0.15)}
+
+/* Pill dot — glow */
+.card-hdr .pill{box-shadow:0 0 6px currentColor}
+
+/* Nudge — depth */
+.nudge{box-shadow:0 2px 14px rgba(0,0,0,0.2)}
+
+/* Info note — gradient border */
+.info-note{
+  background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(59,130,246,0.06));
+  box-shadow:0 2px 14px rgba(99,102,241,0.1)}
+
+/* Leak meter — gradient glow */
+.leak-meter{box-shadow:0 4px 24px rgba(239,68,68,0.12)}
+/* Crore reveal value — fire gradient text */
+.crv{
+  background:linear-gradient(135deg,#f59e0b,#ef4444);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-size:1.7rem}
+
+/* Habit→Wealth value — teal gradient */
+.h2w-val{
+  background:linear-gradient(135deg,var(--green),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Auth logo — bigger glow on dot */
+.auth-logo .dot{box-shadow:0 0 10px rgba(59,130,246,0.5);width:12px;height:12px}
+
+/* Tax compare winner card — glow */
+.tc.winner{box-shadow:0 0 16px rgba(34,197,94,0.12)}
+
+/* Goals detail panel — depth */
+.goal-detail-panel{
+  box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.04)}
+
+/* Scorecard cards in Health screen */
+.score-factor{
+  box-shadow:0 2px 10px rgba(0,0,0,0.2);
+  transition:transform 0.15s}
+.score-factor:active{transform:scale(0.98)}
+
+/* Afford FAB — premium glow */
+.afford-fab{box-shadow:0 4px 22px rgba(59,130,246,0.5),0 2px 8px rgba(0,0,0,0.4)}
+.afford-fab:active{box-shadow:0 2px 8px rgba(59,130,246,0.3)}
+
+/* Grow path cards */
+.path-card{box-shadow:0 4px 20px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.04)}
+
+/* Subscription chip active */
+.sub-chip.on{box-shadow:0 0 10px rgba(99,102,241,0.25)}
+
+/* Weekly report card */
+.wrc-card{box-shadow:0 4px 20px rgba(0,0,0,0.25)}
+
+/* Scroll bar ultra thin */
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
 </style>
 </head>
 <body>
@@ -940,68 +1076,66 @@ select option{background:#1e293b}
 
   <!-- Subscription Plans — hidden during beta -->
   <div class="card" id="plan-card" style="display:none">
-    <div class="card-hdr"><div class="pill" style="background:var(--indigo)"></div><h3>Your Plan</h3>
-      <span class="badge" id="current-plan-badge" style="background:rgba(99,102,241,0.15);color:var(--indigo)">Trial</span>
+    <div class="card-hdr"><div class="pill" style="background:var(--indigo)"></div><h3>Plans &amp; Access</h3>
+      <span class="badge" id="current-plan-badge" style="background:rgba(99,102,241,0.15);color:var(--indigo)">Free</span>
     </div>
     <div class="body" style="padding-bottom:0.5rem">
 
-      <!-- Trial status bar (visible only on free/trial plan) -->
-      <div id="trial-bar" style="display:none;margin-bottom:0.75rem;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:9px;padding:0.6rem 0.75rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
-          <span style="font-size:0.72rem;font-weight:700;color:var(--amber)">Free Trial</span>
-          <span style="font-size:0.72rem;color:var(--t2)" id="trial-sessions-lbl">5 sessions remaining</span>
+      <!-- Full View subscription banner -->
+      <div id="full-view-banner" style="margin-bottom:0.75rem;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.35);border-radius:11px;padding:0.85rem 0.9rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+          <div>
+            <div style="font-size:0.6rem;font-weight:700;letter-spacing:1px;color:var(--indigo);text-transform:uppercase;margin-bottom:0.2rem">Best Value</div>
+            <div style="font-size:0.9rem;font-weight:800;color:var(--text)">Full View</div>
+            <div style="font-size:0.67rem;color:var(--t2);margin-top:0.15rem">All modules · Unlimited · 1 month</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--text)">₹699<span style="font-size:0.68rem;font-weight:500;color:var(--t3)">/mo</span></div>
+            <div style="font-size:0.62rem;color:var(--t3);margin-top:0.1rem">vs ₹1,300 à la carte</div>
+          </div>
         </div>
-        <div style="height:4px;background:var(--c4);border-radius:2px;overflow:hidden">
-          <div id="trial-bar-fill" style="height:100%;background:var(--amber);border-radius:2px;transition:width 0.4s;width:100%"></div>
-        </div>
-        <p style="font-size:0.66rem;color:var(--t3);margin-top:0.4rem">After 5 sessions, a Basic plan (₹49/mo) is required to cover API costs.</p>
+        <button id="btn-full-view" class="plan-btn plan-upgrade" onclick="startPayment('full_view')" style="background:linear-gradient(135deg,var(--indigo),var(--purple));box-shadow:0 3px 14px rgba(99,102,241,0.3)">Get Full View — ₹699/mo</button>
       </div>
 
-      <div class="plan-grid" id="plan-grid">
+      <!-- Per-module grid -->
+      <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.45rem;font-weight:600;text-transform:uppercase;letter-spacing:0.6px">Or pay per module</div>
+      <div class="plan-grid" id="plan-grid" style="grid-template-columns:1fr 1fr">
 
-        <div class="plan-tile" data-plan="basic">
-          <div class="plan-name">Basic</div>
-          <div class="plan-price">₹49<span>/mo</span></div>
-          <ul class="plan-features">
-            <li>Health Score</li>
-            <li>Tax Calculator</li>
-            <li>Profile sync</li>
-          </ul>
-          <button class="plan-btn plan-upgrade" id="btn-basic" onclick="startPayment('basic')">Get Basic</button>
+        <div class="plan-tile" id="ptile-tax_optimizer" data-plan="tax_optimizer">
+          <div class="plan-name">Tax Optimizer</div>
+          <div class="plan-price">₹50<span>/use</span></div>
+          <div id="tax-free-lbl" style="font-size:0.64rem;color:var(--teal);margin:0.1rem 0 0.3rem;font-weight:600">2 free uses</div>
+          <button class="plan-btn plan-upgrade" id="btn-tax_optimizer" onclick="startPayment('tax_optimizer')">Unlock ₹50</button>
         </div>
 
-        <div class="plan-tile" data-plan="essential">
-          <div class="plan-name">Essential</div>
-          <div class="plan-price">₹299<span>/mo</span></div>
-          <ul class="plan-features">
-            <li>All 6 screens</li>
-            <li>Money Leaks</li>
-            <li>Goals Planner</li>
-          </ul>
-          <button class="plan-btn plan-upgrade" onclick="startPayment('essential')">Upgrade</button>
+        <div class="plan-tile" id="ptile-goal_planner" data-plan="goal_planner">
+          <div class="plan-name">Goal Planner</div>
+          <div class="plan-price">₹150<span>/use</span></div>
+          <button class="plan-btn plan-upgrade" id="btn-goal_planner" onclick="startPayment('goal_planner')">Unlock ₹150</button>
         </div>
 
-        <div class="plan-tile plan-popular" data-plan="intelligence">
-          <div class="plan-badge">Most Popular</div>
-          <div class="plan-name">Intelligence</div>
-          <div class="plan-price">₹699<span>/mo</span></div>
-          <ul class="plan-features">
-            <li>Everything in Essential</li>
-            <li>GOT Advisor (AI)</li>
-            <li>Unlimited analysis</li>
-          </ul>
-          <button class="plan-btn plan-upgrade" onclick="startPayment('intelligence')">Upgrade</button>
+        <div class="plan-tile" id="ptile-money_leaks" data-plan="money_leaks">
+          <div class="plan-name">Money Leaks</div>
+          <div class="plan-price">₹150<span>/use</span></div>
+          <button class="plan-btn plan-upgrade" id="btn-money_leaks" onclick="startPayment('money_leaks')">Unlock ₹150</button>
         </div>
 
-        <div class="plan-tile" data-plan="family">
-          <div class="plan-name">Family</div>
-          <div class="plan-price">₹999<span>/mo</span></div>
-          <ul class="plan-features">
-            <li>Everything in Intelligence</li>
-            <li>Partner account</li>
-            <li>Joint goals</li>
-          </ul>
-          <button class="plan-btn plan-upgrade" onclick="startPayment('family')">Upgrade</button>
+        <div class="plan-tile" id="ptile-cost_living" data-plan="cost_living">
+          <div class="plan-name">Cost of Living</div>
+          <div class="plan-price">₹200<span>/use</span></div>
+          <button class="plan-btn plan-upgrade" id="btn-cost_living" onclick="startPayment('cost_living')">Unlock ₹200</button>
+        </div>
+
+        <div class="plan-tile" id="ptile-expert_view" data-plan="expert_view">
+          <div class="plan-name">Expert View</div>
+          <div class="plan-price">₹250<span>/use</span></div>
+          <button class="plan-btn plan-upgrade" id="btn-expert_view" onclick="startPayment('expert_view')">Unlock ₹250</button>
+        </div>
+
+        <div class="plan-tile" id="ptile-salary_skills" data-plan="salary_skills">
+          <div class="plan-name">Salary &amp; Skills</div>
+          <div class="plan-price">₹400<span>/use</span></div>
+          <button class="plan-btn plan-upgrade" id="btn-salary_skills" onclick="startPayment('salary_skills')">Unlock ₹400</button>
         </div>
 
       </div>
@@ -1599,6 +1733,17 @@ select option{background:#1e293b}
     <div class="crs">That's the real cost of this habit.</div>
   </div>
 
+  <!-- ── MODULE 8: HABIT → WEALTH BREAKDOWN ───────────────────── -->
+  <div class="card" id="h2w-section" style="display:none">
+    <div class="card-hdr"><div class="pill" style="background:var(--amber)"></div><h3>Habit → Wealth</h3></div>
+    <p style="font-size:0.7rem;color:var(--t2);margin:0 0 0.65rem;line-height:1.45">If you redirected each leak into a SIP at 12% p.a. — here's what you'd accumulate in 10 years:</p>
+    <div id="h2w-rows"></div>
+    <div style="margin-top:0.65rem;padding-top:0.65rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:0.7rem;color:var(--t3);font-weight:600">All leaks combined → 10 yrs</span>
+      <span style="font-size:1rem;font-weight:800;color:var(--green)" id="h2w-total-10yr">—</span>
+    </div>
+  </div>
+
   <!-- ── MODULE 8: TWO-NUMBER PUNCH ────────────────────────────── -->
   <div class="two-punch" id="two-punch-section" style="display:none">
     <div class="two-punch-hdr">The full cost of your <span id="tp-habit-name">habit</span></div>
@@ -1819,14 +1964,29 @@ select option{background:#1e293b}
     <div style="padding:0 0 0.75rem;border-top:1px solid var(--bd);margin:0 0">
       <div class="col-total-row">
         <div class="col-total-left">
-          <h4>Total Monthly</h4>
+          <h4>Lifestyle Spend</h4>
           <div class="col-total-range" id="col-total-range">—</div>
+          <div style="font-size:0.6rem;color:var(--t4);margin-top:0.15rem">city benchmark (excl. EMIs)</div>
         </div>
         <div class="col-total-right">
-          <div class="col-total-yours-lbl">Your actual spend</div>
+          <div class="col-total-yours-lbl">Your lifestyle spend</div>
           <div class="col-total-yours-val" id="col-total-yours">—</div>
           <div class="col-pets-note" id="col-pets-note"></div>
         </div>
+      </div>
+      <!-- Fixed obligations + total committed summary -->
+      <div id="col-committed-summary" style="display:none;margin-top:0.65rem;padding-top:0.65rem;border-top:1px dashed var(--bd2)">
+        <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3);margin-bottom:0.4rem">Fixed Obligations · from profile</div>
+        <div id="col-fixed-rows"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0 0.35rem;margin-top:0.25rem;border-top:1px solid var(--bd)">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--t2)">Total Committed / month</span>
+          <span style="font-size:0.95rem;font-weight:800;color:var(--amber)" id="col-committed-total">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0 0">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--t2)">Est. Free Cash</span>
+          <span style="font-size:0.95rem;font-weight:800" id="col-free-cash">—</span>
+        </div>
+        <div style="font-size:0.6rem;color:var(--t4);margin-top:0.3rem">Income − lifestyle − EMIs − insurance (savings excluded)</div>
       </div>
     </div>
   </div>
@@ -2122,7 +2282,8 @@ function getProfileData() {
     pf:W.pf, nps:W.nps, mf:W.mf, fd:W.fd, termCover:W.termCover, healthCover:W.healthCover, healthPremium:W.healthPremium, parentHealthPremium:W.parentHealthPremium,
     role:W.role, industry:W.industry, expYears:W.expYears,
     annualSalary:W.annualSalary, ltcg:W.ltcg, taxOtherInc:W.taxOtherInc,
-    ded80c:W.ded80c, ded80d:W.ded80d, dedNPS:W.dedNPS, dedHRA:W.dedHRA, dedHomeLoan:W.dedHomeLoan, dedOther:W.dedOther
+    ded80c:W.ded80c, ded80d:W.ded80d, dedNPS:W.dedNPS, dedHRA:W.dedHRA, dedHomeLoan:W.dedHomeLoan, dedOther:W.dedOther,
+    colCity: colState.city, colCls: colState.cls, colUserSpend: colState.userSpend
   };
 }
 
@@ -2149,11 +2310,15 @@ async function loadProfile() {
     const data = await r.json();
     if (data.profile) {
       Object.assign(W, data.profile);
+      // Restore COL state
+      if (data.profile.colCity)      colState.city = data.profile.colCity;
+      if (data.profile.colCls)       colState.cls  = data.profile.colCls;
+      if (data.profile.colUserSpend) colState.userSpend = data.profile.colUserSpend;
       populateInputs();
       const session = getSession();
       setAvatarUI(W.avatarUrl || null, W.displayName || null, session?.email || null);
     }
-    if (data.plan) updatePlanUI(data.plan);
+    updatePlanUI(data.plan || 'free', data.moduleCredits || {}, data.taxFreeUsed || 0);
   } catch(e) { /* silent fallback */ }
 }
 
@@ -2181,59 +2346,120 @@ function populateInputs() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PLAN UI + RAZORPAY PAYMENTS
+   PLAN UI + CASHFREE PAYMENTS
 ═══════════════════════════════════════════════════════════════ */
 let USER_PLAN = 'free';
-const TRIAL_MAX = 5;
+let MODULE_CREDITS = {};   // { tax_optimizer: 2, goal_planner: 1, ... }
+let TAX_FREE_USED  = 0;    // 0–2 (first 2 Tax Optimizer uses are free)
 
-function getSessionCount() {
-  return parseInt(localStorage.getItem('wiq_sc') || '0', 10);
+const TAX_FREE_MAX = 2;
+const MODULE_PRICES = {
+  tax_optimizer: 50, goal_planner: 150, money_leaks: 150,
+  cost_living: 200, expert_view: 250, salary_skills: 400, full_view: 699
+};
+const MODULE_LABELS = {
+  tax_optimizer: 'Tax Optimizer', goal_planner: 'Goal Planner',
+  money_leaks: 'Money Leaks',     cost_living: 'Cost of Living',
+  expert_view: 'Expert View (AI)',salary_skills: 'Salary & Skills',
+  full_view: 'Full View'
+};
+
+/** Returns true if user can access a module right now */
+function canUseModule(key) {
+  if (USER_PLAN === 'full_view') return true;
+  if (key === 'tax_optimizer' && TAX_FREE_USED < TAX_FREE_MAX) return true;
+  return (MODULE_CREDITS[key] || 0) > 0;
 }
+
 function bumpSessionCount() {
-  const n = getSessionCount() + 1;
+  const n = parseInt(localStorage.getItem('wiq_sc') || '0', 10) + 1;
   localStorage.setItem('wiq_sc', String(n));
   return n;
 }
 
-function updatePlanUI(plan) {
-  USER_PLAN = plan;
-  const badge = document.getElementById('current-plan-badge');
-  const labels = { free:'Trial', basic:'Basic', essential:'Essential', intelligence:'Intelligence', family:'Family' };
-  const colors = { free:'var(--amber)', basic:'var(--teal)', essential:'var(--blue)', intelligence:'var(--indigo)', family:'var(--purple)' };
-  if (badge) { badge.textContent = labels[plan] || plan; badge.style.color = colors[plan] || 'var(--t3)'; }
+function updatePlanUI(plan, moduleCredits, taxFreeUsed) {
+  if (plan !== undefined)          USER_PLAN       = plan;
+  if (moduleCredits !== undefined) MODULE_CREDITS  = moduleCredits;
+  if (taxFreeUsed   !== undefined) TAX_FREE_USED   = taxFreeUsed;
 
-  // Trial bar
-  const bar = document.getElementById('trial-bar');
-  const sc = getSessionCount();
-  if (plan === 'free') {
-    if (bar) bar.style.display = 'block';
-    const remaining = Math.max(0, TRIAL_MAX - sc);
-    const lbl = document.getElementById('trial-sessions-lbl');
-    const fill = document.getElementById('trial-bar-fill');
-    if (lbl) lbl.textContent = remaining > 0 ? `${remaining} session${remaining===1?'':'s'} remaining` : 'Trial ended';
-    if (fill) fill.style.width = `${Math.max(0,(remaining/TRIAL_MAX)*100)}%`;
-    if (fill && remaining === 0) fill.style.background = 'var(--red)';
-  } else {
-    if (bar) bar.style.display = 'none';
+  const badge = document.getElementById('current-plan-badge');
+  if (badge) {
+    if (USER_PLAN === 'full_view') {
+      badge.textContent = 'Full View';
+      badge.style.background = 'rgba(99,102,241,0.15)';
+      badge.style.color = 'var(--indigo)';
+    } else {
+      badge.textContent = 'Free';
+      badge.style.background = 'rgba(245,158,11,0.12)';
+      badge.style.color = 'var(--amber)';
+    }
   }
 
-  // Update all plan tiles
-  document.querySelectorAll('.plan-tile').forEach(tile => {
-    const tilePlan = tile.dataset.plan;
-    tile.classList.toggle('active-plan', tilePlan === plan);
-    const btn = tile.querySelector('.plan-btn');
-    if (!btn) return;
-    if (tilePlan === plan) {
-      btn.textContent = 'Active';
-      btn.className = 'plan-btn plan-active-label';
-      btn.onclick = null;
+  // Full View banner button
+  const btnFV = document.getElementById('btn-full-view');
+  if (btnFV) {
+    if (USER_PLAN === 'full_view') {
+      btnFV.textContent = 'Full View Active';
+      btnFV.className = 'plan-btn plan-active-label';
+      btnFV.onclick = null;
     } else {
-      // Reset to upgrade state if not current
-      const upgrades = { basic:'Get Basic', essential:'Upgrade', intelligence:'Upgrade', family:'Upgrade' };
-      if (btn.textContent === 'Active') {
-        btn.textContent = upgrades[tilePlan] || 'Upgrade';
-        btn.className = 'plan-btn plan-upgrade';
-        btn.onclick = () => startPayment(tilePlan);
+      btnFV.textContent = 'Get Full View — ₹699/mo';
+      btnFV.className = 'plan-btn plan-upgrade';
+      btnFV.style.background = 'linear-gradient(135deg,var(--indigo),var(--purple))';
+      btnFV.onclick = () => startPayment('full_view');
+    }
+  }
+
+  // Per-module tiles
+  const modules = ['tax_optimizer','goal_planner','money_leaks','cost_living','expert_view','salary_skills'];
+  modules.forEach(key => {
+    const tile = document.getElementById(`ptile-${key}`);
+    const btn  = document.getElementById(`btn-${key}`);
+    if (!tile || !btn) return;
+
+    const credits  = MODULE_CREDITS[key] || 0;
+    const price    = MODULE_PRICES[key];
+    const isActive = canUseModule(key);
+
+    tile.classList.toggle('active-plan', isActive);
+
+    if (USER_PLAN === 'full_view') {
+      btn.textContent = 'Included';
+      btn.className   = 'plan-btn plan-active-label';
+      btn.onclick     = null;
+    } else if (key === 'tax_optimizer') {
+      const freeLeft = Math.max(0, TAX_FREE_MAX - TAX_FREE_USED);
+      const taxLbl   = document.getElementById('tax-free-lbl');
+      if (taxLbl) {
+        if (freeLeft > 0) {
+          taxLbl.textContent = `${freeLeft} free use${freeLeft===1?'':'s'} left`;
+          taxLbl.style.color = 'var(--teal)';
+        } else if (credits > 0) {
+          taxLbl.textContent = `${credits} credit${credits===1?'':'s'}`;
+          taxLbl.style.color = 'var(--green)';
+        } else {
+          taxLbl.textContent = 'Free uses used';
+          taxLbl.style.color = 'var(--t3)';
+        }
+      }
+      if (freeLeft > 0 || credits > 0) {
+        btn.textContent = freeLeft > 0 ? 'Free' : `${credits} credit${credits===1?'':'s'}`;
+        btn.className   = 'plan-btn plan-active-label';
+        btn.onclick     = null;
+      } else {
+        btn.textContent = `Unlock ₹${price}`;
+        btn.className   = 'plan-btn plan-upgrade';
+        btn.onclick     = () => startPayment(key);
+      }
+    } else {
+      if (credits > 0) {
+        btn.textContent = `${credits} credit${credits===1?'':'s'}`;
+        btn.className   = 'plan-btn plan-active-label';
+        btn.onclick     = null;
+      } else {
+        btn.textContent = `Unlock ₹${price}`;
+        btn.className   = 'plan-btn plan-upgrade';
+        btn.onclick     = () => startPayment(key);
       }
     }
   });
@@ -2252,11 +2478,7 @@ async function startPayment(plan) {
     if (!r.ok) throw new Error(data.error || 'Could not create order');
 
     const cashfree = await Cashfree({ mode: data.env === 'sandbox' ? 'sandbox' : 'production' });
-    const result = await cashfree.checkout({
-      paymentSessionId: data.paymentSessionId,
-      redirectTarget: '_modal'
-    });
-
+    const result   = await cashfree.checkout({ paymentSessionId: data.paymentSessionId, redirectTarget: '_modal' });
     if (result.error) throw new Error(result.error.message || 'Payment failed');
 
     // Verify with server
@@ -2266,11 +2488,16 @@ async function startPayment(plan) {
       body: JSON.stringify({ orderId: data.orderId, plan })
     });
     const vd = await vr.json();
-    if (vd.success) {
-      updatePlanUI(plan);
-      alert('Plan upgraded! Welcome to ' + data.planLabel + '.');
+    if (!vd.success) throw new Error(vd.error || 'Activation failed');
+
+    if (data.subscription) {
+      USER_PLAN = 'full_view';
+      updatePlanUI('full_view', MODULE_CREDITS, TAX_FREE_USED);
+      alert('Full View activated! All modules unlocked for 30 days.');
     } else {
-      throw new Error(vd.error || 'Activation failed');
+      MODULE_CREDITS[plan] = (MODULE_CREDITS[plan] || 0) + 1;
+      updatePlanUI(USER_PLAN, MODULE_CREDITS, TAX_FREE_USED);
+      alert(`${MODULE_LABELS[plan]} unlocked! 1 credit added.`);
     }
   } catch(e) {
     alert('Payment error: ' + e.message);
@@ -3202,6 +3429,44 @@ function recalcLeaks() {
   $('l-p-name').textContent = p.name;
   $('l-p-desc').textContent = p.desc;
 
+  // Habit → Wealth breakdown (per-leak SIP projections)
+  const h2wItems = [
+    { icon: '📺', name: 'Subscriptions',    v: subTotal },
+    { icon: '🍕', name: 'Food delivery',    v: delMo    },
+    { icon: '☕', name: 'Cafe / coffee',    v: coffeeMo },
+    { icon: '🚕', name: 'Cab / Uber',       v: cabMo    },
+    { icon: '🛍️', name: 'Impulse shopping', v: shopMo   },
+    { icon: '🚬', name: 'Smoking',          v: smokeMo  },
+    { icon: '🍺', name: 'Alcohol',          v: alcMo    },
+  ].filter(x => x.v > 0);
+  const h2wSec = $('h2w-section');
+  if (h2wSec) {
+    if (h2wItems.length === 0) {
+      h2wSec.style.display = 'none';
+    } else {
+      h2wSec.style.display = 'block';
+      const rows = $('h2w-rows');
+      if (rows) {
+        rows.innerHTML = h2wItems.map(x => `
+          <div class="h2w-row">
+            <div class="h2w-left">
+              <span class="h2w-icon">${x.icon}</span>
+              <div>
+                <div class="h2w-name">${x.name}</div>
+                <div class="h2w-mo">${inr(x.v)}/month</div>
+              </div>
+            </div>
+            <div class="h2w-right">
+              <div class="h2w-val">${inrL(fvSIP(x.v, 0.01, 120))}</div>
+              <div class="h2w-lbl">in 10 yrs</div>
+            </div>
+          </div>`).join('');
+      }
+      const t10 = $('h2w-total-10yr');
+      if (t10) t10.textContent = inrL(fvSIP(total, 0.01, 120));
+    }
+  }
+
   // Also update health screen with sub total
   calcHealth();
   renderTwoPunch();
@@ -3368,10 +3633,11 @@ function switchTab(name, title) {
   if (screen) { screen.classList.add('active'); screen.scrollTop = 0; }
   if (tab) tab.classList.add('active');
   if (dsb) dsb.classList.add('active');
-  if (name === 'col')  setTimeout(initCOL,  0);
-  if (name === 'dash') setTimeout(renderDash, 0);
-  if (name === 'tax')  setTimeout(initTaxInputs, 0);
-  if (name === 'grow') setTimeout(initGrow, 0);
+  if (name === 'col')    setTimeout(initCOL,  0);
+  if (name === 'dash')   setTimeout(renderDash, 0);
+  if (name === 'tax')    setTimeout(initTaxInputs, 0);
+  if (name === 'grow')   setTimeout(initGrow, 0);
+  if (name === 'health') setTimeout(animateScoreIfChanged, 50);
   // On desktop the scroll container is .screens, not the screen itself
   const screensEl = document.querySelector('.screens');
   if (screensEl && window.innerWidth >= 1024) screensEl.scrollTop = 0;
@@ -3829,6 +4095,53 @@ recalcAll();
 initWeeklyReport();
 
 /* ═══════════════════════════════════════════════════════════════
+   DESIGN v2 — count-up animation + entrance effects
+═══════════════════════════════════════════════════════════════ */
+function countUp(el, from, to, duration, suffix, isInr) {
+  if (!el) return;
+  const start = performance.now();
+  const update = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t; // ease-in-out
+    const val = Math.round(from + (to - from) * ease);
+    el.textContent = isInr ? inr(val) : (val + (suffix||''));
+    if (t < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+// Animate health score number on change
+let _lastScore = -1;
+function animateScoreIfChanged() {
+  const newScore = W.healthScore || 0;
+  if (newScore === _lastScore) return;
+  const scoreEl = document.getElementById('gauge-score');
+  if (scoreEl) countUp(scoreEl, _lastScore < 0 ? 0 : _lastScore, newScore, 800, '');
+  _lastScore = newScore;
+}
+
+// Card entrance animation on tab switch
+const _origSwitchTab = switchTab;
+switchTab = function(name, title) {
+  _origSwitchTab.apply(this, arguments);
+  requestAnimationFrame(() => {
+    const screen = document.getElementById('screen-' + name);
+    if (!screen) return;
+    const cards = screen.querySelectorAll('.card,.kpi-grid,.nudge,.leak-meter,.leak-impact');
+    cards.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(12px)';
+      el.style.transition = 'none';
+      setTimeout(() => {
+        el.style.transition = `opacity 0.3s cubic-bezier(0.4,0,0.2,1) ${i*45}ms, transform 0.3s cubic-bezier(0.4,0,0.2,1) ${i*45}ms`;
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 20);
+    });
+  });
+};
+
+/* ═══════════════════════════════════════════════════════════════
    AVATAR — profile photo upload + display
 ═══════════════════════════════════════════════════════════════ */
 function _initials(str) {
@@ -3966,102 +4279,108 @@ function showEmailLogin() {
 ═══════════════════════════════════════════════════════════════ */
 const COL_DATA = {
   // ── TIER 1: METRO ──────────────────────────────────────────
-  Mumbai: { tier:1, Base:{r1:12000,r2:22000,r3:36000,groc:7000,trans:2500,dining:3000,health:1500,edu:5500,ent:1500,dom:3500},
-    Medium:{r1:26000,r2:48000,r3:78000,groc:12500,trans:7000,dining:8000,health:3500,edu:11000,ent:4000,dom:6500},
-    Premium:{r1:65000,r2:125000,r3:195000,groc:24000,trans:19000,dining:22000,health:8500,edu:26000,ent:12000,dom:13000},
-    Elite:{r1:145000,r2:240000,r3:390000,groc:44000,trans:52000,dining:60000,health:21000,edu:62000,ent:30000,dom:26000}},
+  // util = electricity + gas/cooking + water + society maintenance
+  Mumbai: { tier:1, Base:{r1:12000,r2:22000,r3:36000,groc:7000,trans:2500,dining:3000,health:1500,edu:5500,ent:1500,dom:3500,util:1400},
+    Medium:{r1:26000,r2:48000,r3:78000,groc:12500,trans:7000,dining:8000,health:3500,edu:11000,ent:4000,dom:6500,util:3200},
+    Premium:{r1:65000,r2:125000,r3:195000,groc:24000,trans:19000,dining:22000,health:8500,edu:26000,ent:12000,dom:13000,util:6500},
+    Elite:{r1:145000,r2:240000,r3:390000,groc:44000,trans:52000,dining:60000,health:21000,edu:62000,ent:30000,dom:26000,util:13000}},
 
-  Delhi: { tier:1, Base:{r1:9000,r2:16000,r3:26000,groc:6500,trans:2200,dining:2500,health:1400,edu:4800,ent:1200,dom:3000},
-    Medium:{r1:20000,r2:38000,r3:60000,groc:11000,trans:6200,dining:7000,health:3000,edu:9500,ent:3500,dom:5500},
-    Premium:{r1:52000,r2:98000,r3:158000,groc:21000,trans:16000,dining:18000,health:7000,edu:23000,ent:10500,dom:10500},
-    Elite:{r1:118000,r2:195000,r3:315000,groc:38000,trans:46000,dining:50000,health:18000,edu:56000,ent:26000,dom:22000}},
+  Delhi: { tier:1, Base:{r1:9000,r2:16000,r3:26000,groc:6500,trans:2200,dining:2500,health:1400,edu:4800,ent:1200,dom:3000,util:1200},
+    Medium:{r1:20000,r2:38000,r3:60000,groc:11000,trans:6200,dining:7000,health:3000,edu:9500,ent:3500,dom:5500,util:2800},
+    Premium:{r1:52000,r2:98000,r3:158000,groc:21000,trans:16000,dining:18000,health:7000,edu:23000,ent:10500,dom:10500,util:5500},
+    Elite:{r1:118000,r2:195000,r3:315000,groc:38000,trans:46000,dining:50000,health:18000,edu:56000,ent:26000,dom:22000,util:11000}},
 
-  Bangalore: { tier:1, Base:{r1:10000,r2:18000,r3:28000,groc:6200,trans:2500,dining:2500,health:1400,edu:4800,ent:1200,dom:2800},
-    Medium:{r1:22000,r2:42000,r3:66000,groc:11000,trans:6500,dining:7000,health:3000,edu:9500,ent:3500,dom:5000},
-    Premium:{r1:58000,r2:108000,r3:172000,groc:22000,trans:16000,dining:18000,health:7000,edu:23000,ent:10500,dom:10500},
-    Elite:{r1:128000,r2:215000,r3:345000,groc:40000,trans:46000,dining:50000,health:18000,edu:56000,ent:26000,dom:20000}},
+  Bangalore: { tier:1, Base:{r1:10000,r2:18000,r3:28000,groc:6200,trans:2500,dining:2500,health:1400,edu:4800,ent:1200,dom:2800,util:1000},
+    Medium:{r1:22000,r2:42000,r3:66000,groc:11000,trans:6500,dining:7000,health:3000,edu:9500,ent:3500,dom:5000,util:2300},
+    Premium:{r1:58000,r2:108000,r3:172000,groc:22000,trans:16000,dining:18000,health:7000,edu:23000,ent:10500,dom:10500,util:4500},
+    Elite:{r1:128000,r2:215000,r3:345000,groc:40000,trans:46000,dining:50000,health:18000,edu:56000,ent:26000,dom:20000,util:9000}},
 
-  Hyderabad: { tier:1, Base:{r1:8000,r2:14000,r3:20000,groc:5500,trans:2000,dining:1800,health:1200,edu:3500,ent:1000,dom:2200},
-    Medium:{r1:16000,r2:26000,r3:42000,groc:9500,trans:5000,dining:4500,health:2500,edu:7000,ent:2500,dom:4500},
-    Premium:{r1:44000,r2:82000,r3:130000,groc:18000,trans:14000,dining:14000,health:6000,edu:18000,ent:8000,dom:9000},
-    Elite:{r1:98000,r2:165000,r3:260000,groc:32000,trans:35000,dining:35000,health:15000,edu:45000,ent:20000,dom:18000}},
+  Hyderabad: { tier:1, Base:{r1:8000,r2:14000,r3:20000,groc:5500,trans:2000,dining:1800,health:1200,edu:3500,ent:1000,dom:2200,util:1200},
+    Medium:{r1:16000,r2:26000,r3:42000,groc:9500,trans:5000,dining:4500,health:2500,edu:7000,ent:2500,dom:4500,util:2700},
+    Premium:{r1:44000,r2:82000,r3:130000,groc:18000,trans:14000,dining:14000,health:6000,edu:18000,ent:8000,dom:9000,util:5200},
+    Elite:{r1:98000,r2:165000,r3:260000,groc:32000,trans:35000,dining:35000,health:15000,edu:45000,ent:20000,dom:18000,util:10500}},
 
-  Chennai: { tier:1, Base:{r1:8500,r2:15000,r3:22000,groc:5500,trans:2000,dining:2000,health:1200,edu:3800,ent:1000,dom:2500},
-    Medium:{r1:18000,r2:30000,r3:48000,groc:9500,trans:5200,dining:5000,health:2500,edu:7500,ent:2500,dom:4800},
-    Premium:{r1:47000,r2:87000,r3:140000,groc:18000,trans:14000,dining:15000,health:6000,edu:19000,ent:8000,dom:9500},
-    Elite:{r1:104000,r2:178000,r3:270000,groc:32000,trans:35000,dining:38000,health:15000,edu:47000,ent:20000,dom:18000}},
+  Chennai: { tier:1, Base:{r1:8500,r2:15000,r3:22000,groc:5500,trans:2000,dining:2000,health:1200,edu:3800,ent:1000,dom:2500,util:1300},
+    Medium:{r1:18000,r2:30000,r3:48000,groc:9500,trans:5200,dining:5000,health:2500,edu:7500,ent:2500,dom:4800,util:2900},
+    Premium:{r1:47000,r2:87000,r3:140000,groc:18000,trans:14000,dining:15000,health:6000,edu:19000,ent:8000,dom:9500,util:5500},
+    Elite:{r1:104000,r2:178000,r3:270000,groc:32000,trans:35000,dining:38000,health:15000,edu:47000,ent:20000,dom:18000,util:11000}},
 
-  Pune: { tier:1, Base:{r1:9000,r2:16000,r3:24000,groc:5800,trans:2200,dining:2000,health:1200,edu:4000,ent:1000,dom:2500},
-    Medium:{r1:18000,r2:32000,r3:52000,groc:10000,trans:5500,dining:5000,health:2500,edu:8000,ent:2800,dom:5000},
-    Premium:{r1:50000,r2:92000,r3:146000,groc:19000,trans:14000,dining:15000,health:6000,edu:20000,ent:9000,dom:9500},
-    Elite:{r1:110000,r2:184000,r3:280000,groc:34000,trans:36000,dining:38000,health:15000,edu:48000,ent:22000,dom:19000}},
+  Pune: { tier:1, Base:{r1:9000,r2:16000,r3:24000,groc:5800,trans:2200,dining:2000,health:1200,edu:4000,ent:1000,dom:2500,util:1100},
+    Medium:{r1:18000,r2:32000,r3:52000,groc:10000,trans:5500,dining:5000,health:2500,edu:8000,ent:2800,dom:5000,util:2500},
+    Premium:{r1:50000,r2:92000,r3:146000,groc:19000,trans:14000,dining:15000,health:6000,edu:20000,ent:9000,dom:9500,util:4800},
+    Elite:{r1:110000,r2:184000,r3:280000,groc:34000,trans:36000,dining:38000,health:15000,edu:48000,ent:22000,dom:19000,util:9500}},
 
-  Kolkata: { tier:1, Base:{r1:7000,r2:12000,r3:18000,groc:5000,trans:1800,dining:1800,health:1000,edu:3500,ent:800,dom:2000},
-    Medium:{r1:14000,r2:24000,r3:38000,groc:8500,trans:4500,dining:4000,health:2000,edu:6500,ent:2000,dom:3800},
-    Premium:{r1:37000,r2:70000,r3:114000,groc:16000,trans:12000,dining:13000,health:5000,edu:17000,ent:7000,dom:8000},
-    Elite:{r1:84000,r2:148000,r3:228000,groc:28000,trans:30000,dining:32000,health:13000,edu:40000,ent:18000,dom:15000}},
+  Kolkata: { tier:1, Base:{r1:7000,r2:12000,r3:18000,groc:5000,trans:1800,dining:1800,health:1000,edu:3500,ent:800,dom:2000,util:1000},
+    Medium:{r1:14000,r2:24000,r3:38000,groc:8500,trans:4500,dining:4000,health:2000,edu:6500,ent:2000,dom:3800,util:2400},
+    Premium:{r1:37000,r2:70000,r3:114000,groc:16000,trans:12000,dining:13000,health:5000,edu:17000,ent:7000,dom:8000,util:4500},
+    Elite:{r1:84000,r2:148000,r3:228000,groc:28000,trans:30000,dining:32000,health:13000,edu:40000,ent:18000,dom:15000,util:9000}},
 
   // ── TIER 2: CITY ───────────────────────────────────────────
-  Ahmedabad: { tier:2, Base:{r1:5800,r2:10000,r3:15000,groc:4400,trans:1700,dining:1500,health:950,edu:3000,ent:750,dom:1800},
-    Medium:{r1:11500,r2:20000,r3:31000,groc:7400,trans:3900,dining:3400,health:1800,edu:5500,ent:1700,dom:3200},
-    Premium:{r1:29000,r2:54000,r3:84000,groc:13800,trans:10000,dining:10000,health:4000,edu:14000,ent:5500,dom:6000},
-    Elite:{r1:63000,r2:112000,r3:172000,groc:23500,trans:24500,dining:24500,health:9800,edu:31500,ent:13500,dom:11800}},
+  Ahmedabad: { tier:2, Base:{r1:5800,r2:10000,r3:15000,groc:4400,trans:1700,dining:1500,health:950,edu:3000,ent:750,dom:1800,util:1000},
+    Medium:{r1:11500,r2:20000,r3:31000,groc:7400,trans:3900,dining:3400,health:1800,edu:5500,ent:1700,dom:3200,util:2200},
+    Premium:{r1:29000,r2:54000,r3:84000,groc:13800,trans:10000,dining:10000,health:4000,edu:14000,ent:5500,dom:6000,util:4200},
+    Elite:{r1:63000,r2:112000,r3:172000,groc:23500,trans:24500,dining:24500,health:9800,edu:31500,ent:13500,dom:11800,util:8500}},
 
-  Jaipur: { tier:2, Base:{r1:5200,r2:9000,r3:14000,groc:4000,trans:1600,dining:1400,health:900,edu:2800,ent:700,dom:1600},
-    Medium:{r1:10500,r2:18000,r3:28000,groc:7000,trans:3500,dining:3000,health:1600,edu:5000,ent:1500,dom:3000},
-    Premium:{r1:27000,r2:50000,r3:78000,groc:13000,trans:9000,dining:9000,health:3800,edu:12500,ent:5000,dom:5500},
-    Elite:{r1:58000,r2:104000,r3:160000,groc:22000,trans:22000,dining:22000,health:9000,edu:28000,ent:12000,dom:10500}},
+  Jaipur: { tier:2, Base:{r1:5200,r2:9000,r3:14000,groc:4000,trans:1600,dining:1400,health:900,edu:2800,ent:700,dom:1600,util:900},
+    Medium:{r1:10500,r2:18000,r3:28000,groc:7000,trans:3500,dining:3000,health:1600,edu:5000,ent:1500,dom:3000,util:2000},
+    Premium:{r1:27000,r2:50000,r3:78000,groc:13000,trans:9000,dining:9000,health:3800,edu:12500,ent:5000,dom:5500,util:3800},
+    Elite:{r1:58000,r2:104000,r3:160000,groc:22000,trans:22000,dining:22000,health:9000,edu:28000,ent:12000,dom:10500,util:7500}},
 
-  Chandigarh: { tier:2, Base:{r1:6200,r2:11000,r3:17000,groc:4700,trans:1800,dining:1600,health:1000,edu:3200,ent:800,dom:2000},
-    Medium:{r1:12500,r2:22000,r3:34000,groc:7900,trans:4100,dining:3700,health:2000,edu:6000,ent:2000,dom:3800},
-    Premium:{r1:31500,r2:59000,r3:93000,groc:14800,trans:10800,dining:10800,health:4400,edu:15000,ent:6000,dom:7000},
-    Elite:{r1:68000,r2:121000,r3:188000,groc:25200,trans:26500,dining:26500,health:10800,edu:34000,ent:14800,dom:12800}},
+  Chandigarh: { tier:2, Base:{r1:6200,r2:11000,r3:17000,groc:4700,trans:1800,dining:1600,health:1000,edu:3200,ent:800,dom:2000,util:950},
+    Medium:{r1:12500,r2:22000,r3:34000,groc:7900,trans:4100,dining:3700,health:2000,edu:6000,ent:2000,dom:3800,util:2100},
+    Premium:{r1:31500,r2:59000,r3:93000,groc:14800,trans:10800,dining:10800,health:4400,edu:15000,ent:6000,dom:7000,util:4000},
+    Elite:{r1:68000,r2:121000,r3:188000,groc:25200,trans:26500,dining:26500,health:10800,edu:34000,ent:14800,dom:12800,util:8000}},
 
-  Kochi: { tier:2, Base:{r1:7000,r2:12000,r3:18000,groc:5000,trans:1800,dining:1800,health:1200,edu:3500,ent:900,dom:2200},
-    Medium:{r1:14000,r2:24000,r3:37000,groc:8400,trans:4200,dining:4100,health:2400,edu:6500,ent:2200,dom:4000},
-    Premium:{r1:34500,r2:63000,r3:99000,groc:15700,trans:10800,dining:11800,health:5400,edu:16000,ent:6500,dom:7800},
-    Elite:{r1:75000,r2:136000,r3:208000,groc:26700,trans:27500,dining:29500,health:12800,edu:37000,ent:16500,dom:14800}},
+  Kochi: { tier:2, Base:{r1:7000,r2:12000,r3:18000,groc:5000,trans:1800,dining:1800,health:1200,edu:3500,ent:900,dom:2200,util:900},
+    Medium:{r1:14000,r2:24000,r3:37000,groc:8400,trans:4200,dining:4100,health:2400,edu:6500,ent:2200,dom:4000,util:2000},
+    Premium:{r1:34500,r2:63000,r3:99000,groc:15700,trans:10800,dining:11800,health:5400,edu:16000,ent:6500,dom:7800,util:3800},
+    Elite:{r1:75000,r2:136000,r3:208000,groc:26700,trans:27500,dining:29500,health:12800,edu:37000,ent:16500,dom:14800,util:7500}},
 
-  Bhopal: { tier:2, Base:{r1:4400,r2:7800,r3:12000,groc:3700,trans:1500,dining:1200,health:850,edu:2500,ent:600,dom:1400},
-    Medium:{r1:8700,r2:15000,r3:23500,groc:6300,trans:3100,dining:2700,health:1500,edu:4500,ent:1350,dom:2800},
-    Premium:{r1:21700,r2:39500,r3:61500,groc:11800,trans:8300,dining:7800,health:3400,edu:10800,ent:4400,dom:5000},
-    Elite:{r1:47000,r2:83000,r3:128000,groc:20000,trans:19500,dining:19500,health:8000,edu:24500,ent:10800,dom:9800}},
+  Bhopal: { tier:2, Base:{r1:4400,r2:7800,r3:12000,groc:3700,trans:1500,dining:1200,health:850,edu:2500,ent:600,dom:1400,util:800},
+    Medium:{r1:8700,r2:15000,r3:23500,groc:6300,trans:3100,dining:2700,health:1500,edu:4500,ent:1350,dom:2800,util:1800},
+    Premium:{r1:21700,r2:39500,r3:61500,groc:11800,trans:8300,dining:7800,health:3400,edu:10800,ent:4400,dom:5000,util:3500},
+    Elite:{r1:47000,r2:83000,r3:128000,groc:20000,trans:19500,dining:19500,health:8000,edu:24500,ent:10800,dom:9800,util:7000}},
 
-  Lucknow: { tier:2, Base:{r1:4800,r2:8500,r3:13000,groc:3900,trans:1500,dining:1300,health:850,edu:2800,ent:650,dom:1500},
-    Medium:{r1:9700,r2:16500,r3:25500,groc:6700,trans:3200,dining:2900,health:1550,edu:5000,ent:1450,dom:2950},
-    Premium:{r1:24000,r2:43000,r3:67000,groc:12400,trans:8800,dining:8300,health:3500,edu:11800,ent:4900,dom:5400},
-    Elite:{r1:51500,r2:90000,r3:138000,groc:21000,trans:21000,dining:20500,health:8300,edu:26500,ent:11800,dom:10500}},
+  Lucknow: { tier:2, Base:{r1:4800,r2:8500,r3:13000,groc:3900,trans:1500,dining:1300,health:850,edu:2800,ent:650,dom:1500,util:850},
+    Medium:{r1:9700,r2:16500,r3:25500,groc:6700,trans:3200,dining:2900,health:1550,edu:5000,ent:1450,dom:2950,util:1900},
+    Premium:{r1:24000,r2:43000,r3:67000,groc:12400,trans:8800,dining:8300,health:3500,edu:11800,ent:4900,dom:5400,util:3600},
+    Elite:{r1:51500,r2:90000,r3:138000,groc:21000,trans:21000,dining:20500,health:8300,edu:26500,ent:11800,dom:10500,util:7200}},
 
-  Indore: { tier:2, Base:{r1:4800,r2:8500,r3:13000,groc:3900,trans:1500,dining:1300,health:850,edu:2800,ent:650,dom:1500},
-    Medium:{r1:9700,r2:16500,r3:25500,groc:6700,trans:3200,dining:2900,health:1550,edu:5000,ent:1450,dom:2950},
-    Premium:{r1:24000,r2:43000,r3:67000,groc:12400,trans:8800,dining:8300,health:3500,edu:11800,ent:4900,dom:5400},
-    Elite:{r1:51500,r2:90000,r3:138000,groc:21000,trans:21000,dining:20500,health:8300,edu:26500,ent:11800,dom:10500}},
+  Indore: { tier:2, Base:{r1:4800,r2:8500,r3:13000,groc:3900,trans:1500,dining:1300,health:850,edu:2800,ent:650,dom:1500,util:850},
+    Medium:{r1:9700,r2:16500,r3:25500,groc:6700,trans:3200,dining:2900,health:1550,edu:5000,ent:1450,dom:2950,util:1900},
+    Premium:{r1:24000,r2:43000,r3:67000,groc:12400,trans:8800,dining:8300,health:3500,edu:11800,ent:4900,dom:5400,util:3600},
+    Elite:{r1:51500,r2:90000,r3:138000,groc:21000,trans:21000,dining:20500,health:8300,edu:26500,ent:11800,dom:10500,util:7200}},
 
-  Nagpur: { tier:2, Base:{r1:4800,r2:8300,r3:12800,groc:3700,trans:1500,dining:1250,health:850,edu:2600,ent:650,dom:1450},
-    Medium:{r1:9400,r2:15800,r3:24500,groc:6400,trans:3100,dining:2750,health:1450,edu:4800,ent:1350,dom:2800},
-    Premium:{r1:23000,r2:41000,r3:64000,groc:11800,trans:8300,dining:7800,health:3400,edu:11200,ent:4700,dom:5100},
-    Elite:{r1:49000,r2:86000,r3:133000,groc:20000,trans:19500,dining:19500,health:8000,edu:25500,ent:11500,dom:10200}},
+  Nagpur: { tier:2, Base:{r1:4800,r2:8300,r3:12800,groc:3700,trans:1500,dining:1250,health:850,edu:2600,ent:650,dom:1450,util:850},
+    Medium:{r1:9400,r2:15800,r3:24500,groc:6400,trans:3100,dining:2750,health:1450,edu:4800,ent:1350,dom:2800,util:1900},
+    Premium:{r1:23000,r2:41000,r3:64000,groc:11800,trans:8300,dining:7800,health:3400,edu:11200,ent:4700,dom:5100,util:3600},
+    Elite:{r1:49000,r2:86000,r3:133000,groc:20000,trans:19500,dining:19500,health:8000,edu:25500,ent:11500,dom:10200,util:7200}},
 
-  Visakhapatnam: { tier:2, Base:{r1:5300,r2:9300,r3:14000,groc:4100,trans:1600,dining:1400,health:950,edu:3000,ent:700,dom:1650},
-    Medium:{r1:10700,r2:18000,r3:27500,groc:6900,trans:3500,dining:3100,health:1750,edu:5500,ent:1550,dom:3150},
-    Premium:{r1:26500,r2:47500,r3:75000,groc:12800,trans:8800,dining:8800,health:3900,edu:13200,ent:5100,dom:5850},
-    Elite:{r1:57000,r2:100000,r3:155000,groc:21600,trans:21600,dining:21600,health:9100,edu:29500,ent:12800,dom:11700}},
+  Visakhapatnam: { tier:2, Base:{r1:5300,r2:9300,r3:14000,groc:4100,trans:1600,dining:1400,health:950,edu:3000,ent:700,dom:1650,util:900},
+    Medium:{r1:10700,r2:18000,r3:27500,groc:6900,trans:3500,dining:3100,health:1750,edu:5500,ent:1550,dom:3150,util:2000},
+    Premium:{r1:26500,r2:47500,r3:75000,groc:12800,trans:8800,dining:8800,health:3900,edu:13200,ent:5100,dom:5850,util:3800},
+    Elite:{r1:57000,r2:100000,r3:155000,groc:21600,trans:21600,dining:21600,health:9100,edu:29500,ent:12800,dom:11700,util:7500}},
 
-  Coimbatore: { tier:2, Base:{r1:5600,r2:10000,r3:15000,groc:4400,trans:1700,dining:1500,health:1000,edu:3200,ent:780,dom:1800},
-    Medium:{r1:11200,r2:18800,r3:29500,groc:7400,trans:3750,dining:3350,health:1850,edu:5800,ent:1650,dom:3350},
-    Premium:{r1:27800,r2:50500,r3:79000,groc:13800,trans:9300,dining:9300,health:4100,edu:13800,ent:5400,dom:6100},
-    Elite:{r1:59500,r2:106000,r3:163000,groc:23400,trans:23000,dining:23000,health:9300,edu:31000,ent:13200,dom:11800}}
+  Coimbatore: { tier:2, Base:{r1:5600,r2:10000,r3:15000,groc:4400,trans:1700,dining:1500,health:1000,edu:3200,ent:780,dom:1800,util:900},
+    Medium:{r1:11200,r2:18800,r3:29500,groc:7400,trans:3750,dining:3350,health:1850,edu:5800,ent:1650,dom:3350,util:2000},
+    Premium:{r1:27800,r2:50500,r3:79000,groc:13800,trans:9300,dining:9300,health:4100,edu:13800,ent:5400,dom:6100,util:3800},
+    Elite:{r1:59500,r2:106000,r3:163000,groc:23400,trans:23000,dining:23000,health:9300,edu:31000,ent:13200,dom:11800,util:7500}}
 };
 
+// Mobile/internet benchmark by lifestyle class (city-independent)
+const MOBILE_BENCH = { Base:500, Medium:1200, Premium:2500, Elite:5000 };
+
 const COL_CATS = [
-  { key:'rent',    label:'Rent',              sub:'1BHK / 2BHK / 3BHK monthly', isRent:true },
-  { key:'groc',    label:'Groceries & Home',  sub:'Food, household essentials' },
-  { key:'trans',   label:'Transport',         sub:'Own vehicle fuel/maintenance or cab average' },
-  { key:'dining',  label:'Dining Out',        sub:'Restaurants, swiggy, zomato' },
-  { key:'health',  label:'Healthcare',        sub:'OPD, medicines, health insurance premium' },
-  { key:'edu',     label:'Education',         sub:'Per child — school fees, tuition, supplies' },
-  { key:'ent',     label:'Entertainment',     sub:'OTT, movies, outings, gym, weekend spend' },
-  { key:'dom',     label:'Domestic Help',     sub:'Cook, maid, driver (if applicable)' },
+  { key:'rent',    label:'Rent',                    sub:'1BHK / 2BHK / 3BHK monthly', isRent:true },
+  { key:'groc',    label:'Groceries & Home',        sub:'Food, household essentials' },
+  { key:'util',    label:'Electricity & Utilities', sub:'Electricity, cooking gas, water, maintenance' },
+  { key:'trans',   label:'Transport',               sub:'Own vehicle fuel/maintenance or cab average' },
+  { key:'mobile',  label:'Mobile & Internet',       sub:'Phone bills, broadband, OTT bundles', mobileKey:true },
+  { key:'dining',  label:'Dining Out',              sub:'Restaurants, Swiggy, Zomato' },
+  { key:'health',  label:'Healthcare',              sub:'OPD, medicines, health check-ups' },
+  { key:'edu',     label:'Education',               sub:'School fees, tuition, supplies (per child)' },
+  { key:'ent',     label:'Entertainment',           sub:'OTT, movies, outings, gym, weekend spend' },
+  { key:'dom',     label:'Domestic Help',           sub:'Cook, maid, driver (if applicable)' },
 ];
 
 // State for COL module
@@ -4123,7 +4442,9 @@ function getColUserSpend() {
   return {
     rent:   W.rent || W.homeLoanEMI || 0,
     groc:   W.groceries || 0,
+    util:   +us.util   || 0,
     trans:  W.transport || 0,
+    mobile: +us.mobile || 0,
     dining: +us.dining || 0,
     health: +us.health || 0,
     edu:    +us.edu    || 0,
@@ -4161,7 +4482,7 @@ function updateColSummary() {
   const data = COL_DATA[city];
   if (!data) return;
   const d = data[cls];
-  const totalMid = d.groc + d.trans + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
+  const totalMid = d.groc + d.util + d.trans + (MOBILE_BENCH[cls]||1200) + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
   function rng(v) { return [Math.round(v*0.82), Math.round(v*1.18)]; }
   function inrK(v) {
     if (v >= 100000) return '₹' + (v/100000).toFixed(1) + 'L';
@@ -4180,21 +4501,65 @@ function updateColSummary() {
     } else { totalYoursEl.textContent = '—'; }
   }
   const petsNote = $('col-pets-note');
-  if (petsNote) petsNote.textContent = pets > 0 ? `incl. ${inrK(pets)}/mo pets (from profile)` : '';
+  if (petsNote) petsNote.textContent = pets > 0 ? `incl. ${inrK(pets)}/mo pets` : '';
+
+  // Fixed obligations block
+  const fixedItems = [
+    { label: 'Car EMI',                  v: W.carEMI || 0 },
+    { label: 'Credit Card min. pay',     v: W.creditCard || 0 },
+    { label: 'Other EMI',                v: W.otherEMI || 0 },
+    { label: 'Health Insurance',         v: Math.round((W.healthPremium || 0) / 12) },
+    { label: 'Parent Health Insurance',  v: Math.round((W.parentHealthPremium || 0) / 12) },
+  ].filter(x => x.v > 0);
+
+  const committedSummary = $('col-committed-summary');
+  if (committedSummary) {
+    if (fixedItems.length > 0) {
+      committedSummary.style.display = 'block';
+      const fixedTotal = fixedItems.reduce((s, x) => s + x.v, 0);
+      const rowsEl = $('col-fixed-rows');
+      if (rowsEl) {
+        rowsEl.innerHTML = fixedItems.map(x =>
+          `<div style="display:flex;justify-content:space-between;padding:0.22rem 0;font-size:0.73rem">
+            <span style="color:var(--t2)">${x.label}</span>
+            <span style="font-weight:700;color:var(--text)">${inrK(x.v)}/mo</span>
+          </div>`
+        ).join('');
+      }
+      const totalCommitted = userTotal + fixedTotal;
+      const income = (W.monthlyIncome || 0) + (W.partnerIncome || 0) + (W.otherIncome || 0);
+      const freeCash = income - totalCommitted;
+      const committedEl = $('col-committed-total');
+      const freeCashEl  = $('col-free-cash');
+      if (committedEl) committedEl.textContent = inrK(totalCommitted) + '/mo';
+      if (freeCashEl) {
+        freeCashEl.textContent = inrK(Math.abs(freeCash)) + (freeCash < 0 ? ' deficit' : ' remaining');
+        freeCashEl.style.color = freeCash < 0 ? 'var(--red)' : 'var(--green)';
+      }
+    } else {
+      committedSummary.style.display = 'none';
+    }
+  }
 
   const nudge = $('col-nudge');
   const nudgeTxt = $('col-nudge-text');
   if (nudge && nudgeTxt) {
     if (userTotal > 0) {
+      const fixedObl = fixedItems.reduce((s, x) => s + x.v, 0);
+      const totalCommitted = userTotal + fixedObl;
+      const income = (W.monthlyIncome || 0) + (W.partnerIncome || 0) + (W.otherIncome || 0);
       if (userTotal > tHi * 1.15) {
         nudge.style.display = 'flex';
-        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo exceeds the ${cls} class range for ${city}. Your lifestyle may be ${cls === 'Elite' ? 'above Elite' : 'one tier higher'} — or there's room to optimise.`;
+        nudgeTxt.textContent = `Your lifestyle spend (${inrK(userTotal)}/mo) exceeds the ${cls} range for ${city}${fixedObl > 0 ? ` — and you have ${inrK(fixedObl)}/mo in additional EMIs & insurance on top` : ''}.`;
+      } else if (income > 0 && totalCommitted > income * 0.85) {
+        nudge.style.display = 'flex';
+        nudgeTxt.textContent = `Your total committed spend (${inrK(totalCommitted)}/mo = lifestyle + EMIs + insurance) is ${Math.round(totalCommitted/income*100)}% of income. Limited room for savings growth.`;
       } else if (userTotal < tLo * 0.85) {
         nudge.style.display = 'flex';
-        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo is below the ${cls} baseline for ${city}. You have significant savings headroom — consider boosting investments.`;
+        nudgeTxt.textContent = `Lifestyle spend of ${inrK(userTotal)}/mo is below the ${cls} baseline for ${city}${fixedObl > 0 ? `, but total committed is ${inrK(totalCommitted)}/mo once EMIs & insurance are added` : '. Significant savings headroom — consider boosting investments.'}.`;
       } else {
         nudge.style.display = 'flex';
-        nudgeTxt.textContent = `Your spend of ${inrK(userTotal)}/mo is within the ${cls} class range for ${city}.`;
+        nudgeTxt.textContent = `Lifestyle spend ${inrK(userTotal)}/mo is within the ${cls} class range for ${city}${fixedObl > 0 ? `. Total committed ${inrK(totalCommitted)}/mo including EMIs & insurance` : ''}.`;
       }
     } else { nudge.style.display = 'none'; }
   }
@@ -4225,7 +4590,7 @@ function renderCOL() {
     return '₹' + v;
   }
 
-  const totalMid = d.groc + d.trans + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
+  const totalMid = d.groc + d.util + d.trans + (MOBILE_BENCH[cls]||1200) + d.dining + d.health + d.edu + d.ent + d.dom + d.r2;
   const [tLo, tHi] = rng(totalMid);
   const totalRangeEl = $('col-total-range');
   if (totalRangeEl) totalRangeEl.textContent = inrK(tLo) + ' – ' + inrK(tHi) + '/mo';
@@ -4251,7 +4616,7 @@ function renderCOL() {
       </div>`;
     }
 
-    const mid = d[cat.key];
+    const mid = cat.mobileKey ? (MOBILE_BENCH[cls] || 1200) : d[cat.key];
     const [lo, hi] = rng(mid);
     const yours = userSpend[cat.key];
     const isProfile = COL_PROFILE_KEYS.has(cat.key);

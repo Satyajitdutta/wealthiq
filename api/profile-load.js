@@ -1,4 +1,4 @@
-// Load user profile + plan from Supabase
+// Load user profile + plan + module credits from Supabase
 import { getAuth, sbHeaders, SUPABASE_URL } from './_auth.js';
 
 export default async function handler(req, res) {
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       fetch(`${base}/rest/v1/wealthiq_profiles?email=eq.${encodeURIComponent(user.email)}&select=profile_data`, {
         headers: sbHeaders()
       }),
-      fetch(`${base}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}&select=plan,plan_expires_at`, {
+      fetch(`${base}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}&select=plan,plan_expires_at,module_credits,tax_free_used`, {
         headers: sbHeaders()
       })
     ]);
@@ -31,12 +31,14 @@ export default async function handler(req, res) {
     const planRow = users?.[0];
     const plan = planRow?.plan || 'free';
     const planExpiresAt = planRow?.plan_expires_at || null;
+    const moduleCredits = planRow?.module_credits || {};
+    const taxFreeUsed = planRow?.tax_free_used || 0;
 
-    // Auto-downgrade if plan expired
-    const activePlan = (plan !== 'free' && planExpiresAt && new Date(planExpiresAt) < new Date())
+    // Auto-downgrade if subscription expired
+    const activePlan = (plan === 'full_view' && planExpiresAt && new Date(planExpiresAt) < new Date())
       ? 'free' : plan;
 
-    res.status(200).json({ success: true, profile, plan: activePlan });
+    res.status(200).json({ success: true, profile, plan: activePlan, moduleCredits, taxFreeUsed });
   } catch(e) {
     console.error('Profile load error:', e.message);
     res.status(500).json({ error: 'Failed to load profile' });
