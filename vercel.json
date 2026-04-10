@@ -9,6 +9,12 @@
     "api/payment-create.js": { "maxDuration": 15 },
     "api/payment-verify.js": { "maxDuration": 15 }
   },
+  "rewrites": [
+    { "source": "/terms",   "destination": "/terms.html" },
+    { "source": "/refund",  "destination": "/refund.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/contact", "destination": "/contact.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
