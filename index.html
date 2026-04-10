@@ -1074,73 +1074,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
   </div>
 
-  <!-- Subscription Plans — hidden during beta -->
-  <div class="card" id="plan-card" style="display:none">
-    <div class="card-hdr"><div class="pill" style="background:var(--indigo)"></div><h3>Plans &amp; Access</h3>
-      <span class="badge" id="current-plan-badge" style="background:rgba(99,102,241,0.15);color:var(--indigo)">Free</span>
-    </div>
-    <div class="body" style="padding-bottom:0.5rem">
-
-      <!-- Full View subscription banner -->
-      <div id="full-view-banner" style="margin-bottom:0.75rem;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.35);border-radius:11px;padding:0.85rem 0.9rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
-          <div>
-            <div style="font-size:0.6rem;font-weight:700;letter-spacing:1px;color:var(--indigo);text-transform:uppercase;margin-bottom:0.2rem">Best Value</div>
-            <div style="font-size:0.9rem;font-weight:800;color:var(--text)">Full View</div>
-            <div style="font-size:0.67rem;color:var(--t2);margin-top:0.15rem">All modules · Unlimited · 1 month</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:1.3rem;font-weight:800;color:var(--text)">₹699<span style="font-size:0.68rem;font-weight:500;color:var(--t3)">/mo</span></div>
-            <div style="font-size:0.62rem;color:var(--t3);margin-top:0.1rem">vs ₹1,300 à la carte</div>
-          </div>
-        </div>
-        <button id="btn-full-view" class="plan-btn plan-upgrade" onclick="startPayment('full_view')" style="background:linear-gradient(135deg,var(--indigo),var(--purple));box-shadow:0 3px 14px rgba(99,102,241,0.3)">Get Full View — ₹699/mo</button>
-      </div>
-
-      <!-- Per-module grid -->
-      <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.45rem;font-weight:600;text-transform:uppercase;letter-spacing:0.6px">Or pay per module</div>
-      <div class="plan-grid" id="plan-grid" style="grid-template-columns:1fr 1fr">
-
-        <div class="plan-tile" id="ptile-tax_optimizer" data-plan="tax_optimizer">
-          <div class="plan-name">Tax Optimizer</div>
-          <div class="plan-price">₹50<span>/use</span></div>
-          <div id="tax-free-lbl" style="font-size:0.64rem;color:var(--teal);margin:0.1rem 0 0.3rem;font-weight:600">2 free uses</div>
-          <button class="plan-btn plan-upgrade" id="btn-tax_optimizer" onclick="startPayment('tax_optimizer')">Unlock ₹50</button>
-        </div>
-
-        <div class="plan-tile" id="ptile-goal_planner" data-plan="goal_planner">
-          <div class="plan-name">Goal Planner</div>
-          <div class="plan-price">₹150<span>/use</span></div>
-          <button class="plan-btn plan-upgrade" id="btn-goal_planner" onclick="startPayment('goal_planner')">Unlock ₹150</button>
-        </div>
-
-        <div class="plan-tile" id="ptile-money_leaks" data-plan="money_leaks">
-          <div class="plan-name">Money Leaks</div>
-          <div class="plan-price">₹150<span>/use</span></div>
-          <button class="plan-btn plan-upgrade" id="btn-money_leaks" onclick="startPayment('money_leaks')">Unlock ₹150</button>
-        </div>
-
-        <div class="plan-tile" id="ptile-cost_living" data-plan="cost_living">
-          <div class="plan-name">Cost of Living</div>
-          <div class="plan-price">₹200<span>/use</span></div>
-          <button class="plan-btn plan-upgrade" id="btn-cost_living" onclick="startPayment('cost_living')">Unlock ₹200</button>
-        </div>
-
-        <div class="plan-tile" id="ptile-expert_view" data-plan="expert_view">
-          <div class="plan-name">Expert View</div>
-          <div class="plan-price">₹250<span>/use</span></div>
-          <button class="plan-btn plan-upgrade" id="btn-expert_view" onclick="startPayment('expert_view')">Unlock ₹250</button>
-        </div>
-
-        <div class="plan-tile" id="ptile-salary_skills" data-plan="salary_skills">
-          <div class="plan-name">Salary &amp; Skills</div>
-          <div class="plan-price">₹400<span>/use</span></div>
-          <button class="plan-btn plan-upgrade" id="btn-salary_skills" onclick="startPayment('salary_skills')">Unlock ₹400</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
 
   <!-- Save + Navigate CTA -->
   <div style="padding:0.5rem 0 0.5rem">
@@ -2094,7 +2027,88 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
     Grow
   </button>
+  <button class="tab" id="tab-pricing" onclick="switchTab('pricing','Plans & Pricing')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+    Plans
+  </button>
 </div>
+
+<!-- ── SCREEN: PLANS & PRICING ─────────────────────────────── -->
+<div class="screen" id="screen-pricing">
+
+  <!-- Full View subscription banner -->
+  <div style="margin-bottom:0.75rem;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.35);border-radius:13px;padding:1.1rem 1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+      <div>
+        <div style="font-size:0.6rem;font-weight:700;letter-spacing:1px;color:var(--indigo);text-transform:uppercase;margin-bottom:0.2rem">Best Value</div>
+        <div style="font-size:1.05rem;font-weight:800;color:var(--text)">Full View</div>
+        <div style="font-size:0.7rem;color:var(--t2);margin-top:0.2rem">All modules · Unlimited · 1 month</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--text)">₹699<span style="font-size:0.7rem;font-weight:500;color:var(--t3)">/mo</span></div>
+        <div style="font-size:0.62rem;color:var(--t3);margin-top:0.15rem">vs ₹1,300 à la carte</div>
+      </div>
+    </div>
+    <button id="btn-full-view-2" class="plan-btn plan-upgrade" style="background:linear-gradient(135deg,var(--indigo),var(--purple));box-shadow:0 3px 14px rgba(99,102,241,0.3);width:100%;padding:0.65rem">Get Full View — ₹699/mo</button>
+  </div>
+
+  <!-- Per-module grid -->
+  <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:0.6px">Or unlock per module</div>
+  <div class="plan-grid" style="grid-template-columns:1fr 1fr">
+
+    <div class="plan-tile" id="ptile2-tax_optimizer">
+      <div class="plan-name">Tax Optimizer</div>
+      <div class="plan-price">₹50<span>/use</span></div>
+      <div id="tax-free-lbl-2" style="font-size:0.64rem;color:var(--teal);margin:0.1rem 0 0.3rem;font-weight:600">2 free uses</div>
+      <button class="plan-btn plan-upgrade" id="btn2-tax_optimizer">Unlock ₹50</button>
+    </div>
+
+    <div class="plan-tile" id="ptile2-goal_planner">
+      <div class="plan-name">Goal Planner</div>
+      <div class="plan-price">₹150<span>/use</span></div>
+      <button class="plan-btn plan-upgrade" id="btn2-goal_planner">Unlock ₹150</button>
+    </div>
+
+    <div class="plan-tile" id="ptile2-money_leaks">
+      <div class="plan-name">Money Leaks</div>
+      <div class="plan-price">₹150<span>/use</span></div>
+      <button class="plan-btn plan-upgrade" id="btn2-money_leaks">Unlock ₹150</button>
+    </div>
+
+    <div class="plan-tile" id="ptile2-cost_living">
+      <div class="plan-name">Cost of Living</div>
+      <div class="plan-price">₹200<span>/use</span></div>
+      <button class="plan-btn plan-upgrade" id="btn2-cost_living">Unlock ₹200</button>
+    </div>
+
+    <div class="plan-tile" id="ptile2-expert_view">
+      <div class="plan-name">Expert View (AI)</div>
+      <div class="plan-price">₹250<span>/use</span></div>
+      <button class="plan-btn plan-upgrade" id="btn2-expert_view">Unlock ₹250</button>
+    </div>
+
+    <div class="plan-tile" id="ptile2-salary_skills">
+      <div class="plan-name">Salary &amp; Skills</div>
+      <div class="plan-price">₹400<span>/use</span></div>
+      <button class="plan-btn plan-upgrade" id="btn2-salary_skills">Unlock ₹400</button>
+    </div>
+
+  </div>
+
+  <!-- What's included note -->
+  <div style="margin-top:0.5rem;background:var(--c2);border:1px solid var(--bd);border-radius:10px;padding:0.75rem 0.875rem">
+    <div style="font-size:0.72rem;font-weight:700;color:var(--t2);margin-bottom:0.5rem">What each module unlocks</div>
+    <div style="display:flex;flex-direction:column;gap:0.3rem">
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Tax Optimizer</span><span style="color:var(--teal)">First 2 uses free</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Goal Planner</span><span style="color:var(--t3)">FIRE targets, SIP goals</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Money Leaks</span><span style="color:var(--t3)">Spending audit & fixes</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Cost of Living</span><span style="color:var(--t3)">City comparison index</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Expert View (AI)</span><span style="color:var(--t3)">GOT AI financial advisor</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem"><span style="color:var(--t2)">Salary & Skills</span><span style="color:var(--t3)">Career growth & benchmarks</span></div>
+    </div>
+  </div>
+
+</div><!-- /screen-pricing -->
 
 </div><!-- /app -->
 
@@ -2410,59 +2424,72 @@ function updatePlanUI(plan, moduleCredits, taxFreeUsed) {
     }
   }
 
-  // Per-module tiles
+  // Per-module tiles — update both plan-card (screen-me) and screen-pricing
   const modules = ['tax_optimizer','goal_planner','money_leaks','cost_living','expert_view','salary_skills'];
   modules.forEach(key => {
-    const tile = document.getElementById(`ptile-${key}`);
-    const btn  = document.getElementById(`btn-${key}`);
-    if (!tile || !btn) return;
-
     const credits  = MODULE_CREDITS[key] || 0;
     const price    = MODULE_PRICES[key];
     const isActive = canUseModule(key);
 
-    tile.classList.toggle('active-plan', isActive);
+    ['', '2'].forEach(suffix => {
+      const pfx  = suffix === '2' ? 'ptile2-' : 'ptile-';
+      const bpfx = suffix === '2' ? 'btn2-'   : 'btn-';
+      const tile = document.getElementById(`${pfx}${key}`);
+      const btn  = document.getElementById(`${bpfx}${key}`);
+      if (!tile || !btn) return;
 
-    if (USER_PLAN === 'full_view') {
-      btn.textContent = 'Included';
-      btn.className   = 'plan-btn plan-active-label';
-      btn.onclick     = null;
-    } else if (key === 'tax_optimizer') {
-      const freeLeft = Math.max(0, TAX_FREE_MAX - TAX_FREE_USED);
-      const taxLbl   = document.getElementById('tax-free-lbl');
-      if (taxLbl) {
-        if (freeLeft > 0) {
-          taxLbl.textContent = `${freeLeft} free use${freeLeft===1?'':'s'} left`;
-          taxLbl.style.color = 'var(--teal)';
-        } else if (credits > 0) {
-          taxLbl.textContent = `${credits} credit${credits===1?'':'s'}`;
-          taxLbl.style.color = 'var(--green)';
+      tile.classList.toggle('active-plan', isActive);
+
+      if (USER_PLAN === 'full_view') {
+        btn.textContent = 'Included';
+        btn.className   = 'plan-btn plan-active-label';
+        btn.onclick     = null;
+      } else if (key === 'tax_optimizer') {
+        const freeLeft = Math.max(0, TAX_FREE_MAX - TAX_FREE_USED);
+        ['tax-free-lbl', 'tax-free-lbl-2'].forEach(lblId => {
+          const taxLbl = document.getElementById(lblId);
+          if (!taxLbl) return;
+          if (freeLeft > 0) { taxLbl.textContent = `${freeLeft} free use${freeLeft===1?'':'s'} left`; taxLbl.style.color = 'var(--teal)'; }
+          else if (credits > 0) { taxLbl.textContent = `${credits} credit${credits===1?'':'s'}`; taxLbl.style.color = 'var(--green)'; }
+          else { taxLbl.textContent = 'Free uses used'; taxLbl.style.color = 'var(--t3)'; }
+        });
+        if (freeLeft > 0 || credits > 0) {
+          btn.textContent = freeLeft > 0 ? 'Free' : `${credits} credit${credits===1?'':'s'}`;
+          btn.className   = 'plan-btn plan-active-label';
+          btn.onclick     = null;
         } else {
-          taxLbl.textContent = 'Free uses used';
-          taxLbl.style.color = 'var(--t3)';
+          btn.textContent = `Unlock ₹${price}`;
+          btn.className   = 'plan-btn plan-upgrade';
+          btn.onclick     = () => startPayment(key);
+        }
+      } else {
+        if (credits > 0) {
+          btn.textContent = `${credits} credit${credits===1?'':'s'}`;
+          btn.className   = 'plan-btn plan-active-label';
+          btn.onclick     = null;
+        } else {
+          btn.textContent = `Unlock ₹${price}`;
+          btn.className   = 'plan-btn plan-upgrade';
+          btn.onclick     = () => startPayment(key);
         }
       }
-      if (freeLeft > 0 || credits > 0) {
-        btn.textContent = freeLeft > 0 ? 'Free' : `${credits} credit${credits===1?'':'s'}`;
-        btn.className   = 'plan-btn plan-active-label';
-        btn.onclick     = null;
-      } else {
-        btn.textContent = `Unlock ₹${price}`;
-        btn.className   = 'plan-btn plan-upgrade';
-        btn.onclick     = () => startPayment(key);
-      }
-    } else {
-      if (credits > 0) {
-        btn.textContent = `${credits} credit${credits===1?'':'s'}`;
-        btn.className   = 'plan-btn plan-active-label';
-        btn.onclick     = null;
-      } else {
-        btn.textContent = `Unlock ₹${price}`;
-        btn.className   = 'plan-btn plan-upgrade';
-        btn.onclick     = () => startPayment(key);
-      }
-    }
+    });
   });
+
+  // Full View button on screen-pricing
+  const btnFV2 = document.getElementById('btn-full-view-2');
+  if (btnFV2) {
+    if (USER_PLAN === 'full_view') {
+      btnFV2.textContent = 'Full View Active';
+      btnFV2.className   = 'plan-btn plan-active-label';
+      btnFV2.onclick     = null;
+    } else {
+      btnFV2.textContent = 'Get Full View — ₹699/mo';
+      btnFV2.className   = 'plan-btn plan-upgrade';
+      btnFV2.style.background = 'linear-gradient(135deg,var(--indigo),var(--purple))';
+      btnFV2.onclick     = () => startPayment('full_view');
+    }
+  }
 }
 
 async function startPayment(plan) {
@@ -3622,7 +3649,7 @@ function updateChildrenFields() {
 /* ═══════════════════════════════════════════════════════════════
    TAB SWITCHING
 ═══════════════════════════════════════════════════════════════ */
-const TAB_TITLES = {me:'My Profile',dash:'Dashboard',health:'Health Score',tax:'Tax Optimizer',goals:'Goals Planner',leaks:'Money Leaks',col:'Cost of Living',got:'GOT Advisor',grow:'Grow — Salary & Skills'};
+const TAB_TITLES = {me:'My Profile',dash:'Dashboard',health:'Health Score',tax:'Tax Optimizer',goals:'Goals Planner',leaks:'Money Leaks',col:'Cost of Living',got:'GOT Advisor',grow:'Grow — Salary & Skills',pricing:'Plans & Pricing'};
 function switchTab(name, title) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
