@@ -61,25 +61,48 @@ export default async function handler(req, res) {
   const planInfo = PLANS[plan];
   const orderId  = `wiq_${plan}_${Date.now()}`;
 
-  // Check for referral discount (Full View only: ₹50 off if has referred_by or unused credits)
+  // Check for discount (Full View only) — user referral (₹50), partner code (variable), or own credits
   let finalAmount = planInfo.amount;
   let referralApplied = false;
+  let discountAmount = 0;
   if (plan === 'full_view') {
     const base2 = SUPABASE_URL();
     if (base2) {
       try {
         const rRef = await fetch(
-          `${base2}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}&select=referred_by,referral_credits`,
+          `${base2}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}&select=referred_by,referral_credits,partner_code`,
           { headers: sbHeaders() }
         );
         const rRows = await rRef.json();
         const uRow = rRows?.[0] || {};
-        if (uRow.referred_by && finalAmount > 50) {
-          finalAmount = finalAmount - 50;
-          referralApplied = true;
-        } else if ((uRow.referral_credits || 0) >= 50 && finalAmount > 50) {
-          finalAmount = finalAmount - 50;
+
+        // Partner code discount — look up variable amount from wealthiq_partners
+        if (uRow.partner_code) {
+          const pRef = await fetch(
+            `${base2}/rest/v1/wealthiq_partners?code=eq.${encodeURIComponent(uRow.partner_code)}&active=eq.true&select=discount_amount`,
+            { headers: sbHeaders() }
+          );
+          const pRows = await pRef.json();
+          if (pRows?.[0]?.discount_amount) {
+            discountAmount = Math.min(pRows[0].discount_amount, planInfo.amount - 1);
+            referralApplied = 'partner';
+          }
+        }
+
+        // User referral code — ₹50 off (only if no partner discount already applied)
+        if (!referralApplied && uRow.referred_by) {
+          discountAmount = 50;
+          referralApplied = 'user';
+        }
+
+        // Own referral credits — ₹50 off (only if no other discount)
+        if (!referralApplied && (uRow.referral_credits || 0) >= 50) {
+          discountAmount = 50;
           referralApplied = 'credits';
+        }
+
+        if (discountAmount > 0 && finalAmount > discountAmount) {
+          finalAmount = finalAmount - discountAmount;
         }
       } catch(_) {}
     }

@@ -1,6 +1,6 @@
-// Referral system
+// Referral system — user-to-user and partner/affiliate codes
 // GET  — return user's referral code, credits, referral stats
-// POST { action: 'apply', code } — apply someone else's referral code
+// POST { action: 'apply', code } — apply a user or partner referral code
 import { getAuth, sbHeaders, SUPABASE_URL } from './_auth.js';
 import crypto from 'crypto';
 
@@ -22,8 +22,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      // Fetch user row
-      const uRes = await fetch(`${userUrl}&select=referral_code,referred_by,referral_credits`, { headers: sbHeaders() });
+      const uRes = await fetch(`${userUrl}&select=referral_code,referred_by,referral_credits,partner_code`, { headers: sbHeaders() });
       const uRows = await uRes.json();
       let row = uRows?.[0] || {};
 
@@ -45,10 +44,25 @@ export default async function handler(req, res) {
       );
       const referrals = await rRes.json();
 
+      // Partner code discount amount (if applied)
+      let partnerDiscount = null;
+      if (row.partner_code) {
+        const pRes = await fetch(
+          `${base}/rest/v1/wealthiq_partners?code=eq.${encodeURIComponent(row.partner_code)}&select=label,discount_amount`,
+          { headers: sbHeaders() }
+        );
+        const pRows = await pRes.json();
+        if (pRows?.[0]) {
+          partnerDiscount = { code: row.partner_code, label: pRows[0].label, discount: pRows[0].discount_amount };
+        }
+      }
+
       res.status(200).json({
         code: row.referral_code,
         credits: row.referral_credits || 0,
         referredBy: row.referred_by || null,
+        partnerCode: row.partner_code || null,
+        partnerDiscount,
         referrals: Array.isArray(referrals) ? referrals : []
       });
     } catch(e) {
@@ -67,44 +81,72 @@ export default async function handler(req, res) {
 
     if (body.action === 'apply') {
       const code = (body.code || '').trim().toUpperCase();
-      if (!code || code.length !== 8) { res.status(400).json({ error: 'Invalid referral code' }); return; }
+      if (!code || code.length < 4 || code.length > 20) {
+        res.status(400).json({ error: 'Invalid code' }); return;
+      }
 
       try {
-        // Check user hasn't already used a referral code
-        const uRes = await fetch(`${userUrl}&select=referral_code,referred_by`, { headers: sbHeaders() });
+        // Check user's current state
+        const uRes = await fetch(`${userUrl}&select=referral_code,referred_by,partner_code`, { headers: sbHeaders() });
         const uRows = await uRes.json();
         const row = uRows?.[0] || {};
 
-        if (row.referred_by) { res.status(400).json({ error: 'You have already used a referral code' }); return; }
-        if (row.referral_code === code) { res.status(400).json({ error: 'You cannot use your own referral code' }); return; }
+        if (row.referred_by && row.partner_code) {
+          res.status(400).json({ error: 'You have already applied a referral code' }); return;
+        }
 
-        // Check code exists
-        const cRes = await fetch(
-          `${base}/rest/v1/wealthiq_users?referral_code=eq.${code}&select=email`,
-          { headers: sbHeaders() }
-        );
-        const cRows = await cRes.json();
-        if (!cRows?.[0]) { res.status(404).json({ error: 'Referral code not found' }); return; }
+        // --- Try user referral code first (8-char hex) ---
+        if (code.length === 8 && !row.referred_by) {
+          if (row.referral_code === code) {
+            res.status(400).json({ error: 'You cannot use your own referral code' }); return;
+          }
+          const cRes = await fetch(
+            `${base}/rest/v1/wealthiq_users?referral_code=eq.${code}&select=email`,
+            { headers: sbHeaders() }
+          );
+          const cRows = await cRes.json();
+          if (cRows?.[0]) {
+            // Valid user referral code — apply it
+            await fetch(userUrl, {
+              method: 'PATCH',
+              headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ referred_by: code })
+            });
+            await fetch(`${base}/rest/v1/wealthiq_referrals`, {
+              method: 'POST',
+              headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+              body: JSON.stringify({
+                referral_code: code,
+                referrer_email: cRows[0].email,
+                referee_email: user.email,
+                status: 'pending'
+              })
+            });
+            res.status(200).json({ success: true, type: 'user', discount: 50 });
+            return;
+          }
+        }
 
-        // Apply code — create pending referral row
-        await fetch(userUrl, {
-          method: 'PATCH',
-          headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ referred_by: code })
-        });
+        // --- Try partner code ---
+        if (!row.partner_code) {
+          const pRes = await fetch(
+            `${base}/rest/v1/wealthiq_partners?code=eq.${encodeURIComponent(code)}&active=eq.true&select=code,label,discount_amount`,
+            { headers: sbHeaders() }
+          );
+          const pRows = await pRes.json();
+          if (pRows?.[0]) {
+            const partner = pRows[0];
+            await fetch(userUrl, {
+              method: 'PATCH',
+              headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ partner_code: partner.code })
+            });
+            res.status(200).json({ success: true, type: 'partner', discount: partner.discount_amount, label: partner.label });
+            return;
+          }
+        }
 
-        await fetch(`${base}/rest/v1/wealthiq_referrals`, {
-          method: 'POST',
-          headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-          body: JSON.stringify({
-            referral_code: code,
-            referrer_email: cRows[0].email,
-            referee_email: user.email,
-            status: 'pending'
-          })
-        });
-
-        res.status(200).json({ success: true, discount: 50 });
+        res.status(404).json({ error: 'Code not found or already applied' });
       } catch(e) {
         console.error('referral apply error:', e.message);
         res.status(500).json({ error: 'Failed to apply code' });

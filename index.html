@@ -2056,9 +2056,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
     <!-- Apply a code -->
     <div id="ref-apply-row">
-      <div style="font-size:0.7rem;color:var(--t3);margin-bottom:0.4rem">Have a friend's referral code?</div>
+      <div style="font-size:0.7rem;color:var(--t3);margin-bottom:0.4rem">Have a referral or partner code?</div>
       <div style="display:flex;gap:0.5rem">
-        <input id="ref-code-input" type="text" maxlength="8" placeholder="Enter 8-char code"
+        <input id="ref-code-input" type="text" maxlength="20" placeholder="Enter code"
           style="flex:1;background:var(--c3);border:1px solid var(--bd);border-radius:8px;padding:0.5rem 0.75rem;font-size:0.82rem;color:var(--t1);outline:none;text-transform:uppercase;letter-spacing:0.08em">
         <button onclick="applyReferralCode()" style="padding:0.5rem 1rem;border-radius:8px;background:var(--purple);color:#fff;font-size:0.72rem;font-weight:700;border:none;cursor:pointer">Apply</button>
       </div>
@@ -2681,10 +2681,14 @@ async function loadReferral(force) {
     const credEl = document.getElementById('ref-credits-display');
     if (credEl) credEl.textContent = `₹${d.credits || 0}`;
 
-    // Hide apply row if already used a code
+    // Show applied code status, hide input
     const applyRow = document.getElementById('ref-apply-row');
-    if (applyRow && d.referredBy) {
-      applyRow.innerHTML = `<div style="font-size:0.68rem;color:var(--teal)">You used referral code <strong>${d.referredBy}</strong> — ₹50 discount applied on your next Full View purchase.</div>`;
+    if (applyRow) {
+      if (d.partnerDiscount) {
+        applyRow.innerHTML = `<div style="font-size:0.68rem;color:var(--teal)">Partner code <strong>${d.partnerDiscount.code}</strong>${d.partnerDiscount.label ? ' (' + d.partnerDiscount.label + ')' : ''} applied — <strong>₹${d.partnerDiscount.discount} off</strong> Full View.</div>`;
+      } else if (d.referredBy) {
+        applyRow.innerHTML = `<div style="font-size:0.68rem;color:var(--teal)">Referral code <strong>${d.referredBy}</strong> applied — <strong>₹50 off</strong> Full View.</div>`;
+      }
     }
 
     // Show referrals made
@@ -2724,7 +2728,8 @@ async function applyReferralCode() {
       if (msgEl) { msgEl.textContent = d.error || 'Could not apply code.'; msgEl.style.color = '#f87171'; }
       return;
     }
-    if (msgEl) { msgEl.textContent = 'Code applied! You\'ll get ₹50 off Full View.'; msgEl.style.color = 'var(--teal)'; }
+    const savings = d.discount ? `₹${d.discount}` : '₹50';
+    if (msgEl) { msgEl.textContent = `Code applied! You'll get ${savings} off Full View.`; msgEl.style.color = 'var(--teal)'; }
     _referralLoaded = false;
     await loadReferral(true);
   } catch(e) {

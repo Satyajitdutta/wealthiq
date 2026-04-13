@@ -102,6 +102,27 @@ export default async function handler(req, res) {
         console.error('Referral activation error (non-fatal):', refErr.message);
       }
 
+      // Partner code tracking — log activation in wealthiq_partner_referrals
+      try {
+        const puRes = await fetch(`${userUrl}&select=partner_code`, { headers: sbHeaders() });
+        const puRows = await puRes.json();
+        const partnerCode = puRows?.[0]?.partner_code;
+        if (partnerCode) {
+          await fetch(`${base}/rest/v1/wealthiq_partner_referrals`, {
+            method: 'POST',
+            headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+            body: JSON.stringify({
+              partner_code: partnerCode,
+              referee_email: user.email,
+              activated: true,
+              activated_at: new Date().toISOString()
+            })
+          });
+        }
+      } catch(pErr) {
+        console.error('Partner referral log error (non-fatal):', pErr.message);
+      }
+
       res.status(200).json({ success: true, plan: 'full_view', expiresAt });
 
     } else {
