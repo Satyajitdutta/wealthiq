@@ -1,5 +1,5 @@
 // Create Cashfree order for module purchase or Full View subscription
-import { getAuth } from './_auth.js';
+import { getAuth, sbHeaders, SUPABASE_URL } from './_auth.js';
 
 // Subscription = full_view (monthly), others = pay-per-use
 const PLANS = {
@@ -36,6 +36,19 @@ export default async function handler(req, res) {
   const plan = body.plan;
   if (!PLANS[plan]) { res.status(400).json({ error: 'Invalid plan' }); return; }
 
+  // Save phone to DB if provided
+  const phone = (body.phone || '').replace(/\D/g, '').slice(0, 10);
+  if (phone && phone.length === 10) {
+    const base = SUPABASE_URL();
+    if (base) {
+      fetch(`${base}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}`, {
+        method: 'PATCH',
+        headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ phone })
+      }).catch(() => {});
+    }
+  }
+
   const appId     = (process.env.CASHFREE_APP_ID     || '').trim();
   const secretKey = (process.env.CASHFREE_SECRET_KEY || '').trim();
   const cfEnv     = (process.env.CASHFREE_ENV        || 'production').trim();
@@ -64,7 +77,7 @@ export default async function handler(req, res) {
         customer_details: {
           customer_id:    user.email.replace(/[^a-z0-9]/gi, '_').slice(0, 50),
           customer_email: user.email,
-          customer_phone: '9999999999'
+          customer_phone: (phone && phone.length === 10) ? phone : '9999999999'
         },
         order_meta: {
           notify_url: `https://wealth.pithonix.ai/api/payment-verify`

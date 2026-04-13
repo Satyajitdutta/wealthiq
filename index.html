@@ -890,6 +890,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           <input class="profile-name-input" id="p-display-name" type="text" placeholder="Tap to add your name" autocomplete="name"
             oninput="W.displayName=this.value;scheduleProfileSave()">
           <div class="profile-hdr-email" id="profile-email-lbl"></div>
+          <input class="profile-name-input" id="p-phone" type="tel" placeholder="Mobile number (for payments)" autocomplete="tel" maxlength="10" style="margin-top:0.4rem;font-size:0.82rem;font-weight:400"
+            oninput="W.phone=this.value.replace(/\D/g,'').slice(0,10);scheduleProfileSave()">
         </div>
       </div>
       <input type="file" id="avatar-input" accept="image/*" capture="user" style="display:none" onchange="handleAvatarPick(this)">
@@ -2321,7 +2323,7 @@ function scheduleProfileSave() {
 
 function getProfileData() {
   return {
-    displayName:W.displayName, avatarUrl:W.avatarUrl, taxRegime:W.taxRegime,
+    displayName:W.displayName, avatarUrl:W.avatarUrl, taxRegime:W.taxRegime, phone:W.phone,
     lifeStage:W.lifeStage, age:W.age, partnerAge:W.partnerAge, cityTier:W.cityTier, city:W.city,
     numChildren:W.numChildren, childAges:W.childAges, petExpense:W.petExpense,
     parentAge:W.parentAge, parentSupport:W.parentSupport, overseasIncome:W.overseasIncome,
@@ -2374,7 +2376,7 @@ async function loadProfile() {
 
 function populateInputs() {
   const map = {
-    'p-age':W.age,'p-tier':W.cityTier,'p-city':W.city,'p-income':W.monthlyIncome,'p-other-inc':W.otherIncome,
+    'p-phone':W.phone,'p-age':W.age,'p-tier':W.cityTier,'p-city':W.city,'p-income':W.monthlyIncome,'p-other-inc':W.otherIncome,
     'p-partner-age':W.partnerAge,'p-partner-income':W.partnerIncome,
     'p-rent':W.rent,'p-home-emi':W.homeLoanEMI,'p-car-emi':W.carEMI,'p-cc':W.creditCard,
     'p-emi':W.otherEMI,'p-groceries':W.groceries,'p-transport':W.transport,'p-pets':W.petExpense,
@@ -2584,7 +2586,7 @@ async function startPayment(plan) {
     const r = await fetch('/api/payment-create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.token}` },
-      body: JSON.stringify({ plan })
+      body: JSON.stringify({ plan, phone: W.phone || '' })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error || 'Could not create order');
@@ -2621,7 +2623,7 @@ async function startPayment(plan) {
 ═══════════════════════════════════════════════════════════════ */
 const W = {
   // Identity
-  displayName: '', avatarUrl: '', taxRegime: 'new',
+  displayName: '', avatarUrl: '', taxRegime: 'new', phone: '',
   // Profile
   lifeStage: 'single', age: 28, partnerAge: 0, cityTier: 1, city: '', lifestyleClass: '',
   numChildren: 0, childAges: [], petExpense: 0,
