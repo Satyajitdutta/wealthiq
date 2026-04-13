@@ -2036,6 +2036,42 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
   </div>
 
+  <!-- Referral Section -->
+  <div id="referral-section" style="margin-top:1.25rem;background:var(--c2);border:1px solid var(--bd);border-radius:12px;padding:1rem 1.125rem">
+    <div style="font-size:0.78rem;font-weight:700;color:var(--t1);margin-bottom:0.25rem">Refer &amp; Earn ₹50</div>
+    <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.875rem">Share your code — your friend gets ₹50 off Full View, you earn ₹50 credit.</div>
+
+    <!-- Your code -->
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+      <div style="flex:1;background:var(--c3);border:1px solid var(--bd);border-radius:8px;padding:0.5rem 0.75rem;font-size:0.9rem;font-weight:800;letter-spacing:0.12em;color:var(--teal)" id="ref-code-display">——</div>
+      <button onclick="copyReferralCode()" style="padding:0.5rem 0.75rem;border-radius:8px;background:var(--teal);color:#000;font-size:0.72rem;font-weight:700;border:none;cursor:pointer">Copy</button>
+      <button onclick="shareReferralCode()" style="padding:0.5rem 0.75rem;border-radius:8px;background:var(--indigo);color:#fff;font-size:0.72rem;font-weight:700;border:none;cursor:pointer">Share</button>
+    </div>
+
+    <!-- Credits balance -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.875rem;padding:0.5rem 0.75rem;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px">
+      <span style="font-size:0.72rem;color:var(--t2)">Your referral credits</span>
+      <span style="font-size:0.85rem;font-weight:800;color:var(--teal)" id="ref-credits-display">₹0</span>
+    </div>
+
+    <!-- Apply a code -->
+    <div id="ref-apply-row">
+      <div style="font-size:0.7rem;color:var(--t3);margin-bottom:0.4rem">Have a friend's referral code?</div>
+      <div style="display:flex;gap:0.5rem">
+        <input id="ref-code-input" type="text" maxlength="8" placeholder="Enter 8-char code"
+          style="flex:1;background:var(--c3);border:1px solid var(--bd);border-radius:8px;padding:0.5rem 0.75rem;font-size:0.82rem;color:var(--t1);outline:none;text-transform:uppercase;letter-spacing:0.08em">
+        <button onclick="applyReferralCode()" style="padding:0.5rem 1rem;border-radius:8px;background:var(--purple);color:#fff;font-size:0.72rem;font-weight:700;border:none;cursor:pointer">Apply</button>
+      </div>
+      <div id="ref-apply-msg" style="font-size:0.68rem;margin-top:0.4rem;min-height:1rem"></div>
+    </div>
+
+    <!-- Referrals made -->
+    <div id="ref-list-wrap" style="margin-top:0.75rem;display:none">
+      <div style="font-size:0.68rem;font-weight:700;color:var(--t2);margin-bottom:0.4rem">Your referrals</div>
+      <div id="ref-list" style="display:flex;flex-direction:column;gap:0.25rem"></div>
+    </div>
+  </div>
+
   <!-- Legal footer -->
   <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--bd);display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
     <a href="/terms"   target="_blank" style="font-size:0.65rem;color:var(--t4);text-decoration:none">Terms &amp; Conditions</a>
@@ -2168,6 +2204,7 @@ function unlockApp(email) {
   setAvatarUI(null, null, email);
   bumpSessionCount();
   setTimeout(() => loadProfile(), 100);
+  setTimeout(() => applyPendingReferral(), 500);
 }
 
 let _authEmail = '';
@@ -2293,6 +2330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) el.insertAdjacentHTML('beforeend', DISCLAIMER_HTML);
   });
+  checkUrlReferral();
   const session = getSession();
   if (session) {
     const fp = localStorage.getItem('wiq_fp');
@@ -2616,6 +2654,125 @@ async function startPayment(plan) {
   } catch(e) {
     alert('Payment error: ' + e.message);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REFERRAL SYSTEM
+═══════════════════════════════════════════════════════════════ */
+let _referralLoaded = false;
+
+async function loadReferral(force) {
+  if (_referralLoaded && !force) return;
+  const session = getSession();
+  if (!session) return;
+  try {
+    const r = await fetch('/api/referral', {
+      headers: { 'Authorization': `Bearer ${session.token}` }
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    _referralLoaded = true;
+
+    // Show code
+    const codeEl = document.getElementById('ref-code-display');
+    if (codeEl) codeEl.textContent = d.code || '——';
+
+    // Show credits
+    const credEl = document.getElementById('ref-credits-display');
+    if (credEl) credEl.textContent = `₹${d.credits || 0}`;
+
+    // Hide apply row if already used a code
+    const applyRow = document.getElementById('ref-apply-row');
+    if (applyRow && d.referredBy) {
+      applyRow.innerHTML = `<div style="font-size:0.68rem;color:var(--teal)">You used referral code <strong>${d.referredBy}</strong> — ₹50 discount applied on your next Full View purchase.</div>`;
+    }
+
+    // Show referrals made
+    const listWrap = document.getElementById('ref-list-wrap');
+    const list     = document.getElementById('ref-list');
+    if (list && Array.isArray(d.referrals) && d.referrals.length > 0) {
+      listWrap.style.display = 'block';
+      list.innerHTML = d.referrals.map(r => {
+        const badge = r.status === 'activated' ? `<span style="color:var(--teal)">Activated</span>`
+                    : r.status === 'clawed_back' ? `<span style="color:#f87171">Clawed back</span>`
+                    : `<span style="color:var(--t4)">Pending</span>`;
+        return `<div style="display:flex;justify-content:space-between;font-size:0.68rem;padding:0.3rem 0;border-bottom:1px solid var(--bd)">
+          <span style="color:var(--t2)">${r.referee_email}</span>${badge}</div>`;
+      }).join('');
+    }
+  } catch(e) { /* silent */ }
+}
+
+async function applyReferralCode() {
+  const session = getSession();
+  if (!session) { alert('Sign in first.'); return; }
+  const input = document.getElementById('ref-code-input');
+  const msgEl = document.getElementById('ref-apply-msg');
+  const code  = (input?.value || '').trim().toUpperCase();
+  if (!code || code.length !== 8) {
+    if (msgEl) { msgEl.textContent = 'Enter a valid 8-character code.'; msgEl.style.color = '#f87171'; }
+    return;
+  }
+  try {
+    const r = await fetch('/api/referral', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.token}` },
+      body: JSON.stringify({ action: 'apply', code })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      if (msgEl) { msgEl.textContent = d.error || 'Could not apply code.'; msgEl.style.color = '#f87171'; }
+      return;
+    }
+    if (msgEl) { msgEl.textContent = 'Code applied! You\'ll get ₹50 off Full View.'; msgEl.style.color = 'var(--teal)'; }
+    _referralLoaded = false;
+    await loadReferral(true);
+  } catch(e) {
+    if (msgEl) { msgEl.textContent = 'Network error. Try again.'; msgEl.style.color = '#f87171'; }
+  }
+}
+
+function copyReferralCode() {
+  const code = document.getElementById('ref-code-display')?.textContent;
+  if (!code || code === '——') return;
+  navigator.clipboard?.writeText(code).then(() => alert('Referral code copied: ' + code));
+}
+
+function shareReferralCode() {
+  const code = document.getElementById('ref-code-display')?.textContent;
+  if (!code || code === '——') return;
+  const url  = `https://wealth.pithonix.ai/?ref=${code}`;
+  const text = `Use my referral code ${code} on WealthIQ and get ₹50 off Full View subscription: ${url}`;
+  if (navigator.share) {
+    navigator.share({ title: 'WealthIQ Referral', text, url }).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert('Share link copied to clipboard!'));
+  }
+}
+
+// Auto-apply ?ref=CODE from URL when user signs in
+function checkUrlReferral() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+  if (ref && ref.length === 8) {
+    localStorage.setItem('pendingReferral', ref.toUpperCase());
+  }
+}
+
+async function applyPendingReferral() {
+  const code = localStorage.getItem('pendingReferral');
+  if (!code) return;
+  const session = getSession();
+  if (!session) return;
+  localStorage.removeItem('pendingReferral');
+  try {
+    await fetch('/api/referral', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.token}` },
+      body: JSON.stringify({ action: 'apply', code })
+    });
+    // Silent — user will see it reflected when they open Pricing tab
+  } catch(_) {}
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -3747,11 +3904,12 @@ function switchTab(name, title) {
   if (screen) { screen.classList.add('active'); screen.scrollTop = 0; }
   if (tab) tab.classList.add('active');
   if (dsb) dsb.classList.add('active');
-  if (name === 'col')    setTimeout(initCOL,  0);
-  if (name === 'dash')   setTimeout(renderDash, 0);
-  if (name === 'tax')    setTimeout(initTaxInputs, 0);
-  if (name === 'grow')   setTimeout(initGrow, 0);
-  if (name === 'health') setTimeout(animateScoreIfChanged, 50);
+  if (name === 'col')     setTimeout(initCOL,  0);
+  if (name === 'dash')    setTimeout(renderDash, 0);
+  if (name === 'tax')     setTimeout(initTaxInputs, 0);
+  if (name === 'grow')    setTimeout(initGrow, 0);
+  if (name === 'health')  setTimeout(animateScoreIfChanged, 50);
+  if (name === 'pricing') setTimeout(loadReferral, 0);
   // On desktop the scroll container is .screens, not the screen itself
   const screensEl = document.querySelector('.screens');
   if (screensEl && window.innerWidth >= 1024) screensEl.scrollTop = 0;

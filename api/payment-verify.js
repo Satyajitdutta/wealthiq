@@ -62,6 +62,46 @@ export default async function handler(req, res) {
         headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
         body: JSON.stringify({ plan: 'full_view', plan_expires_at: expiresAt })
       });
+
+      // Referral activation: find pending referral for this user, activate it, award ₹50 to referrer
+      try {
+        const refRes = await fetch(
+          `${base}/rest/v1/wealthiq_referrals?referee_email=eq.${encodeURIComponent(user.email)}&status=eq.pending&select=id,referral_code,referrer_email`,
+          { headers: sbHeaders() }
+        );
+        const refRows = await refRes.json();
+        if (Array.isArray(refRows) && refRows.length > 0) {
+          const ref = refRows[0];
+          const clawbackDeadline = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(); // 6 months
+          // Activate the referral row
+          await fetch(
+            `${base}/rest/v1/wealthiq_referrals?id=eq.${ref.id}`,
+            {
+              method: 'PATCH',
+              headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ status: 'activated', activated_at: new Date().toISOString(), clawback_deadline: clawbackDeadline })
+            }
+          );
+          // Award ₹50 credit to referrer
+          const rrRes = await fetch(
+            `${base}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(ref.referrer_email)}&select=referral_credits`,
+            { headers: sbHeaders() }
+          );
+          const rrRows = await rrRes.json();
+          const currentCredits = (rrRows?.[0]?.referral_credits) || 0;
+          await fetch(
+            `${base}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(ref.referrer_email)}`,
+            {
+              method: 'PATCH',
+              headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ referral_credits: currentCredits + 50 })
+            }
+          );
+        }
+      } catch(refErr) {
+        console.error('Referral activation error (non-fatal):', refErr.message);
+      }
+
       res.status(200).json({ success: true, plan: 'full_view', expiresAt });
 
     } else {

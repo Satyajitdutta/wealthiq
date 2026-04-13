@@ -7,7 +7,8 @@
     "api/profile-save.js":   { "maxDuration": 15 },
     "api/profile-load.js":   { "maxDuration": 15 },
     "api/payment-create.js": { "maxDuration": 15 },
-    "api/payment-verify.js": { "maxDuration": 15 }
+    "api/payment-verify.js": { "maxDuration": 15 },
+    "api/referral.js":       { "maxDuration": 15 }
   },
   "rewrites": [
     { "source": "/terms",   "destination": "/terms.html" },

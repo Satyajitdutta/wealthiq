@@ -61,6 +61,30 @@ export default async function handler(req, res) {
   const planInfo = PLANS[plan];
   const orderId  = `wiq_${plan}_${Date.now()}`;
 
+  // Check for referral discount (Full View only: ₹50 off if has referred_by or unused credits)
+  let finalAmount = planInfo.amount;
+  let referralApplied = false;
+  if (plan === 'full_view') {
+    const base2 = SUPABASE_URL();
+    if (base2) {
+      try {
+        const rRef = await fetch(
+          `${base2}/rest/v1/wealthiq_users?email=eq.${encodeURIComponent(user.email)}&select=referred_by,referral_credits`,
+          { headers: sbHeaders() }
+        );
+        const rRows = await rRef.json();
+        const uRow = rRows?.[0] || {};
+        if (uRow.referred_by && finalAmount > 50) {
+          finalAmount = finalAmount - 50;
+          referralApplied = true;
+        } else if ((uRow.referral_credits || 0) >= 50 && finalAmount > 50) {
+          finalAmount = finalAmount - 50;
+          referralApplied = 'credits';
+        }
+      } catch(_) {}
+    }
+  }
+
   try {
     const r = await fetch(`${baseUrl}/orders`, {
       method: 'POST',
@@ -72,7 +96,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         order_id:       orderId,
-        order_amount:   planInfo.amount,
+        order_amount:   finalAmount,
         order_currency: 'INR',
         customer_details: {
           customer_id:    user.email.replace(/[^a-z0-9]/gi, '_').slice(0, 50),
@@ -93,7 +117,9 @@ export default async function handler(req, res) {
       success:          true,
       orderId:          order.order_id,
       paymentSessionId: order.payment_session_id,
-      amount:           planInfo.amount,
+      amount:           finalAmount,
+      originalAmount:   planInfo.amount,
+      referralApplied,
       planLabel:        planInfo.label,
       subscription:     planInfo.subscription,
       email:            user.email,
