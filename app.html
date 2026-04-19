@@ -3679,9 +3679,7 @@ const MODULE_LABELS = {
 
 /** Returns true if user can access a module right now */
 function canUseModule(key) {
-  if (USER_PLAN === 'full_view') return true;
-  if (key === 'tax_optimizer' && TAX_FREE_USED < TAX_FREE_MAX) return true;
-  return (MODULE_CREDITS[key] || 0) > 0;
+  return true; // All modules unlocked
 }
 
 function bumpSessionCount() {
@@ -5240,13 +5238,10 @@ function switchTab(name, title) {
     });
   });
 
-  // Teaser gate — show paywall overlay for locked modules
+  // Teasers hidden — all modules unlocked
   if (typeof TSZ_MODULES !== 'undefined') {
     const tKey = TSZ_MODULES[name];
-    if (tKey && !canUseModule(tKey)) {
-      if (typeof prefillTeasers === 'function') prefillTeasers();
-      setTimeout(() => _showTeaser(name), 60);
-    } else if (tKey) {
+    if (tKey) {
       _hideTeaser(name);
     }
   }
@@ -7786,7 +7781,7 @@ function downloadMyReport() {
 let _priorityGOTRunning = false;
 async function runPriorityGOT() {
   if (_priorityGOTRunning) return;
-  if (!canUseModule('expert_view')) { switchTab('pricing'); return; }
+  // canUseModule always true — no gate
   if (W.monthlyIncome === 0) { showToast('📝', 'Add your profile data first for a meaningful analysis'); switchTab('me'); return; }
   _priorityGOTRunning = true;
 
