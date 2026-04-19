@@ -40,11 +40,14 @@ export default async function handler(req, res) {
   const bucket = Math.floor(Date.now() / 300000); // 5-min buckets
   const otp = getOTP(secret, email, bucket);
 
+  // Demo showcase account — OTP routed to admin inbox
+  const deliverTo = email === 'test@demo.com' ? 'satyajitv.d@pithonix.ai' : email;
+
   try {
     const resend = new Resend(resendKey);
     await resend.emails.send({
       from: 'Pithonix WealthIQ <noreply@pithonix.ai>',
-      to: email,
+      to: deliverTo,
       subject: `${otp} — your WealthIQ login code`,
       html: `
 <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;background:#080d1a;color:#f1f5f9;padding:2rem;border-radius:16px;border:1px solid rgba(255,255,255,0.08)">
