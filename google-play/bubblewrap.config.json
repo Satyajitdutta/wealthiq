@@ -1,0 +1,33 @@
+{
+  "packageId": "ai.pithonix.wealthiq",
+  "host": "wealthiq.pithonix.ai",
+  "name": "WealthIQ — Pithonix AI",
+  "launcherName": "WealthIQ",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#080d1a",
+  "backgroundColor": "#080d1a",
+  "startUrl": "/",
+  "iconUrl": "https://wealthiq.pithonix.ai/icon-512.png",
+  "maskableIconUrl": "https://wealthiq.pithonix.ai/icon-512-maskable.png",
+  "appVersion": "1",
+  "appVersionName": "1.0.0",
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "wealthiq"
+  },
+  "splashScreenFadeOutDuration": 300,
+  "enableNotifications": false,
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://wealthiq.pithonix.ai/",
+  "webManifestUrl": "https://wealthiq.pithonix.ai/manifest.json",
+  "generatorApp": "bubblewrap-cli",
+  "serviceWorker": { "enabled": false }
+}
