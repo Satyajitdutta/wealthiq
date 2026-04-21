@@ -1,15 +1,15 @@
 {
   "packageId": "ai.pithonix.wealthiq",
-  "host": "wealthiq.pithonix.ai",
-  "name": "WealthIQ — Pithonix AI",
-  "launcherName": "WealthIQ",
+  "host": "wealth.pithonix.ai",
+  "name": "Artha-IQ — Pithonix AI",
+  "launcherName": "Artha-IQ",
   "display": "standalone",
   "orientation": "portrait",
   "themeColor": "#080d1a",
   "backgroundColor": "#080d1a",
   "startUrl": "/",
-  "iconUrl": "https://wealthiq.pithonix.ai/icon-512.png",
-  "maskableIconUrl": "https://wealthiq.pithonix.ai/icon-512-maskable.png",
+  "iconUrl": "https://wealth.pithonix.ai/icon-512.png",
+  "maskableIconUrl": "https://wealth.pithonix.ai/icon-512-maskable.png",
   "appVersion": "1",
   "appVersionName": "1.0.0",
   "signingKey": {
@@ -26,8 +26,8 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://wealthiq.pithonix.ai/",
-  "webManifestUrl": "https://wealthiq.pithonix.ai/manifest.json",
+  "fullScopeUrl": "https://wealth.pithonix.ai/",
+  "webManifestUrl": "https://wealth.pithonix.ai/manifest.json",
   "generatorApp": "bubblewrap-cli",
   "serviceWorker": { "enabled": false }
 }

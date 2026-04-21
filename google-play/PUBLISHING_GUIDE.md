@@ -1,8 +1,7 @@
-# Google Play Store Publishing Guide — WealthIQ (TWA)
+# Google Play Store Publishing Guide — Artha-IQ (TWA)
 
-WealthIQ is a **Progressive Web App (PWA)**. The fastest and most maintainable way to
-publish it on Google Play is as a **Trusted Web Activity (TWA)** — a thin native Android
-wrapper that loads your existing website in a Chrome custom tab with no browser UI.
+Artha-IQ is a **Progressive Web App (PWA)**. The fastest and most maintainable way to
+publish it on Google Play is as a **Trusted Web Activity (TWA)** using **PWABuilder.com**.
 
 Every future update to your website is automatically live in the Play Store app
 **without** needing to push a new APK.
@@ -11,183 +10,67 @@ Every future update to your website is automatically live in the Play Store app
 
 ## Prerequisites
 
-1. **Google Play Developer Account** — one-time $25 USD fee
-   - Sign up at https://play.google.com/console
-2. **Java 11+** installed (`java -version`)
-3. **Node.js 14+** installed (`node -v`)
-4. **Android SDK** — install via Android Studio or `sdkmanager`
-5. Your web app live at a public HTTPS URL (e.g. `https://wealthiq.pithonix.ai`)
+1. **Google Play Developer Account** — one-time $25 USD fee at https://play.google.com/console
+2. Icon PNG files uploaded to the repo root:
+   - `icon-192.png` (192×192 px)
+   - `icon-512.png` (512×512 px)
+   - `icon-512-maskable.png` (512×512 px, with safe zone padding)
+3. Your web app live at: `https://wealth.pithonix.ai`
 
 ---
 
-## Step 1 — Install Bubblewrap CLI
+## Step 1 — Create Icon PNG Files
 
-```bash
-npm install -g @bubblewrap/cli
-bubblewrap --version
-```
+Go to **pwabuilder.com/imageGenerator**, upload your logo image,
+download the generated ZIP, and extract these files to the repo root:
+- `icon-192.png`
+- `icon-512.png`
+- `icon-512-maskable.png`
 
----
-
-## Step 2 — Generate the Android Project
-
-Navigate to the `google-play/` folder and run:
-
-```bash
-cd google-play
-bubblewrap init --manifest https://wealthiq.pithonix.ai/manifest.json
-```
-
-Bubblewrap will read your `manifest.json` from the live URL and prompt you for:
-- **Package ID**: `ai.pithonix.wealthiq`  ← use this exact value
-- **App name**: `WealthIQ — Pithonix AI`
-- **Launcher name**: `WealthIQ`
-- **App version code**: `1`
-- **App version name**: `1.0.0`
-- **Signing key path**: `./android.keystore`  ← Bubblewrap will generate this
-- **Signing key alias**: `wealthiq`
-
-> A reference config is already saved in `bubblewrap.config.json`.
+Commit and push them to this branch, then redeploy on Vercel.
 
 ---
 
-## Step 3 — Build the APK / AAB
+## Step 2 — Generate Android App via PWABuilder
 
-```bash
-# Inside google-play/ after init
-bubblewrap build
-```
-
-This produces:
-- `app-release-bundle.aab` — upload this to Play Store (preferred)
-- `app-release-signed.apk` — for testing on a device
-
----
-
-## Step 4 — Get the SHA-256 Fingerprint
-
-After building, Bubblewrap prints the signing fingerprint. You can also get it:
-
-```bash
-keytool -list -v -keystore ./android.keystore -alias wealthiq
-```
-
-Copy the **SHA-256** value. It looks like:
-`AB:CD:EF:12:34:...`
+1. Go to **pwabuilder.com**
+2. Enter: `https://wealth.pithonix.ai`
+3. Click **Build My PWA** → **Android**
+4. Set:
+   - Package ID: `ai.pithonix.wealthiq`
+   - App name: `Artha-IQ — Pithonix AI`
+   - Version: `1` / `1.0.0`
+5. Click **Download**
+6. Inside the ZIP, find:
+   - `app-release-bundle.aab` ← upload to Play Store
+   - The SHA-256 fingerprint shown on screen ← needed for assetlinks.json
 
 ---
 
-## Step 5 — Update assetlinks.json
+## Step 3 — Update assetlinks.json
 
-Open `.well-known/assetlinks.json` (in the repo root) and replace the placeholder:
+Open `.well-known/assetlinks.json` and replace the placeholder fingerprint
+with the one from PWABuilder. Commit, push, and redeploy.
 
-```json
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "ai.pithonix.wealthiq",
-    "sha256_cert_fingerprints": ["AB:CD:EF:12:34:..."]  ← paste your fingerprint here
-  }
-}]
-```
-
-Commit and deploy this file. Verify it is live at:
-`https://wealthiq.pithonix.ai/.well-known/assetlinks.json`
-
-> **This step is critical.** Without a valid assetlinks.json the browser bar will show
-> inside your app, breaking the full-screen TWA experience.
-
-**NOTE:** The vercel.json rewrites do not currently serve `.well-known/assetlinks.json`.
-See Step 5b below to add the route.
-
-### Step 5b — Add assetlinks route to vercel.json
-
-Add the following to the `rewrites` array in `vercel.json`:
-
-```json
-{ "source": "/.well-known/assetlinks.json", "destination": "/.well-known/assetlinks.json" }
-```
-
-And add a header entry so it serves the correct MIME type:
-
-```json
-{
-  "source": "/.well-known/assetlinks.json",
-  "headers": [
-    { "key": "Content-Type", "value": "application/json" },
-    { "key": "Cache-Control", "value": "public, max-age=3600" }
-  ]
-}
-```
+Verify at: `https://wealth.pithonix.ai/.well-known/assetlinks.json`
 
 ---
 
-## Step 6 — Verify TWA Link (optional but recommended)
+## Step 4 — Create Play Store Listing
 
-```bash
-bubblewrap validate --url https://wealthiq.pithonix.ai
-```
-
-Should output: `Digital Asset Links verified successfully`
-
----
-
-## Step 7 — Create Play Store Listing
-
-1. Go to https://play.google.com/console → **Create app**
-2. Fill in:
-   - App name: `WealthIQ — Pithonix AI`
-   - Default language: English (India)
-   - App or game: App
-   - Free or paid: Free
-3. Complete the **Store Listing** using content from `store-listing.md`
-4. Upload assets from `assets-checklist.md`
-5. Set **Privacy Policy URL**: `https://wealthiq.pithonix.ai/privacy`
+1. https://play.google.com/console → **Create app**
+2. Fill in the store listing using content from `store-listing.md`
+3. Upload assets from `assets-checklist.md`
+4. Complete Data Safety and Policy declarations
 
 ---
 
-## Step 8 — Upload the AAB
+## Step 5 — Upload AAB and Submit
 
-1. Go to **Release → Production** (or start with **Internal Testing**)
-2. Click **Create new release**
-3. Upload `app-release-bundle.aab`
-4. Write release notes, e.g. `Initial release — WealthIQ 1.0.0`
-5. Click **Save → Review release → Start rollout**
-
----
-
-## Step 9 — Complete Policy Declarations
-
-Google requires you to fill in:
-- **Target audience**: Adults (18+)
-- **Data safety form**: Declare what data you collect (email, financial data, payments)
-  - Email → collected, encrypted, shared with Resend
-  - Financial data → collected, encrypted, not shared
-  - Payment info → not collected (handled by Razorpay)
-- **Financial features declaration**: Since this is a finance app, Google may ask for
-  additional verification. Have your company registration (CIN: U62090TS2026PTC213220)
-  details ready.
-
----
-
-## Step 10 — Wait for Review
-
-- Initial review: **3–7 business days** for new apps
-- Subsequent updates: usually **a few hours**
-- Monitor status in Play Console → **Inbox / Policy** for any issues
-
----
-
-## Keeping the App Updated
-
-Since this is a TWA, **your website IS the app**. Any changes to your Vercel deployment
-are live immediately — no Play Store update needed.
-
-You only need to push a new AAB when:
-- You change the package name, icons, or splash screen
-- You bump the `appVersion` code (required by Play Store for binary updates)
-- You add new Android-level permissions or features
+1. Release → Production → **Create new release**
+2. Upload `app-release-bundle.aab`
+3. Release notes: `Initial release of Artha-IQ 1.0.0`
+4. Submit for review — expect **3–7 business days**
 
 ---
 
@@ -196,10 +79,9 @@ You only need to push a new AAB when:
 | Item | Value |
 |---|---|
 | Package ID | `ai.pithonix.wealthiq` |
-| App name | `WealthIQ — Pithonix AI` |
-| Launcher name | `WealthIQ` |
-| Host URL | `https://wealthiq.pithonix.ai` |
-| Privacy policy | `https://wealthiq.pithonix.ai/privacy` |
+| App name | `Artha-IQ — Pithonix AI` |
+| Host URL | `https://wealth.pithonix.ai` |
+| Privacy policy | `https://wealth.pithonix.ai/privacy` |
 | Support email | `info@pithonix.ai` |
 | Theme color | `#080d1a` |
 | Version | `1.0.0` (code: `1`) |
@@ -210,8 +92,7 @@ You only need to push a new AAB when:
 
 | Problem | Fix |
 |---|---|
-| Browser bar visible inside app | `assetlinks.json` not found or fingerprint mismatch |
-| Build fails — SDK not found | Set `ANDROID_HOME` env variable to your SDK path |
-| `bubblewrap init` fails | Ensure your manifest.json URL is publicly reachable |
-| Play Store rejects app — finance policy | Upload company registration certificate |
+| Browser bar visible inside app | `assetlinks.json` fingerprint mismatch |
+| PWABuilder score too low | Ensure icon PNGs are live at the URLs in manifest.json |
+| Play Store rejects — finance policy | Upload company registration certificate (CIN: U62090TS2026PTC213220) |
 | App crashes on launch | Check that start URL returns HTTP 200 |

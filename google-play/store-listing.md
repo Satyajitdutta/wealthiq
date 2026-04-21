@@ -1,25 +1,25 @@
-# WealthIQ — Google Play Store Listing Content
+# Artha-IQ — Google Play Store Listing Content
 
 ## App Title (max 50 chars)
-WealthIQ — AI Financial Advisor
+Artha-IQ — AI Financial Advisor
 
 ## Short Description (max 80 chars)
 Personal financial intelligence powered by AI. Built for India.
 
 ## Full Description (max 4000 chars)
-WealthIQ by Pithonix AI is India's first personal financial intelligence platform. Get your Financial Health Score, AI-powered tax estimates, investment insights, and personalised money advice — all in one place.
+Artha-IQ by Pithonix AI is India's first personal financial intelligence platform. Get your Financial Health Score, AI-powered tax estimates, investment insights, and personalised money advice — all in one place.
 
-**What WealthIQ does for you:**
+**What Artha-IQ does for you:**
 • 📊 Financial Health Score — Know exactly where you stand financially
 • 🤖 AI-Powered Advice — Get personalised tips from advanced AI (Google Gemini + Claude)
 • 💰 Tax Estimation — Estimate your income tax liability in seconds under new or old regime
 • 📈 Investment Analysis — Review your portfolio and get smart rebalancing ideas
-• 🔒 Secure Login — Passwordless OTP-based login, no passwords to remember
+• 🔐 Secure Login — Passwordless OTP-based login, no passwords to remember
 • ☁️ Sync Across Devices — Your profile stays updated everywhere
 • 💳 Flexible Plans — Free tier available, upgrade anytime
 
-**Why WealthIQ?**
-Most Indians lack access to quality financial guidance. WealthIQ bridges that gap using AI — giving you the same quality of advice that a human financial advisor would charge thousands of rupees for, instantly and affordably.
+**Why Artha-IQ?**
+Most Indians lack access to quality financial guidance. Artha-IQ bridges that gap using AI — giving you the same quality of advice that a human financial advisor would charge thousands of rupees for, instantly and affordably.
 
 Built by PITHONIX AI INDIA PRIVATE LIMITED, a startup registered in Hyderabad, India.
 
@@ -37,16 +37,16 @@ Finance
 financial advisor, AI finance, tax calculator, investment tracker, money management, personal finance India, financial health, budget planner
 
 ## Content Rating
-Everyone (suitable for all ages 18+)
+Everyone (suitable for users 18+)
 
 ## Privacy Policy URL
-https://wealthiq.pithonix.ai/privacy
+https://wealth.pithonix.ai/privacy
 
 ## Support Email
 info@pithonix.ai
 
 ## Website
-https://wealthiq.pithonix.ai
+https://wealth.pithonix.ai
 
 ---
 
