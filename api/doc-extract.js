@@ -264,14 +264,18 @@ export default async function handler(req, res) {
     generationConfig: {
       temperature:      0.1,
       maxOutputTokens:  4096, // increased for transaction lists
-      responseMimeType: 'application/json'
+      responseMimeType: 'application/json',
+      thinkingConfig: {
+        thinkingBudget: -1, // dynamic reasoning
+        includeThoughts: true
+      }
     }
   });
 
   return new Promise((resolve) => {
     const geminiReq = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path:     `/v1beta/models/gemini-3.1-flash:generateContent?key=${apiKey}`,
+      path:     `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       method:  'POST',
       headers: { 'Content-Type': 'application/json' }
     }, (geminiRes) => {
