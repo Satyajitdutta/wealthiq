@@ -234,16 +234,24 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const { mimeType, data, docText, city } = body;
+  const { mimeType, data, docText, images, city } = body;
 
-  // Must have either image data OR extracted text
-  if (!docText && (!mimeType || !data)) {
-    return res.status(400).json({ error: 'Missing mimeType/data or docText' });
+  // Must have either image data, extracted text, or multi-image array
+  if (!docText && !images && (!mimeType || !data)) {
+    return res.status(400).json({ error: 'Missing mimeType/data, docText, or images[]' });
   }
 
   // Reject oversized image payloads (text payloads are always compact)
   if (data && data.length > 14_000_000) {   // ~10 MB file → ~14 MB base64
     return res.status(413).json({ error: 'File too large — please upload max 10 MB', errorCode: 'too_large' });
+  }
+
+  // Reject oversized multi-image payloads
+  if (images && Array.isArray(images)) {
+    const totalSize = images.reduce((sum, img) => sum + (img.data?.length || 0), 0);
+    if (totalSize > 28_000_000) {  // ~20 MB total for all images
+      return res.status(413).json({ error: 'Screenshots too large — try fewer or smaller images', errorCode: 'too_large' });
+    }
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
@@ -255,9 +263,10 @@ export default async function handler(req, res) {
   const cityContext  = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext);
 
-  // Build Gemini request — two modes:
+  // Build Gemini request — three modes:
   //   docText:  text parts only (digital PDFs — all pages, most accurate)
-  //   data:     inlineData (images, scanned PDFs — vision model)
+  //   data:     inlineData single image/PDF (vision model)
+  //   images:   multiple inlineData images (multi-screenshot upload)
   let parts;
   if (docText) {
     // Text mode: full document text from all pages + extraction prompt
@@ -266,6 +275,14 @@ export default async function handler(req, res) {
       { text: extractPrompt }
     ];
     console.log('[doc-extract] mode: text | chars:', docText.length, '| city:', city || 'auto');
+  } else if (images && Array.isArray(images) && images.length > 0) {
+    // Multi-image mode: multiple screenshots of bank statement pages
+    parts = [
+      { text: `The user has uploaded ${images.length} screenshot(s) of their bank statement. Analyse ALL images together as pages of the same document.` },
+      ...images.map(img => ({ inlineData: { mimeType: img.mimeType || 'image/jpeg', data: img.data } })),
+      { text: extractPrompt }
+    ];
+    console.log('[doc-extract] mode: multi-image | count:', images.length, '| city:', city || 'auto');
   } else {
     // Vision mode: inline image/PDF data
     parts = [
