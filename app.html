@@ -1322,6 +1322,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .si-p-done { background:rgba(34,197,94,0.14);color:var(--green) }
 .si-p-err  { background:rgba(239,68,68,0.12);color:var(--red) }
 
+/* Extra UI for Bank Statement */
+.si-note { font-size:0.64rem; color:var(--t3); line-height:1.45; margin-top:0.5rem; padding:0.5rem 0.65rem; background:rgba(255,255,255,0.03); border-radius:8px; border-left:3px solid var(--bd2); font-style:italic }
+.si-note strong { color:var(--text); font-style:normal }
+.si-btn-row { display:flex; gap:0.45rem; margin-top:0.75rem }
+.si-btn-sub { flex:1; display:flex; align-items:center; justify-content:center; gap:0.35rem; font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:0.4px; padding:0.48rem; border-radius:8px; border:1px solid var(--bd2); background:rgba(255,255,255,0.05); color:var(--t2); cursor:pointer; transition:all 0.2s }
+.si-btn-sub:hover { background:rgba(255,255,255,0.1); border-color:var(--t3) }
+.si-btn-sub.primary { border-color:rgba(34,197,94,0.4); background:rgba(34,197,94,0.1); color:var(--green) }
+.si-btn-sub.primary:hover { background:rgba(34,197,94,0.16) }
+
+
 /* SVG check draw */
 .si-chk { stroke-dasharray:32;stroke-dashoffset:32;animation:siCheckDraw 0.48s 0.08s cubic-bezier(0.4,0,0.2,1) forwards }
 
@@ -3639,7 +3649,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- Card 3: Bank Statement -->
-      <div class="si-card si-card-3" id="si-card-2" onclick="siTrigger(2)" role="button" tabindex="0">
+      <div class="si-card si-card-3" id="si-card-2" onclick="if(event.target===this||this.contains(event.target)) return;" role="button" tabindex="0">
         <div class="si-scan"></div>
         <div class="si-card-row">
           <div class="si-icon">
@@ -3652,10 +3662,24 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           </div>
           <div class="si-info">
             <div class="si-name">Bank Statement</div>
-            <div class="si-desc">EMIs · Recurring spend · Average monthly outflow</div>
-            <div class="si-hint" id="si-hint-2">Screenshot or PDF · Most banks lock PDFs with a password — screenshot works better</div>
+            <div class="si-desc">EMIs · Recurring spend · Average balance</div>
+            <div class="si-hint" id="si-hint-2">Screenshot (Summary Page) or PDF</div>
+            <div class="si-note">
+              <strong>Tip:</strong> Statements &gt; 2 pages? Use <strong>Screenshots</strong> of the summary page for faster, private analysis.
+            </div>
           </div>
-          <div class="si-st"><div class="si-pill si-p-idle" id="si-pill-2">Upload</div></div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="si-pill-2">Idle</div></div>
+        </div>
+        <!-- Dedicated Action Buttons -->
+        <div class="si-btn-row">
+          <button class="si-btn-sub" onclick="siTrigger(2); event.stopPropagation();">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload PDF
+          </button>
+          <button class="si-btn-sub primary" onclick="siTriggerMulti(2); event.stopPropagation();">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Add Screenshots
+          </button>
         </div>
       </div>
 
@@ -8546,6 +8570,14 @@ function siShowEmiFallback(isPasswordError = false) {
   // Show password section only when we detected a password-protected PDF
   if (pwdSec) pwdSec.style.display = isPasswordError ? 'block' : 'none';
   setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+/* ── Trigger Multi-Image Selection Specifically ────────────── */
+function siTriggerMulti(idx) {
+  // Clear any existing multi-images first for fresh start
+  SI.multiImages = [];
+  const input = document.getElementById('si-multi-file');
+  if (input) input.click();
 }
 
 /* ── PDF Password Unlock ───────────────────────────────────── */
