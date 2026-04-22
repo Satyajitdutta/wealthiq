@@ -271,10 +271,11 @@ export default async function handler(req, res) {
   return new Promise((resolve) => {
     const geminiReq = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path:     `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      path:     `/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       method:  'POST',
       headers: { 'Content-Type': 'application/json' }
     }, (geminiRes) => {
+      geminiRes.setEncoding('utf8');
       let raw = '';
       geminiRes.on('data', c => raw += c);
       geminiRes.on('end', () => {
@@ -299,8 +300,8 @@ export default async function handler(req, res) {
           res.status(200).json({ 
             success: false, 
             errorCode: 'parse_error',
-            error: 'Could not extract data',
-            aiHint: raw.slice(0, 300) // assist debugging frontend console
+            error: e.message || 'Could not extract data',
+            aiHint: raw.slice(0, 1000) // increased for better debugging
           });
         }
         resolve();
