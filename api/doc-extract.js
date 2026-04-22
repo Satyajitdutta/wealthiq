@@ -289,8 +289,8 @@ export default async function handler(req, res) {
   }
 
   // Reject oversized image payloads (text payloads are always compact)
-  if (data && data.length > 10_000_000) {
-    return res.status(413).json({ error: 'File too large — please upload max 7 MB', errorCode: 'too_large' });
+  if (data && data.length > 14_000_000) {   // ~10 MB file → ~14 MB base64
+    return res.status(413).json({ error: 'File too large — please upload max 10 MB', errorCode: 'too_large' });
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();

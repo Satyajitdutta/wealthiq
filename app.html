@@ -8391,7 +8391,7 @@ async function siPdfToJpeg(file) {
   let totalH = 0, maxW = 0;
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p);
-    const vp   = page.getViewport({ scale: 0.9 });  // 0.9x: all pages, compact
+    const vp   = page.getViewport({ scale: 1.2 });  // 1.2x: high clarity for OCR, all pages
     const cv   = document.createElement('canvas');
     cv.width   = vp.width;
     cv.height  = vp.height;
@@ -8417,14 +8417,14 @@ async function siPdfToJpeg(file) {
 const SI_ERRORS = {
   2: { // Bank statement specific
     pdf_unreadable: 'PDF is password-protected — see the tip below, or try a screenshot',
-    too_large:      'File too large — try just 1 month, or take a screenshot',
+    too_large:      'File too large — max 10 MB. Try a shorter period statement.',
     parse_error:    'Couldn\'t read this PDF — try a screenshot of the summary page',
     low_confidence: 'Couldn\'t read clearly — try a screenshot instead',
     default:        'Upload failed — try a screenshot of the summary page'
   },
   default: {
     pdf_unreadable: 'Couldn\'t read — try a clearer photo or a digital (non-scanned) PDF',
-    too_large:      'File too large — max 7 MB',
+    too_large:      'File too large — max 10 MB',
     parse_error:    'Couldn\'t extract data — try a better quality file',
     low_confidence: 'Couldn\'t read clearly — try a crisper photo or PDF',
     default:        'Upload failed — please try again'
@@ -8519,8 +8519,8 @@ async function siHandleFile(idx, input) {
   input.value = '';            // allow re-selecting same file
   if (!file) return;
 
-  // Guard: max 7 MB client-side
-  if (file.size > 7 * 1024 * 1024) {
+  // Guard: max 10 MB client-side
+  if (file.size > 10 * 1024 * 1024) {
     siSetCard(idx, 'err', 0, siGetErr(idx, 'too_large'));
     if (idx === 2) siShowEmiFallback();
     return;
