@@ -185,24 +185,22 @@ JSON schema (use null for any field not found in the document):
 
   "avg_monthly_credit": <average monthly credit in ₹ as a number | null>,
   "avg_monthly_debit":  <average monthly debit in ₹ as a number | null>,
-  "emi_total":          <estimated total monthly EMI payments (loans) in ₹ as a number | null>,
-  "recurring_utilities": <estimated total monthly utilities (electricity, water, gas, internet, mobile, insurance, subscriptions) in ₹ as a number | null>,
+  "emi_total":          <total monthly loan EMIs in ₹ as a number | null>,
+  "recurring_utilities": <total monthly recurring bills/subs in ₹ as a number | null>,
   "total_monthly_obligations": <emi_total + recurring_utilities | null>,
-  "recurring_debits":   [],
+  "recurring_debits":   [
+    { "name": <string>, "amount": <number>, "category": "emi" | "utility" | "subscription", "date": <string | null> }
+  ],
 
   "fields_extracted":   <integer count of non-null fields above, excluding doc_type, confidence, recurring_debits>
 }
 
 Rules:
 - All monetary values must be plain numbers in Indian Rupees (no ₹ symbol, no commas).
-- If the document shows annual figures, divide by 12 to get monthly values.
-- For bank statements: identify EMIs as recurring loan/finance debits (Bajaj, HDFC Bank, LIC Housing, etc.).
-- For bank statements: identify recurring utilities separately (electricity, water, gas, mobile, insurance, subscriptions) — check provider names below.
-- recurring_utilities = sum of all non-EMI recurring debits. emi_total = loan EMIs only.
-- total_monthly_obligations = emi_total + recurring_utilities
-- Set confidence below 0.3 if the document is blurry, cut off, or unreadable.
-- If it is not a financial document at all, set doc_type to "unknown" and confidence to 0.
-- Return ONLY the JSON object. No text outside it.
+- For bank statements: list high-confidence recurring debits in the recurring_debits array.
+- category: "emi" for loans, "utility" for bills (electricity/water/gas/mobile/internet), "subscription" for OTT/apps.
+- total_monthly_obligations MUST equal the sum of all transaction amounts in recurring_debits.
+- Return ONLY the JSON object.
 
 ${cityContext}`;
 }
@@ -216,7 +214,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'POST')   { res.status(405).json({ error: 'POST only' }); return; }
 
-  // Parse body (manual stream read to handle large base64 payloads)
+  // Parse body
   let body;
   try {
     if (typeof req.body === 'object' && req.body !== null) {
@@ -235,134 +233,80 @@ export default async function handler(req, res) {
   }
 
   const { mimeType, data, docText, images, city } = body;
-
-  // Must have either image data, extracted text, or multi-image array
   if (!docText && !images && (!mimeType || !data)) {
-    return res.status(400).json({ error: 'Missing mimeType/data, docText, or images[]' });
-  }
-
-  // Reject oversized image payloads (text payloads are always compact)
-  if (data && data.length > 14_000_000) {   // ~10 MB file → ~14 MB base64
-    return res.status(413).json({ error: 'File too large — please upload max 10 MB', errorCode: 'too_large' });
-  }
-
-  // Reject oversized multi-image payloads
-  if (images && Array.isArray(images)) {
-    const totalSize = images.reduce((sum, img) => sum + (img.data?.length || 0), 0);
-    if (totalSize > 28_000_000) {  // ~20 MB total for all images
-      return res.status(413).json({ error: 'Screenshots too large — try fewer or smaller images', errorCode: 'too_large' });
-    }
+    return res.status(400).json({ error: 'Missing document data' });
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-  if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-  }
+  if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY missing' });
 
-  // Build city-aware extraction prompt
-  const cityContext  = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
+  const cityContext   = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext);
 
-  // Build Gemini request — three modes:
-  //   docText:  text parts only (digital PDFs — all pages, most accurate)
-  //   data:     inlineData single image/PDF (vision model)
-  //   images:   multiple inlineData images (multi-screenshot upload)
   let parts;
   if (docText) {
-    // Text mode: full document text from all pages + extraction prompt
     parts = [
-      { text: `BANK/FINANCIAL DOCUMENT TEXT (all pages):\n\n${docText}` },
+      { text: `DOCUMENT TEXT (all pages):\n\n${docText}` },
       { text: extractPrompt }
     ];
-    console.log('[doc-extract] mode: text | chars:', docText.length, '| city:', city || 'auto');
   } else if (images && Array.isArray(images) && images.length > 0) {
-    // Multi-image mode: multiple screenshots of bank statement pages
     parts = [
-      { text: `The user has uploaded ${images.length} screenshot(s) of their bank statement. Analyse ALL images together as pages of the same document.` },
+      { text: `Analyse these ${images.length} screenshots together.` },
       ...images.map(img => ({ inlineData: { mimeType: img.mimeType || 'image/jpeg', data: img.data } })),
       { text: extractPrompt }
     ];
-    console.log('[doc-extract] mode: multi-image | count:', images.length, '| city:', city || 'auto');
   } else {
-    // Vision mode: inline image/PDF data
-    parts = [
-      { inlineData: { mimeType, data } },
-      { text: extractPrompt }
-    ];
-    console.log('[doc-extract] mode: vision | mimeType:', mimeType, '| city:', city || 'auto');
+    parts = [ { inlineData: { mimeType, data } }, { text: extractPrompt } ];
   }
 
   const geminiBody = JSON.stringify({
     contents: [{ parts }],
     generationConfig: {
       temperature:      0.1,
-      maxOutputTokens:  2048,   // increased: text mode returns richer detail
+      maxOutputTokens:  4096, // increased for transaction lists
       responseMimeType: 'application/json'
     }
   });
 
-  const path = `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
   return new Promise((resolve) => {
     const geminiReq = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path,
+      path:     `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       method:  'POST',
-      headers: {
-        'Content-Type':   'application/json',
-        'Content-Length': Buffer.byteLength(geminiBody)
-      }
+      headers: { 'Content-Type': 'application/json' }
     }, (geminiRes) => {
       let raw = '';
       geminiRes.on('data', c => raw += c);
       geminiRes.on('end', () => {
         try {
           const parsed = JSON.parse(raw);
-          let   text   = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-          // Strip markdown fences if Gemini wraps anyway
-          text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-
+          let text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          
+          // Robust JSON extraction
           const start = text.indexOf('{');
           const end   = text.lastIndexOf('}');
-          if (start === -1 || end === -1) throw new Error('No JSON in Gemini response');
-
-          const extracted = JSON.parse(text.slice(start, end + 1));
-          console.log('[doc-extract] doc_type:', extracted.doc_type,
-                      '| confidence:', extracted.confidence,
-                      '| fields:', extracted.fields_extracted,
-                      '| gemini status:', geminiRes.statusCode);
-
-          // Detect encrypted/unreadable PDF from confidence + empty fields
-          if ((extracted.confidence || 0) < 0.15 && !extracted.take_home && !extracted.annual_income && !extracted.avg_monthly_credit) {
-            return res.status(200).json({
-              success: false,
-              errorCode: 'pdf_unreadable',
-              error: 'Could not read document — it may be password-protected or unreadable'
-            });
+          if (start === -1 || end === -1) {
+             throw new Error(`Invalid JSON format: ${text.slice(0, 100)}...`);
           }
-
+          const extracted = JSON.parse(text.slice(start, end + 1));
+          
+          if ((extracted.confidence || 0) < 0.15 && !extracted.take_home && !extracted.avg_monthly_credit) {
+            return res.status(200).json({ success: false, errorCode: 'pdf_unreadable' });
+          }
           res.status(200).json({ success: true, extracted });
         } catch (e) {
-          console.error('[doc-extract] parse error:', e.message, '| gemini status:', geminiRes.statusCode, '| raw:', raw.slice(0, 300));
-          // If Gemini returned a non-200, it's likely an API-level error (encrypted PDF, bad format)
-          const isEncryptedErr = raw.includes('INVALID_ARGUMENT') || raw.includes('unable to process') || raw.includes('encrypted');
-          res.status(200).json({
-            success: false,
-            errorCode: isEncryptedErr ? 'pdf_unreadable' : 'parse_error',
-            error: 'Could not extract data from this document'
+          console.error('[doc-extract] parse error:', e.message);
+          res.status(200).json({ 
+            success: false, 
+            errorCode: 'parse_error',
+            error: 'Could not extract data',
+            aiHint: raw.slice(0, 300) // assist debugging frontend console
           });
         }
         resolve();
       });
     });
-
-    geminiReq.on('error', (e) => {
-      console.error('[doc-extract] request error:', e.message);
-      res.status(500).json({ error: e.message });
-      resolve();
-    });
-
+    geminiReq.on('error', e => { res.status(500).json({ error: e.message }); resolve(); });
     geminiReq.write(geminiBody);
     geminiReq.end();
   });
