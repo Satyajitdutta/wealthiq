@@ -207,54 +207,7 @@ Rules:
 ${cityContext}`;
 }
 
-const EXTRACT_PROMPT_TEMPLATE = buildExtractPrompt();
-
-A user has uploaded a financial document. It is one of: salary slip, Form 16, or bank statement (Indian).
-
-Extract every financial field you can identify. Return ONLY valid JSON — no explanation, no markdown, no code fences.
-
-JSON schema (use null for any field not found in the document):
-{
-  "doc_type": "salary_slip" | "form_16" | "bank_statement" | "unknown",
-  "confidence": <0.0 to 1.0 — how clearly readable is this document>,
-
-  "employee_name":     <string | null>,
-  "employer_name":     <string | null>,
-  "designation":       <string | null>,
-  "month_year":        <"MMM YYYY" | null>,
-  "city":              <city name | null>,
-
-  "take_home":         <monthly take-home pay in ₹ as a number | null>,
-  "gross_salary":      <monthly gross salary in ₹ as a number | null>,
-  "basic":             <monthly basic pay in ₹ as a number | null>,
-  "hra":               <monthly HRA in ₹ as a number | null>,
-  "special_allowance": <monthly special allowance in ₹ as a number | null>,
-  "pf_employee":       <monthly employee PF deduction in ₹ as a number | null>,
-  "professional_tax":  <monthly professional tax in ₹ as a number | null>,
-  "tds_monthly":       <monthly TDS deducted in ₹ as a number | null>,
-
-  "annual_income":     <total annual income in ₹ as a number | null>,
-  "tax_regime":        <"new" | "old" | null>,
-  "section_80c":       <annual 80C total in ₹ as a number | null>,
-  "section_80d":       <annual 80D total in ₹ as a number | null>,
-  "nps_80ccd":         <annual NPS 80CCD 1B in ₹ as a number | null>,
-  "annual_tds":        <annual total TDS in ₹ as a number | null>,
-
-  "avg_monthly_credit": <average monthly credit in ₹ as a number | null>,
-  "avg_monthly_debit":  <average monthly debit in ₹ as a number | null>,
-  "emi_total":          <estimated total monthly EMI payments in ₹ as a number | null>,
-  "recurring_debits":   [],
-
-  "fields_extracted":   <integer count of non-null fields above, excluding doc_type, confidence, recurring_debits>
-}
-
-Rules:
-- All monetary values must be plain numbers in Indian Rupees (no ₹ symbol, no commas).
-- If the document shows annual figures, divide by 12 to get monthly values.
-- For bank statements: identify EMIs as recurring fixed debits that appear every month.
-- Set confidence below 0.3 if the document is blurry, cut off, or unreadable.
-- If it is not a financial document at all, set doc_type to "unknown" and confidence to 0.
-- Return ONLY the JSON object. No text outside it.`;
+// (EXTRACT_PROMPT_TEMPLATE kept for legacy — active prompt built dynamically via buildExtractPrompt)
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
