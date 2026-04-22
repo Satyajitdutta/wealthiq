@@ -285,17 +285,38 @@ export default async function handler(req, res) {
       geminiRes.on('end', () => {
         try {
           const parsed = JSON.parse(raw);
-          let text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
+
+          // Thinking models return multiple parts. Find the one that's NOT a thought.
+          const parts = parsed?.candidates?.[0]?.content?.parts || [];
+          let text = '';
+          for (const p of parts) {
+            if (p.thought) continue; // Skip thinking/reasoning blocks
+            if (p.text) { text = p.text; break; }
+          }
           
-          // Robust JSON extraction
+          if (!text) throw new Error('Gemini returned no extraction text');
+
+          // Robust JSON extraction (find the block between the first { and last })
           const start = text.indexOf('{');
           const end   = text.lastIndexOf('}');
           if (start === -1 || end === -1) {
-             throw new Error(`Invalid JSON format: ${text.slice(0, 100)}...`);
+             throw new Error('No JSON object found in Gemini response');
           }
-          const extracted = JSON.parse(text.slice(start, end + 1));
           
-          if ((extracted.confidence || 0) < 0.15 && !extracted.take_home && !extracted.avg_monthly_credit) {
+          const jsonStr = text.slice(start, end + 1);
+          let extracted;
+          try {
+            extracted = JSON.parse(jsonStr);
+          } catch (e) {
+            // Attempt to fix common Gemini JSON formatting issues (like trailing commas)
+            const cleaned = jsonStr.replace(/,\s*([\]}])/g, '$1');
+            extracted = JSON.parse(cleaned);
+          }
+          
+          // Detect poor extraction (confidence < 0.15 AND no core fields)
+          const hasData = extracted.take_home || extracted.annual_income || extracted.avg_monthly_credit || extracted.emi_total;
+          if ((extracted.confidence || 0) < 0.15 && !hasData) {
             return res.status(200).json({ success: false, errorCode: 'pdf_unreadable' });
           }
           res.status(200).json({ success: true, extracted });
