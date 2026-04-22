@@ -3662,25 +3662,61 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div><!-- /si-cards -->
 
     <!-- Bank statement fallback: manual EMI entry (shown when PDF fails) -->
-    <div id="si-emi-fallback" style="display:none;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:0.875rem;margin-bottom:0.85rem">
-      <div style="font-size:0.72rem;font-weight:800;color:#f59e0b;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
-        Bank statement is password-protected
-      </div>
-      <div style="font-size:0.72rem;color:var(--t2);margin-bottom:0.75rem;line-height:1.5">
-        Indian banks lock PDF statements with your PAN or date of birth. <strong style="color:var(--text)">Take a screenshot of the summary page</strong> and upload that — or enter your total monthly recurring obligations below.
-      </div>
-      <div style="display:flex;gap:0.5rem;align-items:center">
-        <div style="flex:1">
-          <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.25rem">Total monthly obligations (EMI + utilities + subscriptions)</div>
-          <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.5rem">Include: Home/Car/Personal loans, Electricity, Water, Gas, Insurance, Mobile, Broadband, Subscriptions. Not: occasional food/shopping.</div>
-          <input id="si-emi-input" type="number" placeholder="e.g. 35000"
-            style="width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.55rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;outline:none"
-            oninput="siSaveManualEMI(this.value)">
+    <!-- Bank Statement Smart Recovery Panel -->
+    <div id="si-bank-fallback" style="display:none;margin-bottom:0.85rem">
+
+      <!-- Section 1: Password Unlock (shown only when PDF is password-protected) -->
+      <div id="si-pwd-section" style="display:none;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:0.875rem;margin-bottom:0.6rem">
+        <div style="font-size:0.72rem;font-weight:800;color:#f59e0b;margin-bottom:0.45rem;display:flex;align-items:center;gap:0.4rem">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          PDF is password-protected
         </div>
-        <button onclick="siTrigger(2)" style="flex-shrink:0;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:0.55rem 0.75rem;color:#f59e0b;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap">
-          Try Screenshot
+        <div style="font-size:0.68rem;color:var(--t2);margin-bottom:0.65rem;line-height:1.45">
+          Indian banks lock statements with your <strong style="color:var(--text)">PAN number</strong> or <strong style="color:var(--text)">date of birth</strong> (e.g. ABCDE1234F or 15021980). Enter it below to unlock.
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <input id="si-pwd-input" type="password" placeholder="Enter PDF password (PAN / DOB)"
+            style="flex:1;background:var(--c3);border:1px solid rgba(245,158,11,0.4);border-radius:8px;padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;outline:none"
+            onkeydown="if(event.key==='Enter') siUnlockPdf()">
+          <button onclick="siUnlockPdf()" id="si-pwd-btn"
+            style="flex-shrink:0;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);border-radius:8px;padding:0.5rem 0.85rem;color:#f59e0b;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;white-space:nowrap">
+            🔓 Unlock
+          </button>
+        </div>
+        <div id="si-pwd-err" style="display:none;font-size:0.65rem;color:#ef4444;margin-top:0.4rem">Wrong password — try your PAN or DOB (DDMMYYYY format)</div>
+      </div>
+
+      <!-- Section 2: Upload Screenshots (one or many) -->
+      <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:0.875rem;margin-bottom:0.6rem">
+        <div style="font-size:0.72rem;font-weight:800;color:var(--indigo);margin-bottom:0.45rem;display:flex;align-items:center;gap:0.4rem">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Upload Screenshots Instead
+        </div>
+        <div style="font-size:0.68rem;color:var(--t2);margin-bottom:0.65rem;line-height:1.45">
+          Take screenshots of your statement pages and upload them all at once. You can pick <strong style="color:var(--text)">multiple images</strong> in one go.
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <button onclick="document.getElementById('si-f2-multi').click()"
+            style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:8px;padding:0.5rem 0.85rem;color:var(--indigo);font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:0.35rem">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Select Screenshots
+          </button>
+          <span id="si-multi-count" style="font-size:0.65rem;color:var(--t3)"></span>
+        </div>
+        <!-- Thumbnail strip -->
+        <div id="si-multi-thumbs" style="display:none;flex-wrap:wrap;gap:0.4rem;margin-top:0.6rem"></div>
+        <button id="si-multi-send-btn" onclick="siSendMultiImages()" style="display:none;margin-top:0.6rem;width:100%;background:var(--indigo);border:none;border-radius:8px;padding:0.55rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer">
+          ✦ Analyse These Screenshots
         </button>
+      </div>
+
+      <!-- Section 3: Manual Entry fallback -->
+      <div style="background:var(--c3);border:1px solid var(--bd2);border-radius:12px;padding:0.875rem">
+        <div style="font-size:0.7rem;font-weight:700;color:var(--t2);margin-bottom:0.5rem">Or enter your monthly obligations manually</div>
+        <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.5rem;line-height:1.4">Include EMIs, insurance, utilities, mobile, broadband. Exclude occasional food/shopping.</div>
+        <input id="si-emi-input" type="number" placeholder="Total monthly obligations e.g. 45000"
+          style="width:100%;background:var(--bg);border:1px solid var(--bd2);border-radius:8px;padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;outline:none;box-sizing:border-box"
+          oninput="siSaveManualEMI(this.value)">
       </div>
     </div>
 
@@ -3688,6 +3724,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <input type="file" id="si-f0" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(0,this)">
     <input type="file" id="si-f1" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(1,this)">
     <input type="file" id="si-f2" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(2,this)">
+    <input type="file" id="si-f2-multi" accept="image/*" multiple style="display:none" onchange="siHandleMultiImages(this)">
 
     <!-- Review panel (appears after first extraction) -->
     <div class="si-review" id="si-review">
@@ -8413,6 +8450,56 @@ async function siPdfToJpeg(file) {
   return out.toDataURL('image/jpeg', 0.78).split(',')[1];
 }
 
+/* ── Extract text from an already-loaded PDF document object ── */
+// Used by siUnlockPdf after password unlock succeeds
+async function siExtractTextFromLoadedPdf(pdf) {
+  let fullText = `DOCUMENT: unlocked-statement.pdf\nTOTAL PAGES: ${pdf.numPages}\n\n`;
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page    = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const lines = {};
+    for (const item of content.items) {
+      const y = Math.round(item.transform[5]);
+      if (!lines[y]) lines[y] = [];
+      lines[y].push(item.str);
+    }
+    const pageText = Object.keys(lines)
+      .sort((a, b) => b - a)
+      .map(y => lines[y].join('  '))
+      .filter(l => l.trim())
+      .join('\n');
+    fullText += `--- PAGE ${p} ---\n${pageText}\n\n`;
+  }
+  return fullText;
+}
+
+/* ── Render all pages of an already-loaded PDF to JPEG ── */
+// Used by siUnlockPdf for scanned PDFs after password unlock
+async function siRenderPdfToJpeg(pdf) {
+  const canvases = [];
+  let totalH = 0, maxW = 0;
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const vp   = page.getViewport({ scale: 1.2 });
+    const cv   = document.createElement('canvas');
+    cv.width   = vp.width;
+    cv.height  = vp.height;
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    canvases.push(cv);
+    totalH += vp.height;
+    maxW = Math.max(maxW, vp.width);
+  }
+  const out = document.createElement('canvas');
+  out.width  = maxW;
+  out.height = totalH;
+  const ctx  = out.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, maxW, totalH);
+  let y = 0;
+  for (const cv of canvases) { ctx.drawImage(cv, 0, y); y += cv.height; }
+  return out.toDataURL('image/jpeg', 0.78).split(',')[1];
+}
+
 /* ── Error messages per card + situation ──────────────────── */
 const SI_ERRORS = {
   2: { // Bank statement specific
@@ -8435,10 +8522,172 @@ function siGetErr(idx, code) {
   return map[code] || map.default;
 }
 
-/* ── Show bank statement fallback ─────────────────────────── */
-function siShowEmiFallback() {
-  const el = document.getElementById('si-emi-fallback');
-  if (el) { el.style.display = 'block'; setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100); }
+/* ── Show bank statement smart recovery panel ──────────────── */
+function siShowEmiFallback(isPasswordError = false) {
+  const panel = document.getElementById('si-bank-fallback');
+  const pwdSec = document.getElementById('si-pwd-section');
+  if (!panel) return;
+  panel.style.display = 'block';
+  // Show password section only when we detected a password-protected PDF
+  if (pwdSec) pwdSec.style.display = isPasswordError ? 'block' : 'none';
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+/* ── PDF Password Unlock ───────────────────────────────────── */
+async function siUnlockPdf() {
+  const pwd = document.getElementById('si-pwd-input')?.value?.trim();
+  if (!pwd) { showToast('⚠️', 'Enter your PDF password first'); return; }
+  if (!SI.pendingPdfBuf) { showToast('⚠️', 'Upload the PDF again first'); return; }
+
+  const btn = document.getElementById('si-pwd-btn');
+  const errEl = document.getElementById('si-pwd-err');
+  if (btn) { btn.textContent = '⏳ Unlocking…'; btn.disabled = true; }
+  if (errEl) errEl.style.display = 'none';
+
+  try {
+    await siPdfJsLoad();
+    const pdf = await window.pdfjsLib.getDocument({ data: SI.pendingPdfBuf, password: pwd }).promise;
+
+    // Password worked — now extract text from all pages
+    siSetCard(2, 'proc');
+    const text = await siExtractTextFromLoadedPdf(pdf);
+    const meaningfulChars = text.replace(/[\s\-\|]+/g, '').length;
+
+    let payload;
+    if (meaningfulChars > 800) {
+      payload = { docText: text };
+    } else {
+      // Scanned even after unlock — render all pages
+      const b64 = await siRenderPdfToJpeg(pdf);
+      payload = { mimeType: 'image/jpeg', data: b64 };
+    }
+
+    await siSubmitPayload(2, payload);
+
+  } catch (e) {
+    if (btn) { btn.textContent = '🔓 Unlock'; btn.disabled = false; }
+    if (e.name === 'PasswordException') {
+      if (errEl) errEl.style.display = 'block';
+    } else {
+      showToast('❌', 'Unlock failed — try uploading a screenshot instead');
+    }
+  }
+}
+
+/* ── Multi-image screenshot upload ────────────────────────── */
+function siHandleMultiImages(input) {
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+
+  SI.multiImages = files;
+  const countEl = document.getElementById('si-multi-count');
+  const thumbEl = document.getElementById('si-multi-thumbs');
+  const sendBtn = document.getElementById('si-multi-send-btn');
+
+  if (countEl) countEl.textContent = `${files.length} image${files.length > 1 ? 's' : ''} selected`;
+
+  // Show thumbnails
+  if (thumbEl) {
+    thumbEl.style.display = 'flex';
+    thumbEl.innerHTML = files.map((f, i) => {
+      const url = URL.createObjectURL(f);
+      return `<div style="position:relative">
+        <img src="${url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--bd2)">
+        <div style="position:absolute;top:-4px;right:-4px;background:var(--c3);border:1px solid var(--bd2);border-radius:50%;width:14px;height:14px;font-size:0.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="siRemoveMultiImage(${i})">✕</div>
+      </div>`;
+    }).join('');
+  }
+  if (sendBtn) sendBtn.style.display = 'block';
+  input.value = ''; // allow re-selection
+}
+
+function siRemoveMultiImage(idx) {
+  if (!SI.multiImages) return;
+  SI.multiImages.splice(idx, 1);
+  // Re-render by creating a fake input event
+  const thumbEl = document.getElementById('si-multi-thumbs');
+  const countEl = document.getElementById('si-multi-count');
+  const sendBtn = document.getElementById('si-multi-send-btn');
+  if (!SI.multiImages.length) {
+    if (thumbEl) { thumbEl.innerHTML = ''; thumbEl.style.display = 'none'; }
+    if (countEl) countEl.textContent = '';
+    if (sendBtn) sendBtn.style.display = 'none';
+    return;
+  }
+  if (countEl) countEl.textContent = `${SI.multiImages.length} image${SI.multiImages.length > 1 ? 's' : ''} selected`;
+  if (thumbEl) {
+    thumbEl.innerHTML = SI.multiImages.map((f, i) => {
+      const url = URL.createObjectURL(f);
+      return `<div style="position:relative">
+        <img src="${url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--bd2)">
+        <div style="position:absolute;top:-4px;right:-4px;background:var(--c3);border:1px solid var(--bd2);border-radius:50%;width:14px;height:14px;font-size:0.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="siRemoveMultiImage(${i})">✕</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function siSendMultiImages() {
+  const files = SI.multiImages;
+  if (!files || !files.length) { showToast('⚠️', 'No images selected'); return; }
+
+  siSetCard(2, 'proc');
+  const sendBtn = document.getElementById('si-multi-send-btn');
+  if (sendBtn) { sendBtn.textContent = '⏳ Analysing…'; sendBtn.disabled = true; }
+
+  try {
+    // Convert each image to base64
+    const images = await Promise.all(files.map(async f => ({
+      mimeType: f.type || 'image/jpeg',
+      data: await siToB64(f)
+    })));
+
+    await siSubmitPayload(2, { images });
+
+  } catch (e) {
+    siSetCard(2, 'err', 0, siGetErr(2, 'default'));
+    if (sendBtn) { sendBtn.textContent = '✦ Analyse These Screenshots'; sendBtn.disabled = false; }
+  }
+}
+
+/* ── Core: submit payload to API and handle result ──────────── */
+async function siSubmitPayload(idx, payload) {
+  const res = await fetch('/api/doc-extract', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, city: W.city || null })
+  });
+
+  const json = await res.json();
+
+  if (!json.success || json.errorCode) {
+    const code = json.errorCode || (res.status === 413 ? 'too_large' : 'default');
+    siSetCard(idx, 'err', 0, siGetErr(idx, code));
+    if (idx === 2) siShowEmiFallback(false);
+    return;
+  }
+
+  const ext = json.extracted;
+  if (!ext) throw new Error('No data');
+
+  if ((ext.confidence || 0) < 0.25) {
+    siSetCard(idx, 'err', 0, siGetErr(idx, 'low_confidence'));
+    if (idx === 2) siShowEmiFallback(false);
+    return;
+  }
+
+  SI.results[idx] = ext;
+  siMerge();
+  const count = ext.fields_extracted || siCountFields(ext);
+  siSetCard(idx, 'done', count);
+  const dot = document.getElementById('si-dot-' + idx);
+  if (dot) dot.classList.add('done');
+  siUpdateReview();
+
+  // Hide fallback panel on success
+  const fallback = document.getElementById('si-bank-fallback');
+  if (fallback && idx === 2) fallback.style.display = 'none';
+  const sendBtn = document.getElementById('si-multi-send-btn');
+  if (sendBtn) { sendBtn.textContent = '✦ Analyse These Screenshots'; sendBtn.disabled = false; }
 }
 
 /* ── Save manual EMI input ────────────────────────────────── */
@@ -8552,7 +8801,16 @@ async function siHandleFile(idx, input) {
           payload = { mimeType: 'image/jpeg', data: b64 };
         }
       } catch (pdfErr) {
-        // PDF.js failed (encrypted, corrupt) — try sending raw to Gemini
+        // Check if it's a password-protected PDF
+        if (pdfErr.name === 'PasswordException' && idx === 2) {
+          console.warn('[SmartImport] PDF is password-protected');
+          // Save the raw buffer so siUnlockPdf can retry with password
+          SI.pendingPdfBuf = await file.arrayBuffer();
+          siSetCard(2, 'err', 0, siGetErr(2, 'pdf_unreadable'));
+          siShowEmiFallback(true); // show password section
+          return;
+        }
+        // Other PDF.js failure (corrupt, etc.) — try sending raw to Gemini
         console.warn('[SmartImport] PDF.js failed, sending raw:', pdfErr.message);
         const b64 = await siToB64(file);
         payload = { mimeType, data: b64 };
