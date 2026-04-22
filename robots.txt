@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /.well-known/
+
+# Sitemap
+Sitemap: https://wealth.pithonix.ai/sitemap.xml
+
+# Crawl-delay for well-behaved bots
+Crawl-delay: 2
+
+# Allow major search engines full access
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+User-agent: Slurp
+Allow: /
+Disallow: /api/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/

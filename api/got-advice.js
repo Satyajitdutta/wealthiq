@@ -51,6 +51,27 @@ After analysing each node, find the connections. Example: "Underutilised NPS (Ta
 SYNTHESIS — TOP 3 ACTIONS:
 Rank by impact × urgency. Be specific. Include exact rupee amounts.
 
+${profile.priorityAnalysis ? `
+PRIORITY ANALYSIS MODE (Annual Plan User):
+This user receives a deeper analysis. Add the following extra sections:
+
+INVESTMENT STRATEGY:
+Based on their age (${profile.age}), risk appetite, existing corpus, and goals — what is the optimal asset allocation? Give specific percentages for equity MF, debt, gold, PPF/NPS, and emergency fund. Name 2-3 specific fund categories (not fund names).
+
+30-DAY ACTION PLAN:
+Give exactly 7 actions they can complete in the next 30 days, each with a specific week number (Week 1, Week 2, etc.). These must be actionable (can be done in 1-2 hours). Include the exact impact in rupees.
+
+Add these fields to the JSON:
+"investmentStrategy": {
+  "allocation": [{"asset":"Equity MF","pct":50,"rationale":"Why"},...],
+  "keyInsight": "One compelling reason for this specific allocation"
+},
+"monthlyActions": [
+  {"action":"specific task","why":"reason","impact":"₹X or outcome","timeToAct":"Week 1"},
+  ...7 items total
+]
+` : ''}
+
 Return ONLY valid JSON with no markdown, no explanation, just the JSON object:
 {
   "summary": "2-3 sentence honest assessment of their situation",
@@ -169,13 +190,14 @@ export default async function handler(req, res) {
   if (!apiKey) { res.status(500).json({ error: 'GEMINI_API_KEY not configured' }); return; }
 
   const prompt = buildGOTPrompt(profile);
+  const isPriority = profile.priorityAnalysis === true;
   const geminiBody = JSON.stringify({
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: 0.3,
-      maxOutputTokens: 8192,
+      temperature: isPriority ? 0.4 : 0.3,
+      maxOutputTokens: isPriority ? 16384 : 8192,
       responseMimeType: 'application/json',
-      thinkingConfig: { thinkingBudget: 0 }
+      thinkingConfig: { thinkingBudget: isPriority ? 5000 : 0 }
     }
   });
 

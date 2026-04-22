@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Artha-IQ — Shareable Badges</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0f1e;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    align-items: center;
+  }
+
+  h2 {
+    color: rgba(255,255,255,0.3);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: -40px;
+  }
+
+  /* ===================== */
+  /* BADGE 1 — SCORE CARD  */
+  /* 1080 x 1080 square    */
+  /* ===================== */
+  .score-card {
+    width: 540px;
+    height: 540px;
+    background: #080d1a;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    border: 1px solid rgba(33,150,243,0.15);
+  }
+
+  .sc-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(33,150,243,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(33,150,243,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .sc-glow-tl {
+    position: absolute;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(33,150,243,0.2) 0%, transparent 70%);
+    top: -120px; left: -80px;
+  }
+  .sc-glow-br {
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,224,160,0.15) 0%, transparent 70%);
+    bottom: -100px; right: -80px;
+  }
+
+  .sc-content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: 0 48px;
+  }
+
+  .sc-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .sc-logo-text {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .sc-logo-iq {
+    background: linear-gradient(135deg, #2196F3, #00E0A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sc-ring {
+    width: 160px;
+    height: 160px;
+    margin-bottom: 24px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .sc-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .sc-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .sc-ring-num {
+    font-size: 48px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+  }
+  .sc-ring-total {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 500;
+  }
+  .sc-ring-title {
+    font-size: 11px;
+    color: #2196F3;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sc-headline {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .sc-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .sc-chips {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .sc-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .chip-green {
+    background: rgba(0,224,160,0.1);
+    border-color: rgba(0,224,160,0.3);
+    color: #00e0a0;
+  }
+  .chip-blue {
+    background: rgba(33,150,243,0.1);
+    border-color: rgba(33,150,243,0.3);
+    color: #64B5F6;
+  }
+  .chip-orange {
+    background: rgba(255,152,0,0.1);
+    border-color: rgba(255,152,0,0.3);
+    color: #FFB74D;
+  }
+
+  .sc-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 5;
+  }
+  .sc-footer-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+  }
+  .sc-footer-text {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .sc-footer-url {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+  }
+
+  /* ========================= */
+  /* BADGE 2 — LINKEDIN BADGE  */
+  /* 1200 x 627 landscape      */
+  /* ========================= */
+  .linkedin-badge {
+    width: 680px;
+    height: 356px;
+    background: #080d1a;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    border: 1px solid rgba(33,150,243,0.2);
+  }
+
+  .lb-left-accent {
+    width: 6px;
+    background: linear-gradient(to bottom, #2196F3, #00E0A0);
+    flex-shrink: 0;
+  }
+
+  .lb-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(33,150,243,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(33,150,243,0.04) 1px, transparent 1px);
+    background-size: 35px 35px;
+  }
+  .lb-glow {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(33,150,243,0.12) 0%, transparent 70%);
+    top: -150px; right: -100px;
+  }
+
+  .lb-body {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 36px 40px;
+    gap: 32px;
+  }
+
+  .lb-icon-wrap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lb-medal {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1565C0 0%, #0D47A1 50%, #1976D2 100%);
+    border: 3px solid rgba(33,150,243,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(33,150,243,0.3);
+    position: relative;
+  }
+  .lb-medal-inner {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a1628, #0d1f3c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lb-verified {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #00E0A0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    border: 2px solid #080d1a;
+  }
+
+  .lb-text {
+    flex: 1;
+  }
+  .lb-certified {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #2196F3;
+    margin-bottom: 8px;
+  }
+  .lb-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .lb-title span {
+    background: linear-gradient(135deg, #2196F3, #00E0A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .lb-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .lb-stats {
+    display: flex;
+    gap: 24px;
+  }
+  .lb-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .lb-stat-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .lb-stat-val.green { color: #00e0a0; }
+  .lb-stat-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .lb-brand {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    z-index: 5;
+  }
+
+  /* ========================= */
+  /* BADGE 3 — FIRE GOAL CARD  */
+  /* ========================= */
+  .fire-card {
+    width: 540px;
+    height: 300px;
+    background: #080d1a;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 36px 40px;
+    gap: 32px;
+    border: 1px solid rgba(0,224,160,0.2);
+  }
+
+  .fc-glow {
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,224,160,0.12) 0%, transparent 70%);
+    top: -100px; left: -50px;
+  }
+  .fc-glow2 {
+    position: absolute;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(33,150,243,0.1) 0%, transparent 70%);
+    bottom: -80px; right: -50px;
+  }
+
+  .fc-left {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+  }
+  .fc-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #00e0a0;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .fc-number {
+    font-size: 52px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .fc-number span {
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+  .fc-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 20px;
+  }
+  .fc-progress-wrap {
+    margin-bottom: 6px;
+  }
+  .fc-progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .fc-progress-fill {
+    height: 100%;
+    width: 28%;
+    background: linear-gradient(90deg, #2196F3, #00E0A0);
+    border-radius: 3px;
+  }
+  .fc-progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .fc-right {
+    position: relative;
+    z-index: 5;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .fc-age-box {
+    background: rgba(0,224,160,0.08);
+    border: 1px solid rgba(0,224,160,0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+  .fc-age-val {
+    font-size: 32px;
+    font-weight: 900;
+    color: #00e0a0;
+    line-height: 1;
+  }
+  .fc-age-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .fc-logo-sm {
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.5px;
+  }
+  .fc-logo-sm span {
+    background: linear-gradient(135deg, #2196F3, #00E0A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ========================= */
+  /* BADGE 4 — HABIT/LEAK CARD */
+  /* ========================= */
+  .leak-card {
+    width: 540px;
+    height: 300px;
+    background: #080d1a;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 36px 40px;
+    gap: 28px;
+    border: 1px solid rgba(255,107,107,0.2);
+  }
+  .lc-glow {
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,107,107,0.1) 0%, transparent 70%);
+    top: -100px; right: -50px;
+  }
+  .lc-left {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+  }
+  .lc-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF6B6B;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .lc-habit {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .lc-monthly {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 20px;
+  }
+  .lc-cost-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .lc-cost {
+    font-size: 44px;
+    font-weight: 900;
+    color: #FF6B6B;
+    line-height: 1;
+  }
+  .lc-cost-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+
+  .lc-right {
+    position: relative;
+    z-index: 5;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .lc-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .lc-vs-box {
+    background: rgba(0,224,160,0.08);
+    border: 1px solid rgba(0,224,160,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 110px;
+  }
+  .lc-vs-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: #00e0a0;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .lc-vs-label {
+    font-size: 9px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .lc-arrow {
+    font-size: 18px;
+    color: rgba(255,255,255,0.2);
+  }
+  .lc-logo-sm {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+  .lc-logo-sm span {
+    background: linear-gradient(135deg, #2196F3, #00E0A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Print/export note */
+  .note {
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+    text-align: center;
+    letter-spacing: 1px;
+    padding-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Badge 1 — Financial Health Score Card (Instagram / LinkedIn Square)</h2>
+
+<!-- SCORE CARD -->
+<div class="score-card">
+  <div class="sc-grid"></div>
+  <div class="sc-glow-tl"></div>
+  <div class="sc-glow-br"></div>
+
+  <div class="sc-content">
+    <!-- Logo -->
+    <div class="sc-logo-row">
+      <svg viewBox="0 0 40 40" width="32" height="32">
+        <defs>
+          <radialGradient id="ig1" cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#42B8F5"/>
+            <stop offset="100%" stop-color="#1565C0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="20" cy="20" r="19" fill="url(#ig1)"/>
+        <path d="M20,6 L8,33 L13,33 L20,16 L27,33 L32,33 Z" fill="white" opacity="0.95"/>
+        <rect x="13" y="22" width="14" height="3" fill="url(#ig1)"/>
+        <rect x="16" y="25" width="2" height="6" rx="1" fill="white" opacity="0.9"/>
+        <rect x="19" y="23" width="2" height="8" rx="1" fill="white" opacity="0.9"/>
+        <rect x="22" y="26" width="2" height="5" rx="1" fill="white" opacity="0.9"/>
+      </svg>
+      <span class="sc-logo-text">Artha<span class="sc-logo-iq">-IQ</span></span>
+    </div>
+
+    <!-- Score Ring -->
+    <div class="sc-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2196F3"/>
+            <stop offset="100%" stop-color="#00E0A0"/>
+          </linearGradient>
+        </defs>
+        <!-- Background ring -->
+        <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+        <!-- Score arc: 74/100 = 266.4 degrees of 427.26 circumference -->
+        <circle cx="80" cy="80" r="68" fill="none" stroke="url(#ringGrad)" stroke-width="12"
+          stroke-dasharray="316 427" stroke-linecap="round"/>
+      </svg>
+      <div class="sc-ring-label">
+        <div class="sc-ring-num">74</div>
+        <div class="sc-ring-total">/ 100</div>
+        <div class="sc-ring-title">Score</div>
+      </div>
+    </div>
+
+    <div class="sc-headline">I know exactly where<br>my money is going.</div>
+    <div class="sc-sub">Artha-IQ found ₹1.8L/yr I was leaving on the table</div>
+
+    <div class="sc-chips">
+      <span class="sc-chip chip-green">Tax Saved ₹15,600</span>
+      <span class="sc-chip chip-blue">FIRE: ₹2.4Cr</span>
+      <span class="sc-chip chip-orange">4 Schemes Unused</span>
+    </div>
+  </div>
+
+  <div class="sc-footer">
+    <span class="sc-footer-text">Powered by</span>
+    <div class="sc-footer-dot"></div>
+    <span class="sc-footer-url">wealth.pithonix.ai</span>
+  </div>
+</div>
+
+
+<h2>Badge 2 — LinkedIn Certification Badge (Landscape)</h2>
+
+<!-- LINKEDIN BADGE -->
+<div class="linkedin-badge">
+  <div class="lb-left-accent"></div>
+  <div class="lb-grid"></div>
+  <div class="lb-glow"></div>
+
+  <div class="lb-body">
+    <div class="lb-icon-wrap">
+      <div class="lb-medal">
+        <div class="lb-medal-inner">
+          <svg viewBox="0 0 40 40" width="44" height="44">
+            <defs>
+              <radialGradient id="ig2" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#42B8F5"/>
+                <stop offset="100%" stop-color="#1565C0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="20" cy="20" r="19" fill="url(#ig2)"/>
+            <path d="M20,6 L8,33 L13,33 L20,16 L27,33 L32,33 Z" fill="white" opacity="0.95"/>
+            <rect x="13" y="22" width="14" height="3" fill="url(#ig2)"/>
+            <rect x="16" y="25" width="2" height="6" rx="1" fill="white" opacity="0.9"/>
+            <rect x="19" y="23" width="2" height="8" rx="1" fill="white" opacity="0.9"/>
+            <rect x="22" y="26" width="2" height="5" rx="1" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="lb-verified">✓</div>
+      </div>
+    </div>
+
+    <div class="lb-text">
+      <div class="lb-certified">Artha-IQ · Certified 2026</div>
+      <div class="lb-title">I Know My<br><span>FIRE Number</span></div>
+      <div class="lb-desc">Completed AI-powered personal finance analysis.<br>Tax-optimised · Insurance-covered · Goal-mapped.</div>
+      <div class="lb-stats">
+        <div class="lb-stat">
+          <span class="lb-stat-val green">₹2.4Cr</span>
+          <span class="lb-stat-label">FIRE Corpus</span>
+        </div>
+        <div class="lb-stat">
+          <span class="lb-stat-val">Score 74</span>
+          <span class="lb-stat-label">Financial Health</span>
+        </div>
+        <div class="lb-stat">
+          <span class="lb-stat-val">Age 52</span>
+          <span class="lb-stat-label">Retire By</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lb-brand">wealth.pithonix.ai</div>
+</div>
+
+
+<h2>Badge 3 — FIRE Goal Card</h2>
+
+<!-- FIRE CARD -->
+<div class="fire-card">
+  <div class="fc-glow"></div>
+  <div class="fc-glow2"></div>
+
+  <div class="fc-left">
+    <div class="fc-label">🔥 My FIRE Number</div>
+    <div class="fc-number">₹2.4<span>Crore</span></div>
+    <div class="fc-sub">Financial Independence target · Artha-IQ</div>
+    <div class="fc-progress-wrap">
+      <div class="fc-progress-bar">
+        <div class="fc-progress-fill"></div>
+      </div>
+      <div class="fc-progress-label">
+        <span>₹67L saved today</span>
+        <span>28% there</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-right">
+    <div class="fc-age-box">
+      <div class="fc-age-val">52</div>
+      <div class="fc-age-label">Retire By</div>
+    </div>
+    <div class="fc-logo-sm">Artha<span>-IQ</span></div>
+  </div>
+</div>
+
+
+<h2>Badge 4 — Money Leak / Habit Cost Card</h2>
+
+<!-- HABIT LEAK CARD -->
+<div class="leak-card">
+  <div class="lc-glow"></div>
+
+  <div class="lc-left">
+    <div class="lc-label">💧 My Biggest Money Leak</div>
+    <div class="lc-habit">Weekend dining out + OTT subscriptions</div>
+    <div class="lc-monthly">₹8,500 / month · seems small, right?</div>
+    <div class="lc-cost-label">Real 20-year cost</div>
+    <div class="lc-cost">₹61L</div>
+    <div class="lc-cost-sub">at 10% compounding · Artha-IQ</div>
+  </div>
+
+  <div class="lc-right">
+    <div class="lc-vs">
+      <div class="lc-vs-box">
+        <div class="lc-vs-val">₹8,500</div>
+        <div class="lc-vs-label">Monthly leak</div>
+      </div>
+      <div class="lc-arrow">↓</div>
+      <div class="lc-vs-box">
+        <div class="lc-vs-val">₹61L</div>
+        <div class="lc-vs-label">Lost in 20 yrs</div>
+      </div>
+    </div>
+    <div class="lc-logo-sm">Artha<span>-IQ</span></div>
+  </div>
+</div>
+
+<p class="note">Open in Chrome → Ctrl+Shift+P → "Capture screenshot" to save each card as PNG</p>
+
+</body>
+</html>

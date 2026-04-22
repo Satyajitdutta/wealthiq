@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Artha-IQ — Financial Intelligence by Pithonix AI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060c1a;
+  --card:#0d1529;
+  --border:rgba(255,255,255,0.07);
+  --blue:#3b82f6;
+  --teal:#06b6d4;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --purple:#8b5cf6;
+  --indigo:#6366f1;
+  --text:#f1f5f9;
+  --t2:#94a3b8;
+  --t3:#64748b;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+}
+
+/* ── WRAPPER ── */
+.page{
+  max-width:900px;
+  margin:0 auto;
+  padding:2.5rem 2rem 3rem;
+}
+
+/* ── HEADER ── */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom:2rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:2.5rem;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  flex-shrink:0;
+}
+.brand-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.1rem;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  background:linear-gradient(90deg,#888,#ccc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.brand-tagline{
+  font-size:0.6rem;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#5bafd6;
+  display:block;
+  margin-top:1px;
+}
+.header-url{
+  font-size:0.78rem;
+  font-weight:600;
+  color:var(--teal);
+  background:rgba(6,182,212,0.08);
+  border:1px solid rgba(6,182,212,0.2);
+  border-radius:100px;
+  padding:0.35rem 0.9rem;
+  text-decoration:none;
+  letter-spacing:0.02em;
+}
+
+/* ── HERO ── */
+.hero{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:2rem;
+  align-items:center;
+  margin-bottom:2.5rem;
+  padding:2rem 2rem;
+  background:linear-gradient(135deg,rgba(59,130,246,0.06) 0%,rgba(99,102,241,0.04) 50%,rgba(6,182,212,0.04) 100%);
+  border:1px solid rgba(59,130,246,0.12);
+  border-radius:18px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:220px;height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(6,182,212,0.1);
+  border:1px solid rgba(6,182,212,0.2);
+  border-radius:100px;
+  padding:0.3rem 0.75rem;
+  font-size:0.7rem;
+  font-weight:700;
+  color:var(--teal);
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  margin-bottom:0.9rem;
+}
+.hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--teal)}
+.hero-title{
+  font-size:2.4rem;
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-0.02em;
+  margin-bottom:0.6rem;
+}
+.hero-title span{
+  background:linear-gradient(90deg,var(--blue),var(--teal));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:0.92rem;
+  color:var(--t2);
+  line-height:1.6;
+  max-width:480px;
+  margin-bottom:1.25rem;
+}
+.hero-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+.hero-tag{
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:0.25rem 0.6rem;
+  font-size:0.68rem;
+  font-weight:600;
+  color:var(--t2);
+}
+.hero-badge{
+  background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(59,130,246,0.1));
+  border:1px solid rgba(99,102,241,0.25);
+  border-radius:14px;
+  padding:1.25rem 1.5rem;
+  text-align:center;
+  min-width:140px;
+  flex-shrink:0;
+}
+.hero-badge-num{
+  font-size:2.2rem;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:block;
+  line-height:1;
+  margin-bottom:0.2rem;
+}
+.hero-badge-label{font-size:0.7rem;color:var(--t2);font-weight:500;line-height:1.4}
+
+/* ── SECTION TITLES ── */
+.section-title{
+  font-size:0.68rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:var(--t3);
+  margin-bottom:1rem;
+}
+
+/* ── MODULES GRID ── */
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0.75rem;
+  margin-bottom:2.5rem;
+}
+.module-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:1rem 1rem 0.875rem;
+  position:relative;
+  overflow:hidden;
+}
+.module-card::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  border-radius:13px 13px 0 0;
+}
+.mod-blue::after{background:linear-gradient(90deg,var(--blue),var(--teal))}
+.mod-green::after{background:linear-gradient(90deg,var(--green),var(--teal))}
+.mod-amber::after{background:linear-gradient(90deg,var(--amber),#f97316)}
+.mod-purple::after{background:linear-gradient(90deg,var(--purple),var(--indigo))}
+.mod-teal::after{background:linear-gradient(90deg,var(--teal),var(--blue))}
+.mod-pink::after{background:linear-gradient(90deg,#ec4899,var(--purple))}
+.mod-indigo::after{background:linear-gradient(90deg,var(--indigo),var(--blue))}
+.mod-red::after{background:linear-gradient(90deg,#ef4444,var(--amber))}
+.mod-cyan::after{background:linear-gradient(90deg,#22d3ee,var(--teal))}
+
+.module-icon{font-size:1.5rem;margin-bottom:0.5rem;display:block}
+.module-name{font-size:0.82rem;font-weight:800;color:var(--text);margin-bottom:0.2rem}
+.module-desc{font-size:0.7rem;color:var(--t2);line-height:1.45}
+.module-free{
+  display:inline-block;
+  font-size:0.58rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--green);
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:4px;
+  padding:0.1rem 0.35rem;
+  margin-top:0.35rem;
+}
+.module-price{
+  display:inline-block;
+  font-size:0.62rem;
+  font-weight:700;
+  color:var(--t3);
+  margin-top:0.35rem;
+}
+
+/* ── TWO-COL BOTTOM ── */
+.bottom-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.25rem;
+  margin-bottom:2rem;
+}
+
+/* ── PRICING ── */
+.pricing-cards{display:flex;flex-direction:column;gap:0.5rem}
+.price-row{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0.75rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+.price-row.highlight{
+  border-color:rgba(99,102,241,0.35);
+  background:rgba(99,102,241,0.06);
+}
+.price-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.price-info{flex:1}
+.price-tier{font-size:0.78rem;font-weight:700;color:var(--text)}
+.price-desc{font-size:0.65rem;color:var(--t3);margin-top:0.1rem}
+.price-amount{font-size:0.88rem;font-weight:800;color:var(--text);white-space:nowrap}
+.price-amount small{font-size:0.6rem;font-weight:500;color:var(--t3)}
+
+/* ── FOR WHOM ── */
+.persona-list{display:flex;flex-direction:column;gap:0.5rem}
+.persona{
+  display:flex;align-items:flex-start;gap:0.65rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0.7rem 0.875rem;
+}
+.persona-icon{font-size:1rem;flex-shrink:0;margin-top:0.05rem}
+.persona-text{font-size:0.72rem;color:var(--t2);line-height:1.4}
+.persona-text strong{color:var(--text);font-weight:700;display:block;margin-bottom:0.1rem}
+
+/* ── CTA STRIP ── */
+.cta-strip{
+  background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(6,182,212,0.08));
+  border:1px solid rgba(59,130,246,0.2);
+  border-radius:16px;
+  padding:1.5rem 2rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  margin-bottom:2rem;
+}
+.cta-left h3{font-size:1.1rem;font-weight:800;margin-bottom:0.3rem}
+.cta-left p{font-size:0.78rem;color:var(--t2)}
+.cta-btn{
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:0.75rem 1.75rem;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+  text-decoration:none;
+  display:inline-block;
+  letter-spacing:0.01em;
+}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding-top:1.25rem;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:2rem;
+}
+.footer-legal{font-size:0.62rem;color:var(--t3);line-height:1.7}
+.footer-legal strong{color:var(--t2);font-size:0.65rem}
+.footer-qr{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:0.75rem;
+  text-align:center;
+  flex-shrink:0;
+}
+.qr-placeholder{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(6,182,212,0.1));
+  border-radius:6px;
+  margin:0 auto 0.4rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.footer-qr-label{font-size:0.6rem;color:var(--t3);font-weight:600}
+
+/* ── PRINT STYLES ── */
+@media print{
+  body{background:#fff;color:#111}
+  :root{--bg:#fff;--card:#f8f9fa;--border:#e2e8f0;--text:#111;--t2:#475569;--t3:#64748b}
+  .page{padding:1cm 1.5cm}
+  .hero{background:#f0f7ff;border-color:#bfdbfe}
+  .hero-title span{color:#2563eb;-webkit-text-fill-color:#2563eb}
+  .brand-name{color:#444;-webkit-text-fill-color:#444}
+  .cta-strip{background:#eff6ff;border-color:#bfdbfe}
+  .cta-btn{background:#2563eb;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  @page{size:A4;margin:0}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .modules-grid{grid-template-columns:1fr 1fr}
+  .bottom-grid{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .hero-badge{display:none}
+  .cta-strip{flex-direction:column;text-align:center}
+  footer{flex-direction:column}
+  .hero-title{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <span class="brand-name">Pithonix AI</span>
+        <span class="brand-tagline">Information to Intelligence</span>
+      </div>
+    </div>
+    <a href="https://wealth.pithonix.ai" class="header-url">wealth.pithonix.ai</a>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        Powered by Claude AI
+      </div>
+      <h1 class="hero-title">Your money,<br><span>finally intelligent.</span></h1>
+      <p class="hero-sub">Artha-IQ is a personal financial intelligence platform built for Indian salaried professionals. It diagnoses your finances, reveals hidden leaks, optimises taxes, and builds a wealth plan — all in one place.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">GCC Employees</span>
+        <span class="hero-tag">BFSI Professionals</span>
+        <span class="hero-tag">Senior Management</span>
+        <span class="hero-tag">NRIs</span>
+        <span class="hero-tag">Salaried India</span>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <span class="hero-badge-num">9</span>
+      <span class="hero-badge-label">AI-powered<br>financial<br>modules</span>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-title">What Artha-IQ Does</div>
+  <div class="modules-grid">
+
+    <div class="module-card mod-blue">
+      <span class="module-icon">📊</span>
+      <div class="module-name">Financial Health Score</div>
+      <div class="module-desc">A real-time score that benchmarks your savings rate, debt, liquidity, insurance cover, and investment health against your income.</div>
+      <span class="module-free">Free</span>
+    </div>
+
+    <div class="module-card mod-green">
+      <span class="module-icon">🧾</span>
+      <div class="module-name">Tax Optimizer</div>
+      <div class="module-desc">Compares Old vs. New regime, maps every deduction you're eligible for, and tells you exactly how much tax you're leaving on the table.</div>
+      <span class="module-price">₹50 / use · 2 free</span>
+    </div>
+
+    <div class="module-card mod-amber">
+      <span class="module-icon">🎯</span>
+      <div class="module-name">Goals Planner</div>
+      <div class="module-desc">Inflation-adjusted SIP calculator for home, education, retirement, and custom goals — with real monthly numbers, not generic advice.</div>
+      <span class="module-price">₹150 / use</span>
+    </div>
+
+    <div class="module-card mod-red">
+      <span class="module-icon">🔍</span>
+      <div class="module-name">Money Leaks</div>
+      <div class="module-desc">Identifies where your salary disappears — subscriptions, lifestyle creep, excessive EMIs — and quantifies the 10-year opportunity cost.</div>
+      <span class="module-price">₹150 / use</span>
+    </div>
+
+    <div class="module-card mod-teal">
+      <span class="module-icon">🏙️</span>
+      <div class="module-name">Cost of Living</div>
+      <div class="module-desc">City-wise breakdown of your actual living expenses versus benchmarks, with relocation cost impact for 20+ Indian metros.</div>
+      <span class="module-price">₹200 / use</span>
+    </div>
+
+    <div class="module-card mod-purple">
+      <span class="module-icon">🧠</span>
+      <div class="module-name">GOT Advisor</div>
+      <div class="module-desc">The Graph of Thoughts AI engine. Delivers a multi-layered financial strategy — investments, debt, tax, and estate — tailored to your exact profile.</div>
+      <span class="module-price">₹250 / use</span>
+    </div>
+
+    <div class="module-card mod-indigo">
+      <span class="module-icon">📈</span>
+      <div class="module-name">Salary & Skills Grow</div>
+      <div class="module-desc">Benchmarks your CTC against your role and industry, recommends skills to close salary gaps, and models your 5-year earning trajectory.</div>
+      <span class="module-price">₹400 / use</span>
+    </div>
+
+    <div class="module-card mod-cyan">
+      <span class="module-icon">📋</span>
+      <div class="module-name">Dashboard</div>
+      <div class="module-desc">Live financial snapshot — income, expenses, savings rate, EMI burden, insurance cover, and net worth at a glance.</div>
+      <span class="module-free">Free</span>
+    </div>
+
+    <div class="module-card mod-pink">
+      <span class="module-icon">👤</span>
+      <div class="module-name">Smart Profile</div>
+      <div class="module-desc">One-time guided setup captures your full financial picture — income, loans, goals, family, city — to personalise every module output.</div>
+      <span class="module-free">Free</span>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+
+    <!-- PRICING -->
+    <div>
+      <div class="section-title">Pricing — Built for India</div>
+      <div class="pricing-cards">
+        <div class="price-row">
+          <div class="price-dot" style="background:var(--green)"></div>
+          <div class="price-info">
+            <div class="price-tier">Free Tier</div>
+            <div class="price-desc">Health Score, Dashboard, Profile, 2 free Tax uses</div>
+          </div>
+          <div class="price-amount">₹0</div>
+        </div>
+        <div class="price-row">
+          <div class="price-dot" style="background:var(--blue)"></div>
+          <div class="price-info">
+            <div class="price-tier">Pay Per Use</div>
+            <div class="price-desc">Buy only the module you need — no subscription</div>
+          </div>
+          <div class="price-amount">₹50–400</div>
+        </div>
+        <div class="price-row highlight">
+          <div class="price-dot" style="background:var(--indigo)"></div>
+          <div class="price-info">
+            <div class="price-tier">Full View</div>
+            <div class="price-desc">All 9 modules, unlimited use, priority GOT, PDF reports</div>
+          </div>
+          <div class="price-amount">₹699 <small>/mo</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOR WHOM -->
+    <div>
+      <div class="section-title">Who It's Built For</div>
+      <div class="persona-list">
+        <div class="persona">
+          <span class="persona-icon">🏢</span>
+          <div class="persona-text">
+            <strong>GCC & MNC Employees</strong>
+            High CTC, low financial clarity — Artha-IQ translates complex comp structures into a real wealth plan.
+          </div>
+        </div>
+        <div class="persona">
+          <span class="persona-icon">🏦</span>
+          <div class="persona-text">
+            <strong>BFSI & Senior Management</strong>
+            Financially aware but time-poor — get an expert-level analysis in under 5 minutes.
+          </div>
+        </div>
+        <div class="persona">
+          <span class="persona-icon">✈️</span>
+          <div class="persona-text">
+            <strong>NRIs & Returning Professionals</strong>
+            Navigating dual tax regimes, remittances, and India reintegration — Artha-IQ covers it all.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-strip">
+    <div class="cta-left">
+      <h3>Start free in 60 seconds.</h3>
+      <p>No app download needed. OTP login, no passwords. Works on every device.</p>
+    </div>
+    <a href="https://wealth.pithonix.ai" class="cta-btn">Open Artha-IQ →</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-legal">
+      <strong>PITHONIX AI INDIA PRIVATE LIMITED</strong><br>
+      CIN: U62090TS2026PTC213220<br>
+      No 2-106/D405, Accurate Wind Chimes, Narsingi, K.V.Rangareddy,<br>
+      Rajendranagar, Telangana, India — 500075<br>
+      info@pithonix.ai &nbsp;·&nbsp; wealth.pithonix.ai<br><br>
+      © 2026 Pithonix AI India Private Limited. All Rights Reserved.<br>
+      Proprietary &amp; Confidential. Powered by Claude AI (Anthropic).
+    </div>
+    <div class="footer-qr">
+      <div class="qr-placeholder">
+        <!-- QR code for wealth.pithonix.ai -->
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#3b82f6" stroke-width="1.5"/>
+          <rect x="5" y="5" width="6" height="6" rx="0.5" fill="#3b82f6"/>
+          <rect x="30" y="2" width="12" height="12" rx="1.5" stroke="#3b82f6" stroke-width="1.5"/>
+          <rect x="33" y="5" width="6" height="6" rx="0.5" fill="#3b82f6"/>
+          <rect x="2" y="30" width="12" height="12" rx="1.5" stroke="#3b82f6" stroke-width="1.5"/>
+          <rect x="5" y="33" width="6" height="6" rx="0.5" fill="#3b82f6"/>
+          <rect x="18" y="2" width="2" height="2" fill="#06b6d4"/>
+          <rect x="22" y="2" width="2" height="2" fill="#06b6d4"/>
+          <rect x="18" y="6" width="4" height="2" fill="#06b6d4"/>
+          <rect x="18" y="10" width="2" height="2" fill="#06b6d4"/>
+          <rect x="2" y="18" width="2" height="4" fill="#06b6d4"/>
+          <rect x="6" y="18" width="2" height="2" fill="#06b6d4"/>
+          <rect x="10" y="18" width="2" height="4" fill="#06b6d4"/>
+          <rect x="18" y="18" width="8" height="8" rx="1" fill="#3b82f6" opacity="0.6"/>
+          <rect x="30" y="18" width="2" height="2" fill="#06b6d4"/>
+          <rect x="34" y="18" width="4" height="2" fill="#06b6d4"/>
+          <rect x="38" y="22" width="2" height="4" fill="#06b6d4"/>
+          <rect x="30" y="30" width="4" height="4" rx="0.5" fill="#06b6d4"/>
+          <rect x="36" y="30" width="2" height="2" fill="#06b6d4"/>
+          <rect x="38" y="34" width="4" height="4" rx="0.5" fill="#06b6d4"/>
+          <rect x="18" y="30" width="2" height="4" fill="#06b6d4"/>
+          <rect x="22" y="34" width="4" height="2" fill="#06b6d4"/>
+        </svg>
+      </div>
+      <div class="footer-qr-label">Scan to open</div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

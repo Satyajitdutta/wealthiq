@@ -8417,18 +8417,24 @@ async function siPdfExtractText(file) {
 }
 
 /* ── PDF: render ALL pages to JPEG (fallback for scanned/image PDFs) ── */
-// Used only when text extraction yields sparse content (scanned bank statements).
-// Renders at 0.9x scale — sharp enough for OCR, compact enough for upload.
+// Renders with adaptive scale — more pages = lower quality to fit under body limit.
+// No page cap: annual statements (20+ pages) are supported.
 async function siPdfToJpeg(file) {
   await siPdfJsLoad();
   const buf = await file.arrayBuffer();
   const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
 
+  const n = pdf.numPages;
+  // Dynamic scale: keep total canvas manageable for any page count
+  const scale   = n <= 3 ? 1.2 : n <= 6 ? 1.0 : n <= 12 ? 0.75 : 0.55;
+  const quality = n <= 3 ? 0.75 : n <= 6 ? 0.68 : n <= 12 ? 0.58 : 0.45;
+  console.log(`[SmartImport] PDF render: ${n} pages @ scale=${scale} quality=${quality}`);
+
   const canvases = [];
   let totalH = 0, maxW = 0;
-  for (let p = 1; p <= pdf.numPages; p++) {
+  for (let p = 1; p <= n; p++) {
     const page = await pdf.getPage(p);
-    const vp   = page.getViewport({ scale: 1.2 });  // 1.2x: high clarity for OCR, all pages
+    const vp   = page.getViewport({ scale });
     const cv   = document.createElement('canvas');
     cv.width   = vp.width;
     cv.height  = vp.height;
@@ -8447,7 +8453,9 @@ async function siPdfToJpeg(file) {
   let y = 0;
   for (const cv of canvases) { ctx.drawImage(cv, 0, y); y += cv.height; }
 
-  return out.toDataURL('image/jpeg', 0.78).split(',')[1];
+  const b64 = out.toDataURL('image/jpeg', quality).split(',')[1];
+  console.log(`[SmartImport] PDF rendered → ${Math.round(b64.length / 1024)} KB (${n} pages)`);
+  return b64;
 }
 
 /* ── Extract text from an already-loaded PDF document object ── */
@@ -8476,11 +8484,14 @@ async function siExtractTextFromLoadedPdf(pdf) {
 /* ── Render all pages of an already-loaded PDF to JPEG ── */
 // Used by siUnlockPdf for scanned PDFs after password unlock
 async function siRenderPdfToJpeg(pdf) {
+  const n = pdf.numPages;
+  const scale   = n <= 3 ? 1.2 : n <= 6 ? 1.0 : n <= 12 ? 0.75 : 0.55;
+  const quality = n <= 3 ? 0.75 : n <= 6 ? 0.68 : n <= 12 ? 0.58 : 0.45;
   const canvases = [];
   let totalH = 0, maxW = 0;
-  for (let p = 1; p <= pdf.numPages; p++) {
+  for (let p = 1; p <= n; p++) {
     const page = await pdf.getPage(p);
-    const vp   = page.getViewport({ scale: 1.2 });
+    const vp   = page.getViewport({ scale });
     const cv   = document.createElement('canvas');
     cv.width   = vp.width;
     cv.height  = vp.height;
@@ -8497,7 +8508,9 @@ async function siRenderPdfToJpeg(pdf) {
   ctx.fillRect(0, 0, maxW, totalH);
   let y = 0;
   for (const cv of canvases) { ctx.drawImage(cv, 0, y); y += cv.height; }
-  return out.toDataURL('image/jpeg', 0.78).split(',')[1];
+  const b64 = out.toDataURL('image/jpeg', quality).split(',')[1];
+  console.log(`[SmartImport] Unlock PDF rendered → ${Math.round(b64.length / 1024)} KB (${n} pages)`);
+  return b64;
 }
 
 /* ── Error messages per card + situation ──────────────────── */
@@ -8632,19 +8645,52 @@ async function siSendMultiImages() {
 
   siSetCard(2, 'proc');
   const sendBtn = document.getElementById('si-multi-send-btn');
-  if (sendBtn) { sendBtn.textContent = '⏳ Compressing images…'; sendBtn.disabled = true; }
+  if (sendBtn) { sendBtn.textContent = '⏳ Stitching pages…'; sendBtn.disabled = true; }
 
   try {
-    // Compress each image to max 1400px width, JPEG @65% — keeps total under Vercel's 4.5 MB limit
-    const images = [];
+    // Step 1: Load all images into Image objects
+    const imgs = [];
     for (let i = 0; i < files.length; i++) {
-      if (sendBtn) sendBtn.textContent = `⏳ Processing ${i + 1}/${files.length}…`;
-      const compressed = await siCompressImage(files[i], 1400, 0.65);
-      images.push(compressed);
+      if (sendBtn) sendBtn.textContent = `⏳ Loading ${i + 1}/${files.length}…`;
+      const img = await siLoadImage(files[i]);
+      imgs.push(img);
     }
 
+    // Step 2: Stitch all images into ONE tall canvas (same technique as siPdfToJpeg)
+    if (sendBtn) sendBtn.textContent = '⏳ Stitching pages…';
+    const MAX_W = 1200; // max width for each page
+    let totalH = 0, maxW = 0;
+    const scaled = imgs.map(img => {
+      let w = img.width, h = img.height;
+      if (w > MAX_W) { h = Math.round(h * (MAX_W / w)); w = MAX_W; }
+      totalH += h;
+      maxW = Math.max(maxW, w);
+      return { img, w, h };
+    });
+
+    const cv = document.createElement('canvas');
+    cv.width  = maxW;
+    cv.height = totalH;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, maxW, totalH);
+
+    let y = 0;
+    for (const { img, w, h } of scaled) {
+      ctx.drawImage(img, 0, y, w, h);
+      y += h;
+    }
+
+    // Step 3: Convert stitched canvas to compressed JPEG
+    const b64 = cv.toDataURL('image/jpeg', 0.72).split(',')[1];
+    console.log('[SmartImport] Stitched', files.length, 'images →', Math.round(b64.length / 1024), 'KB');
+
+    // Step 4: Send as a regular single-image payload (uses the proven path)
     if (sendBtn) sendBtn.textContent = '⏳ Analysing…';
-    await siSubmitPayload(2, { images });
+    await siSubmitPayload(2, { mimeType: 'image/jpeg', data: b64 });
+
+    // Cleanup
+    imgs.forEach(img => URL.revokeObjectURL(img.src));
 
   } catch (e) {
     console.error('[SmartImport] multi-image error:', e);
@@ -8653,9 +8699,17 @@ async function siSendMultiImages() {
   }
 }
 
-/* ── Compress image via canvas: resize + JPEG quality ─────── */
-// Keeps images readable for OCR while drastically reducing payload size.
-// A typical 3 MB phone screenshot → ~150-250 KB after this.
+/* ── Load a File into an Image element ───────────────────── */
+function siLoadImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload  = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ── Compress a single image file via canvas ─────────────── */
 function siCompressImage(file, maxWidth = 1400, quality = 0.65) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -8686,16 +8740,45 @@ function siCompressImage(file, maxWidth = 1400, quality = 0.65) {
 
 /* ── Core: submit payload to API and handle result ──────────── */
 async function siSubmitPayload(idx, payload) {
-  const res = await fetch('/api/doc-extract', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, city: W.city || null })
-  });
+  const bodyStr = JSON.stringify({ ...payload, city: W.city || null });
+  console.log(`[SmartImport] Sending ${idx} → ${Math.round(bodyStr.length / 1024)} KB`);
 
-  const json = await res.json();
+  let res;
+  try {
+    res = await fetch('/api/doc-extract', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: bodyStr
+    });
+  } catch (netErr) {
+    console.error('[SmartImport] Network error:', netErr);
+    siSetCard(idx, 'err', 0, siGetErr(idx, 'default'));
+    if (idx === 2) siShowEmiFallback(false);
+    return;
+  }
+
+  // Handle non-OK responses (413 body too large, 502 timeout, etc.)
+  if (!res.ok) {
+    console.error(`[SmartImport] API ${res.status}: ${res.statusText}`);
+    const code = res.status === 413 ? 'too_large' : 'default';
+    siSetCard(idx, 'err', 0, siGetErr(idx, code));
+    if (idx === 2) siShowEmiFallback(false);
+    return;
+  }
+
+  let json;
+  try {
+    json = await res.json();
+  } catch (parseErr) {
+    console.error('[SmartImport] JSON parse failed:', parseErr);
+    siSetCard(idx, 'err', 0, siGetErr(idx, 'default'));
+    if (idx === 2) siShowEmiFallback(false);
+    return;
+  }
 
   if (!json.success || json.errorCode) {
-    const code = json.errorCode || (res.status === 413 ? 'too_large' : 'default');
+    console.warn('[SmartImport] API error:', json.errorCode, json.error);
+    const code = json.errorCode || 'default';
     siSetCard(idx, 'err', 0, siGetErr(idx, code));
     if (idx === 2) siShowEmiFallback(false);
     return;
@@ -8845,10 +8928,20 @@ async function siHandleFile(idx, input) {
           siShowEmiFallback(true); // show password section
           return;
         }
-        // Other PDF.js failure (corrupt, etc.) — compress and send as image
-        console.warn('[SmartImport] PDF.js failed, sending raw:', pdfErr.message);
-        const compressed = await siCompressImage(file, 1600, 0.7);
-        payload = { mimeType: compressed.mimeType, data: compressed.data };
+        // Other PDF.js failure (corrupt, render issue) — try image render as last resort
+        console.warn('[SmartImport] PDF text extraction failed:', pdfErr.message);
+        try {
+          const b64 = await siPdfToJpeg(file);
+          payload = { mimeType: 'image/jpeg', data: b64 };
+        } catch (renderErr) {
+          console.error('[SmartImport] PDF render also failed:', renderErr.message);
+          if (idx === 2) {
+            siSetCard(2, 'err', 0, siGetErr(2, 'parse_error'));
+            siShowEmiFallback(false);
+            return;
+          }
+          throw renderErr;
+        }
       }
     } else {
       // Image (JPG/PNG) — compress before sending
@@ -8856,45 +8949,8 @@ async function siHandleFile(idx, input) {
       payload = { mimeType: compressed.mimeType, data: compressed.data };
     }
 
-    const res = await fetch('/api/doc-extract', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        ...payload,
-        city: W.city || null  // Pass city for better utility detection
-      })
-    });
-
-    const json = await res.json();
-
-    // Explicit error code from API
-    if (!json.success || json.errorCode) {
-      const code = json.errorCode || (res.status === 413 ? 'too_large' : 'default');
-      siSetCard(idx, 'err', 0, siGetErr(idx, code));
-      if (idx === 2) siShowEmiFallback();
-      return;
-    }
-
-    const ext = json.extracted;
-    if (!ext) throw new Error('No data');
-
-    // Low confidence
-    if ((ext.confidence || 0) < 0.25) {
-      siSetCard(idx, 'err', 0, siGetErr(idx, 'low_confidence'));
-      if (idx === 2) siShowEmiFallback();
-      return;
-    }
-
-    SI.results[idx] = ext;
-    siMerge();
-
-    const count = ext.fields_extracted || siCountFields(ext);
-    siSetCard(idx, 'done', count);
-
-    const dot = document.getElementById('si-dot-' + idx);
-    if (dot) dot.classList.add('done');
-
-    siUpdateReview();
+    // Use the shared submit function (has proper error handling, logging, size checks)
+    await siSubmitPayload(idx, payload);
 
   } catch (e) {
     console.error('[SmartImport]', e);

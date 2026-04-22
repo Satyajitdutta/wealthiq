@@ -1,31 +1,59 @@
 {
+  "id": "/",
   "name": "Artha-IQ — Pithonix AI",
   "short_name": "Artha-IQ",
-  "description": "India's personal financial intelligence platform",
+  "description": "India's personal financial intelligence platform. Get your financial health score, tax estimates, goal planning, and AI-powered advice.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#080d1a",
-  "theme_color": "#080d1a",
+  "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
   "categories": ["finance", "productivity"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512-maskable.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Artha-IQ — Personal Financial Intelligence"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Financial Health",
+      "short_name": "Health",
+      "url": "/",
+      "description": "Check your financial health score",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
