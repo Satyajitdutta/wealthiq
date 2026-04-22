@@ -1224,6 +1224,136 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:none; border:none; font-family:'DM Sans',sans-serif;
   padding:0.25rem;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SMART IMPORT — Document Intelligence
+   © 2026 PITHONIX AI INDIA PRIVATE LIMITED
+══════════════════════════════════════════════════════════════ */
+
+/* Keyframes */
+@keyframes siOrbFloat  { 0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(-24px) scale(1.07)}70%{transform:translateY(10px) scale(0.95)} }
+@keyframes siScanLine  { 0%{top:-2px;opacity:0}10%{opacity:1}88%{opacity:1}100%{top:100%;opacity:0} }
+@keyframes siCardPulse { 0%,100%{box-shadow:0 0 0 1px rgba(59,130,246,0.15),0 2px 10px rgba(0,0,0,0.18)} 50%{box-shadow:0 0 0 1px rgba(59,130,246,0.4),0 4px 18px rgba(59,130,246,0.09)} }
+@keyframes siCheckDraw { from{stroke-dashoffset:32} to{stroke-dashoffset:0} }
+@keyframes siCountIn   { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes siShine     { 0%{transform:translateX(-120%)} 100%{transform:translateX(220%)} }
+@keyframes siDotPop    { 0%{transform:scaleX(0.4);opacity:0}65%{transform:scaleX(1.1)}100%{transform:scaleX(1);opacity:1} }
+@keyframes siBadge     { 0%,100%{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.28)} 50%{background:rgba(59,130,246,0.22);border-color:rgba(59,130,246,0.5)} }
+@keyframes siSlideUp   { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+/* ── Overlay ─────────────────────────────────────────────────── */
+.si-ov { position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;overflow:hidden }
+.si-ov.open { pointer-events:all }
+
+/* Backdrop */
+.si-bg { position:absolute;inset:0;background:rgba(4,7,18,0.88);backdrop-filter:blur(7px);opacity:0;transition:opacity 0.32s ease }
+.si-ov.open .si-bg { opacity:1 }
+
+/* Floating orbs behind sheet */
+.si-orb { position:absolute;border-radius:50%;filter:blur(72px);pointer-events:none;will-change:transform }
+.si-orb-1 { width:280px;height:280px;background:radial-gradient(circle,rgba(59,130,246,0.5) 0%,transparent 70%);top:-90px;left:-70px;animation:siOrbFloat 10s ease-in-out infinite }
+.si-orb-2 { width:210px;height:210px;background:radial-gradient(circle,rgba(139,92,246,0.45) 0%,transparent 70%);top:8%;right:-55px;animation:siOrbFloat 12s ease-in-out infinite;animation-delay:-5s }
+.si-orb-3 { width:190px;height:190px;background:radial-gradient(circle,rgba(6,182,212,0.42) 0%,transparent 70%);bottom:46%;left:18%;animation:siOrbFloat 8s ease-in-out infinite;animation-delay:-8s }
+
+/* Bottom sheet */
+.si-sheet { position:relative;z-index:1;background:var(--c1);border-radius:22px 22px 0 0;padding:1.25rem 1.15rem calc(env(safe-area-inset-bottom,0px) + 1.75rem);max-height:93vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.44s cubic-bezier(0.34,1.22,0.64,1);border-top:1px solid rgba(255,255,255,0.09) }
+.si-ov.open .si-sheet { transform:translateY(0) }
+
+/* Handle */
+.si-handle { width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 1.2rem }
+
+/* Header */
+.si-hdr { text-align:center;margin-bottom:0.9rem }
+.si-badge { display:inline-flex;align-items:center;gap:0.38rem;background:rgba(59,130,246,0.13);border:1px solid rgba(59,130,246,0.28);border-radius:100px;padding:0.22rem 0.7rem;font-size:0.64rem;font-weight:800;color:var(--blue);letter-spacing:0.6px;text-transform:uppercase;margin-bottom:0.65rem;animation:siBadge 3.5s ease-in-out infinite }
+.si-title { font-size:1.38rem;font-weight:800;color:var(--text);line-height:1.22;margin-bottom:0.3rem }
+.si-title em { font-style:normal;background:linear-gradient(135deg,var(--blue),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text }
+.si-sub { font-size:0.79rem;color:var(--t2);line-height:1.55;max-width:295px;margin:0 auto }
+
+/* Privacy */
+.si-privacy { display:flex;align-items:flex-start;gap:0.42rem;background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.18);border-radius:9px;padding:0.55rem 0.85rem;font-size:0.69rem;color:var(--t2);margin:0.9rem 0 0.8rem;line-height:1.45 }
+.si-privacy svg { flex-shrink:0;margin-top:1px }
+
+/* Progress dots */
+.si-dots { display:flex;gap:0.5rem;margin-bottom:0.85rem }
+.si-dot  { flex:1;height:3px;border-radius:2px;background:var(--bd2);transition:background 0.4s }
+.si-dot.done { background:linear-gradient(90deg,var(--blue),var(--teal));animation:siDotPop 0.45s cubic-bezier(0.34,1.4,0.64,1) both }
+
+/* Upload card list */
+.si-cards { display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.85rem }
+
+/* Card */
+.si-card { border-radius:14px;border:1px solid var(--bd2);background:var(--c2);padding:0.88rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.25s,background 0.25s,transform 0.12s;animation:siCardPulse 4.5s ease-in-out infinite;-webkit-tap-highlight-color:transparent }
+.si-card:active { transform:scale(0.975) }
+.si-card.si-proc  { animation:none;border-color:rgba(59,130,246,0.5);background:rgba(59,130,246,0.04) }
+.si-card.si-done  { animation:none;border-color:rgba(34,197,94,0.42);background:rgba(34,197,94,0.04);box-shadow:0 4px 20px rgba(34,197,94,0.1) }
+.si-card.si-err   { animation:none;border-color:rgba(239,68,68,0.38) }
+/* Stagger card pulse */
+.si-card-2 { animation-delay:-1.5s }
+.si-card-3 { animation-delay:-3s }
+
+/* Scan line (processing animation) */
+.si-scan { position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,var(--blue) 30%,var(--teal) 70%,transparent 100%);box-shadow:0 0 12px rgba(59,130,246,0.7),0 0 24px rgba(6,182,212,0.35);top:-2px;opacity:0;display:none }
+.si-card.si-proc .si-scan { display:block;animation:siScanLine 1.7s ease-in-out infinite }
+
+/* Card row */
+.si-card-row { display:flex;align-items:center;gap:0.82rem;position:relative;z-index:1 }
+
+/* Icon box */
+.si-icon { width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.3s,border-color 0.3s }
+.si-card-1 .si-icon { background:linear-gradient(135deg,rgba(59,130,246,0.18),rgba(6,182,212,0.12));border:1px solid rgba(59,130,246,0.3) }
+.si-card-2 .si-icon { background:linear-gradient(135deg,rgba(139,92,246,0.18),rgba(99,102,241,0.12));border:1px solid rgba(139,92,246,0.3) }
+.si-card-3 .si-icon { background:linear-gradient(135deg,rgba(34,197,94,0.14),rgba(6,182,212,0.1));border:1px solid rgba(34,197,94,0.25) }
+.si-icon svg { width:22px;height:22px }
+/* Done: icon turns green */
+.si-card.si-done .si-icon { background:linear-gradient(135deg,rgba(34,197,94,0.18),rgba(6,182,212,0.1)) !important;border-color:rgba(34,197,94,0.42) !important }
+
+/* Card text */
+.si-info  { flex:1;min-width:0 }
+.si-name  { font-size:0.88rem;font-weight:800;color:var(--text);margin-bottom:0.1rem }
+.si-desc  { font-size:0.7rem;color:var(--t2);line-height:1.44 }
+.si-hint  { font-size:0.65rem;color:var(--t3);margin-top:0.16rem }
+.si-cnt   { font-size:0.65rem;color:var(--green);font-weight:800;animation:siCountIn 0.38s ease forwards }
+
+/* Status pill */
+.si-st    { flex-shrink:0 }
+.si-pill  { font-size:0.62rem;font-weight:800;padding:0.22rem 0.58rem;border-radius:100px;text-transform:uppercase;letter-spacing:0.3px;display:inline-flex;align-items:center;gap:0.25rem }
+.si-p-idle { background:rgba(255,255,255,0.07);color:var(--t2) }
+.si-p-proc { background:rgba(59,130,246,0.14);color:var(--blue) }
+.si-p-done { background:rgba(34,197,94,0.14);color:var(--green) }
+.si-p-err  { background:rgba(239,68,68,0.12);color:var(--red) }
+
+/* SVG check draw */
+.si-chk { stroke-dasharray:32;stroke-dashoffset:32;animation:siCheckDraw 0.48s 0.08s cubic-bezier(0.4,0,0.2,1) forwards }
+
+/* Review panel */
+.si-review { background:var(--c3);border:1px solid var(--bd2);border-radius:12px;padding:0.875rem;margin-bottom:0.85rem;display:none }
+.si-review.show { display:block }
+.si-rv-hdr { font-size:0.67rem;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:var(--teal);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.38rem }
+.si-rv-row { display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;border-bottom:1px solid var(--bd) }
+.si-rv-row:last-of-type { border-bottom:none }
+.si-rv-l { font-size:0.72rem;color:var(--t2) }
+.si-rv-v { font-size:0.76rem;font-weight:700;color:var(--text) }
+.si-rv-gap { font-size:0.7rem;margin-top:0.55rem;padding-top:0.5rem;border-top:1px solid var(--bd);display:flex;align-items:flex-start;gap:0.35rem;line-height:1.45 }
+
+/* Main CTA */
+.si-cta { width:100%;background:linear-gradient(135deg,var(--blue),var(--teal));border:none;border-radius:100px;padding:1rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.98rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.6rem;box-shadow:0 4px 22px rgba(59,130,246,0.38),0 2px 8px rgba(0,0,0,0.18);transition:opacity 0.15s,transform 0.12s;margin-bottom:0.6rem;position:relative;overflow:hidden;letter-spacing:0.01em }
+.si-cta::after { content:'';position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:siShine 4s ease-in-out 2s infinite;transform:translateX(-120%) }
+.si-cta:active { opacity:0.85;transform:scale(0.98) }
+
+/* Skip */
+.si-skip { display:block;width:100%;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--t3);cursor:pointer;padding:0.35rem;text-align:center }
+.si-skip:hover { color:var(--t2) }
+
+/* ── Profile screen Smart Import button ──────────────────────── */
+.si-prof-btn { width:100%;background:linear-gradient(135deg,rgba(99,102,241,0.13),rgba(59,130,246,0.07));border:1px solid rgba(99,102,241,0.28);border-radius:12px;padding:0.8rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;text-align:left;transition:background 0.2s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent }
+.si-prof-btn::after { content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);transform:translateX(-120%);animation:siShine 5s ease-in-out 3s infinite }
+.si-prof-btn:active { background:rgba(99,102,241,0.2) }
+.si-prof-ic { width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--indigo));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 10px rgba(59,130,246,0.28) }
+.si-prof-ic svg { width:18px;height:18px }
+.si-prof-txt { flex:1 }
+.si-prof-t   { font-size:0.88rem;font-weight:800;color:var(--text);margin-bottom:0.06rem }
+.si-prof-s   { font-size:0.68rem;color:var(--t2);font-weight:400 }
+.si-prof-arr { color:var(--t3);font-size:0.9rem;flex-shrink:0 }
 </style>
 </head>
 <body>
@@ -1318,6 +1448,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <button class="prof-edit-btn" onclick="openWizard()">Edit ✎</button>
     </div>
     <div class="prof-stats-grid" id="prof-sum-stats"></div>
+
+    <!-- Smart Import CTA -->
+    <button class="si-prof-btn" onclick="openSmartImport()">
+      <div class="si-prof-ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <div class="si-prof-txt">
+        <div class="si-prof-t">Smart Import</div>
+        <div class="si-prof-s">Upload salary slip or Form 16 — auto-update your profile</div>
+      </div>
+      <div class="si-prof-arr">→</div>
+    </button>
+
     <button onclick="switchTab('health','Health Score')" style="width:100%;background:linear-gradient(135deg,var(--blue),#6366f1);border:none;border-radius:100px;padding:0.95rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,0.3);letter-spacing:0.01em;margin-bottom:0.75rem">
       View My Health Score →
     </button>
@@ -3409,6 +3554,161 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   </div>
 
 </div><!-- /profile-wizard -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SMART IMPORT — Document Intelligence Overlay
+     Upload salary slip / Form 16 / bank statement → Claude reads it
+     → auto-fills profile → wizard shows only gap fields
+════════════════════════════════════════════════════════════════ -->
+<div class="si-ov" id="si-ov">
+
+  <!-- Animated backdrop + orbs -->
+  <div class="si-bg" onclick="closeSmartImport()"></div>
+  <div class="si-orb si-orb-1"></div>
+  <div class="si-orb si-orb-2"></div>
+  <div class="si-orb si-orb-3"></div>
+
+  <!-- Bottom sheet -->
+  <div class="si-sheet">
+    <div class="si-handle"></div>
+
+    <!-- Header -->
+    <div class="si-hdr">
+      <div class="si-badge">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Smart Import · Powered by Claude AI
+      </div>
+      <div class="si-title">Fill your profile<br><em>in seconds.</em></div>
+      <div class="si-sub">Upload any financial document — Artha-IQ reads it and auto-fills your numbers. No typing.</div>
+    </div>
+
+    <!-- Privacy note -->
+    <div class="si-privacy">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>Your documents are read instantly by AI and <strong>never stored</strong> on our servers. Only the extracted numbers are saved.</span>
+    </div>
+
+    <!-- Progress dots (one per card) -->
+    <div class="si-dots">
+      <div class="si-dot" id="si-dot-0"></div>
+      <div class="si-dot" id="si-dot-1"></div>
+      <div class="si-dot" id="si-dot-2"></div>
+    </div>
+
+    <!-- Upload cards -->
+    <div class="si-cards">
+
+      <!-- Card 1: Salary Slip -->
+      <div class="si-card si-card-1" id="si-card-0" onclick="siTrigger(0)" role="button" tabindex="0">
+        <div class="si-scan"></div>
+        <div class="si-card-row">
+          <div class="si-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"/>
+              <line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/>
+              <line x1="8" y1="15" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="si-info">
+            <div class="si-name">Salary Slip</div>
+            <div class="si-desc">Take-home · HRA · PF · TDS · Employer · City</div>
+            <div class="si-hint" id="si-hint-0">PDF or photo (JPG / PNG) · Most recent month</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="si-pill-0">Upload</div></div>
+        </div>
+      </div>
+
+      <!-- Card 2: Form 16 -->
+      <div class="si-card si-card-2" id="si-card-1" onclick="siTrigger(1)" role="button" tabindex="0">
+        <div class="si-scan"></div>
+        <div class="si-card-row">
+          <div class="si-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/>
+            </svg>
+          </div>
+          <div class="si-info">
+            <div class="si-name">Form 16</div>
+            <div class="si-desc">Tax regime · 80C / 80D · NPS · Annual income</div>
+            <div class="si-hint" id="si-hint-1">PDF · From your employer · FY 2025-26</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="si-pill-1">Upload</div></div>
+        </div>
+      </div>
+
+      <!-- Card 3: Bank Statement -->
+      <div class="si-card si-card-3" id="si-card-2" onclick="siTrigger(2)" role="button" tabindex="0">
+        <div class="si-scan"></div>
+        <div class="si-card-row">
+          <div class="si-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+              <line x1="6" y1="15" x2="9" y2="15"/>
+              <line x1="14" y1="15" x2="18" y2="15"/>
+            </svg>
+          </div>
+          <div class="si-info">
+            <div class="si-name">Bank Statement</div>
+            <div class="si-desc">EMIs · Recurring spend · Average monthly outflow</div>
+            <div class="si-hint" id="si-hint-2">Screenshot or PDF · Most banks lock PDFs with a password — screenshot works better</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="si-pill-2">Upload</div></div>
+        </div>
+      </div>
+
+    </div><!-- /si-cards -->
+
+    <!-- Bank statement fallback: manual EMI entry (shown when PDF fails) -->
+    <div id="si-emi-fallback" style="display:none;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:0.875rem;margin-bottom:0.85rem">
+      <div style="font-size:0.72rem;font-weight:800;color:#f59e0b;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+        Bank statement is password-protected
+      </div>
+      <div style="font-size:0.72rem;color:var(--t2);margin-bottom:0.75rem;line-height:1.5">
+        Indian banks lock PDF statements with your PAN or date of birth. <strong style="color:var(--text)">Take a screenshot of the summary page</strong> and upload that — or enter your total monthly recurring obligations below.
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <div style="flex:1">
+          <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.25rem">Total monthly obligations (EMI + utilities + subscriptions)</div>
+          <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.5rem">Include: Home/Car/Personal loans, Electricity, Water, Gas, Insurance, Mobile, Broadband, Subscriptions. Not: occasional food/shopping.</div>
+          <input id="si-emi-input" type="number" placeholder="e.g. 35000"
+            style="width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.55rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;outline:none"
+            oninput="siSaveManualEMI(this.value)">
+        </div>
+        <button onclick="siTrigger(2)" style="flex-shrink:0;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:0.55rem 0.75rem;color:#f59e0b;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap">
+          Try Screenshot
+        </button>
+      </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="si-f0" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(0,this)">
+    <input type="file" id="si-f1" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(1,this)">
+    <input type="file" id="si-f2" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(2,this)">
+
+    <!-- Review panel (appears after first extraction) -->
+    <div class="si-review" id="si-review">
+      <div class="si-rv-hdr">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Extracted — here's what we found
+      </div>
+      <div id="si-rv-rows"></div>
+      <div class="si-rv-gap" id="si-rv-gap"></div>
+    </div>
+
+    <!-- Primary CTA -->
+    <button class="si-cta" id="si-cta" onclick="siContinue()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      Continue — Fill Remaining Details
+    </button>
+
+    <button class="si-skip" onclick="siSkip()">Skip — I'll type everything myself</button>
+
+  </div><!-- /si-sheet -->
+</div><!-- /si-ov -->
 
 </div><!-- /app -->
 
@@ -7274,8 +7574,9 @@ function renderProfileSummaryPanel() {
 // ── Auto-open wizard for truly new users ─────────────────────────
 function initWizardOnLoad() {
   const isNewUser = !W.monthlyIncome && !W.displayName && !W.monthlySavings;
-  if (isNewUser) {
-    setTimeout(() => openWizard(), 600);
+  if (isNewUser && !sessionStorage.getItem('si_skip')) {
+    // New user — show Smart Import first (faster than typing the full wizard)
+    setTimeout(() => openSmartImport(), 650);
   } else {
     renderProfileSummaryPanel();
   }
@@ -7892,6 +8193,419 @@ function renderTaxStrategyPlanner() {
     </div>`;
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   SMART IMPORT — Document Intelligence
+   Upload salary slip / Form 16 / bank statement → Claude AI reads it
+   → structured JSON → auto-fills W profile object + DOM fields
+   © 2026 PITHONIX AI INDIA PRIVATE LIMITED
+══════════════════════════════════════════════════════════════ */
+
+/* ── State ────────────────────────────────────────────────── */
+const SI = {
+  results: [null, null, null],  // per-card extraction results
+  merged:  {}                   // merged result from all uploaded docs
+};
+
+/* ── Local format helper ──────────────────────────────────── */
+const _siFmt = v => (v != null && !isNaN(v))
+  ? '₹' + Math.round(v).toLocaleString('en-IN')
+  : String(v || '—');
+
+/* ── Open / Close ─────────────────────────────────────────── */
+function openSmartImport() {
+  const ov = document.getElementById('si-ov');
+  if (ov) { ov.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+function closeSmartImport() {
+  const ov = document.getElementById('si-ov');
+  if (ov) { ov.classList.remove('open'); document.body.style.overflow = ''; }
+}
+function siSkip() {
+  sessionStorage.setItem('si_skip', '1');
+  closeSmartImport();
+  openWizard();
+}
+
+/* ── Trigger file picker ──────────────────────────────────── */
+function siTrigger(idx) {
+  const inp = document.getElementById('si-f' + idx);
+  if (inp) inp.click();
+}
+
+/* ── File → base64 (strip data-URL prefix) ───────────────── */
+function siToB64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ── Count meaningful extracted fields ───────────────────── */
+function siCountFields(obj) {
+  const skip = new Set(['doc_type','confidence','fields_extracted','recurring_debits','month_year']);
+  return Object.entries(obj).filter(([k, v]) =>
+    !skip.has(k) && v != null && v !== '' && !Array.isArray(v)
+  ).length;
+}
+
+/* ── Merge results: first non-null value wins per field ───── */
+function siMerge() {
+  SI.merged = {};
+  for (const r of SI.results) {
+    if (!r) continue;
+    for (const [k, v] of Object.entries(r)) {
+      if (v != null && SI.merged[k] == null) SI.merged[k] = v;
+    }
+  }
+}
+
+/* ── Card state: idle | proc | done | err ─────────────────── */
+function siSetCard(idx, state, count, errMsg) {
+  const card   = document.getElementById('si-card-' + idx);
+  const pill   = document.getElementById('si-pill-' + idx);
+  const hintEl = document.getElementById('si-hint-' + idx);
+  if (!card || !pill) return;
+
+  card.classList.remove('si-proc', 'si-done', 'si-err');
+
+  if (state === 'proc') {
+    card.classList.add('si-proc');
+    pill.className   = 'si-pill si-p-proc';
+    pill.textContent = 'Reading…';
+    if (hintEl) hintEl.textContent = 'Claude AI is scanning your document…';
+
+  } else if (state === 'done') {
+    card.classList.add('si-done');
+    pill.className = 'si-pill si-p-done';
+    pill.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" class="si-chk"/></svg> Done`;
+    if (hintEl) {
+      hintEl.innerHTML = count
+        ? `<span class="si-cnt">✦ ${count} fields extracted</span>`
+        : `<span class="si-cnt">✦ Data extracted</span>`;
+    }
+
+  } else if (state === 'err') {
+    card.classList.add('si-err');
+    pill.className   = 'si-pill si-p-err';
+    pill.textContent = '↻ Retry';
+    if (hintEl) hintEl.textContent = errMsg || 'Upload failed — tap to retry';
+  }
+}
+
+/* ── PDF.js: render first N pages of a PDF to a JPEG ─────── */
+// Lazy-loads PDF.js from CDN only when needed (bank statement card)
+async function siPdfToJpeg(file, maxPages = 2) {
+  // Lazy-load PDF.js UMD build
+  if (!window.pdfjsLib) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  const buf = await file.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = Math.min(pdf.numPages, maxPages);
+
+  // Render each page to its own canvas
+  const canvases = [];
+  let totalH = 0, maxW = 0;
+  for (let p = 1; p <= pages; p++) {
+    const page = await pdf.getPage(p);
+    const vp   = page.getViewport({ scale: 1.5 });   // 1.5x = clear & not huge
+    const cv   = document.createElement('canvas');
+    cv.width   = vp.width;
+    cv.height  = vp.height;
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    canvases.push(cv);
+    totalH += vp.height;
+    maxW = Math.max(maxW, vp.width);
+  }
+
+  // Stack pages vertically into one canvas
+  const out = document.createElement('canvas');
+  out.width  = maxW;
+  out.height = totalH;
+  const ctx  = out.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, maxW, totalH);
+  let y = 0;
+  for (const cv of canvases) { ctx.drawImage(cv, 0, y); y += cv.height; }
+
+  // Return base64 JPEG (no data-URL prefix)
+  return out.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+
+/* ── Error messages per card + situation ──────────────────── */
+const SI_ERRORS = {
+  2: { // Bank statement specific
+    pdf_unreadable: 'PDF is password-protected — see the tip below, or try a screenshot',
+    too_large:      'File too large — try just 1 month, or take a screenshot',
+    parse_error:    'Couldn\'t read this PDF — try a screenshot of the summary page',
+    low_confidence: 'Couldn\'t read clearly — try a screenshot instead',
+    default:        'Upload failed — try a screenshot of the summary page'
+  },
+  default: {
+    pdf_unreadable: 'Couldn\'t read — try a clearer photo or a digital (non-scanned) PDF',
+    too_large:      'File too large — max 7 MB',
+    parse_error:    'Couldn\'t extract data — try a better quality file',
+    low_confidence: 'Couldn\'t read clearly — try a crisper photo or PDF',
+    default:        'Upload failed — please try again'
+  }
+};
+function siGetErr(idx, code) {
+  const map = SI_ERRORS[idx] || SI_ERRORS.default;
+  return map[code] || map.default;
+}
+
+/* ── Show bank statement fallback ─────────────────────────── */
+function siShowEmiFallback() {
+  const el = document.getElementById('si-emi-fallback');
+  if (el) { el.style.display = 'block'; setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100); }
+}
+
+/* ── Save manual EMI input ────────────────────────────────── */
+function siSaveManualEMI(val) {
+  const emi = parseFloat(val);
+  if (!isNaN(emi) && emi > 0) {
+    SI.merged.emi_total = emi;
+    if (Object.keys(SI.merged).length > 1) siUpdateReview();
+  }
+}
+
+/* ── Handle file selected ─────────────────────────────────── */
+async function siHandleFile(idx, input) {
+  const file = input.files[0];
+  input.value = '';            // allow re-selecting same file
+  if (!file) return;
+
+  // Guard: max 7 MB client-side
+  if (file.size > 7 * 1024 * 1024) {
+    siSetCard(idx, 'err', 0, siGetErr(idx, 'too_large'));
+    if (idx === 2) siShowEmiFallback();
+    return;
+  }
+
+  siSetCard(idx, 'proc');
+
+  try {
+    let b64        = await siToB64(file);
+    let mimeType   = file.type ||
+      (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+
+    // For bank statement (idx=2) with multi-page PDF: render first 2 pages as JPEG
+    // Avoids Gemini overload on dense 11-page transaction tables
+    if (idx === 2 && mimeType === 'application/pdf') {
+      b64 = await siPdfToJpeg(file, 2);
+      mimeType = 'image/jpeg';
+    }
+
+    const res = await fetch('/api/doc-extract', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        mimeType,
+        data: b64,
+        city: W.city || null  // Pass city if available for better extraction
+      })
+    });
+
+    const json = await res.json();
+
+    // Explicit error code from API
+    if (!json.success || json.errorCode) {
+      const code = json.errorCode || (res.status === 413 ? 'too_large' : 'default');
+      siSetCard(idx, 'err', 0, siGetErr(idx, code));
+      if (idx === 2) siShowEmiFallback();
+      return;
+    }
+
+    const ext = json.extracted;
+    if (!ext) throw new Error('No data');
+
+    // Low confidence
+    if ((ext.confidence || 0) < 0.25) {
+      siSetCard(idx, 'err', 0, siGetErr(idx, 'low_confidence'));
+      if (idx === 2) siShowEmiFallback();
+      return;
+    }
+
+    SI.results[idx] = ext;
+    siMerge();
+
+    const count = ext.fields_extracted || siCountFields(ext);
+    siSetCard(idx, 'done', count);
+
+    const dot = document.getElementById('si-dot-' + idx);
+    if (dot) dot.classList.add('done');
+
+    siUpdateReview();
+
+  } catch (e) {
+    console.error('[SmartImport]', e);
+    siSetCard(idx, 'err', 0, siGetErr(idx, 'default'));
+    if (idx === 2) siShowEmiFallback();
+  }
+}
+
+/* ── Build review panel with extracted fields ─────────────── */
+function siUpdateReview() {
+  const m      = SI.merged;
+  const review = document.getElementById('si-review');
+  const rowsEl = document.getElementById('si-rv-rows');
+  const gapEl  = document.getElementById('si-rv-gap');
+  if (!review || !rowsEl || !gapEl) return;
+
+  // Field definitions: [key, label, formatter]
+  const FIELDS = [
+    ['take_home',     'Take-home salary',   v => _siFmt(v) + ' / mo'],
+    ['gross_salary',  'Gross salary',        v => _siFmt(v) + ' / mo'],
+    ['employer_name', 'Employer',            v => v],
+    ['designation',   'Designation',         v => v],
+    ['city',          'City',                v => v],
+    ['hra',           'HRA',                 v => _siFmt(v) + ' / mo'],
+    ['pf_employee',   'PF (employee)',        v => _siFmt(v) + ' / mo'],
+    ['tds_monthly',   'TDS / month',          v => _siFmt(v)],
+    ['tax_regime',    'Tax regime',           v => v === 'new' ? 'New Regime ✓' : 'Old Regime'],
+    ['section_80c',   '80C deductions',       v => _siFmt(v) + ' / yr'],
+    ['section_80d',   '80D (health)',          v => _siFmt(v) + ' / yr'],
+    ['nps_80ccd',     'NPS (80CCD 1B)',        v => _siFmt(v) + ' / yr'],
+    ['emi_total',     'EMIs detected',         v => _siFmt(v) + ' / mo'],
+  ];
+
+  const found = FIELDS.filter(([k]) => m[k] != null);
+  rowsEl.innerHTML = found.slice(0, 8).map(([k, label, fmt]) =>
+    `<div class="si-rv-row">
+       <span class="si-rv-l">${label}</span>
+       <span class="si-rv-v">${fmt(m[k])}</span>
+     </div>`
+  ).join('') + (found.length > 8
+    ? `<div class="si-rv-row"><span class="si-rv-l" style="color:var(--teal)">+ ${found.length - 8} more fields extracted</span><span class="si-rv-v"></span></div>`
+    : '');
+
+  // Gap analysis
+  const missing = [];
+  if (!m.take_home && !m.gross_salary) missing.push('Income');
+  if (!m.city) missing.push('City');
+  if (!m.tax_regime) missing.push('Tax regime');
+
+  const gapColor = missing.length ? '#f59e0b' : '#22c55e';
+  const gapIcon  = missing.length
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${gapColor}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="${gapColor}"/></svg>`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${gapColor}" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+  gapEl.style.color = gapColor;
+  gapEl.innerHTML = missing.length
+    ? `${gapIcon}<span>${missing.length} more thing${missing.length>1?'s':''} needed: <strong>${missing.join(', ')}</strong> — we'll ask next.</span>`
+    : `${gapIcon}<span>Profile almost complete. Just a few personal details left.</span>`;
+
+  review.classList.add('show');
+
+  // Update CTA label
+  const cta = document.getElementById('si-cta');
+  if (cta) {
+    const lbl = missing.length
+      ? `Continue — ${missing.length} detail${missing.length>1?'s':''} left`
+      : 'Confirm & Continue';
+    cta.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg> ${lbl}`;
+  }
+}
+
+/* ── Apply extracted data to W object + DOM ───────────────── */
+function siApply() {
+  const m = SI.merged;
+  if (!m || !Object.keys(m).length) return;
+
+  const set = (wKey, domId, val) => {
+    if (val == null) return;
+    W[wKey] = val;
+    const el = document.getElementById(domId);
+    if (el) el.value = val;
+  };
+
+  // Income
+  if (m.take_home)  set('monthlyIncome', 'p-income',   m.take_home);
+
+  // Annual salary (for Tax module)
+  if (m.gross_salary && !W.annualSalary) {
+    W.annualSalary = m.gross_salary * 12;
+    const el = document.getElementById('t-salary');
+    if (el) el.value = W.annualSalary;
+  }
+
+  // City
+  if (m.city) {
+    W.city = m.city;
+    ['p-city','wiz-city'].forEach(id => { const el=document.getElementById(id); if(el) el.value=m.city; });
+
+    // Auto tier-detect
+    const cl = m.city.toLowerCase();
+    const t1 = ['mumbai','delhi','bengaluru','bangalore','hyderabad','chennai','kolkata','pune'];
+    const t2 = ['ahmedabad','jaipur','chandigarh','kochi','lucknow','indore','nagpur','bhopal',
+                 'visakhapatnam','vizag','coimbatore','surat','vadodara','nashik'];
+    const tier = t1.some(c => cl.includes(c)) ? 1 : t2.some(c => cl.includes(c)) ? 2 : null;
+    if (tier) {
+      W.cityTier = tier;
+      ['p-tier','wiz-tier'].forEach(id => { const el=document.getElementById(id); if(el) el.value=tier; });
+    }
+  }
+
+  // Tax regime
+  if (m.tax_regime) setRegime(m.tax_regime);
+
+  // Deductions (Tax screen)
+  if (m.section_80c) set('ded80c',  't-80c', m.section_80c);
+  if (m.section_80d) set('ded80d',  't-80d', m.section_80d);  // note: 't-80d' if exists
+  if (m.nps_80ccd)   set('dedNPS',  't-nps', m.nps_80ccd);
+
+  // Health premium (80D)
+  if (m.section_80d) set('healthPremium', 'p-health-prem', m.section_80d);
+
+  // EMIs (from extraction OR manual input fallback)
+  const manualEMI = parseFloat(document.getElementById('si-emi-input')?.value);
+  const emiVal = m.emi_total || (!isNaN(manualEMI) && manualEMI > 0 ? manualEMI : null);
+  if (emiVal) set('otherEMI', 'p-emi', emiVal);
+
+  // Monthly PF contribution (stored separately)
+  if (m.pf_employee) W.pfMonthly = m.pf_employee;
+
+  // Employee name (if profile not yet named)
+  if (m.employee_name && !W.displayName) {
+    W.displayName = m.employee_name;
+    ['p-display-name','wiz-name'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = m.employee_name;
+    });
+  }
+
+  recalcAll();
+  scheduleProfileSave();
+}
+
+/* ── Continue: apply + open wizard at right step ─────────── */
+function siContinue() {
+  siApply();
+  closeSmartImport();
+
+  const m         = SI.merged;
+  const hasName   = !!(m.employee_name || W.displayName);
+  const autoCount = [m.take_home || m.gross_salary, m.city, m.tax_regime]
+                      .filter(Boolean).length;
+
+  // Open wizard — skip to step 1 if name was extracted
+  openWizard();
+  if (hasName) setTimeout(() => wizShowStep(1, false), 60);
+
+  if (autoCount > 0) {
+    showToast('✦', `${autoCount * 3}+ fields auto-filled from your document`);
+  }
+}
 
 </script>
 </body>
