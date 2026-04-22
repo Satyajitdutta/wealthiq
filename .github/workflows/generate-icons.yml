@@ -1,0 +1,35 @@
+name: Generate App Icons
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-icons:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: claude/google-play-store-publish-ehd0f
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Generate PNG icons
+        run: python3 .github/scripts/generate_icons.py
+
+      - name: Move icons to repo root
+        run: |
+          cp icons_out/icon-192.png icon-192.png
+          cp icons_out/icon-512.png icon-512.png
+          cp icons_out/icon-512-maskable.png icon-512-maskable.png
+
+      - name: Commit and push icons
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add icon-192.png icon-512.png icon-512-maskable.png
+          git commit -m "chore: auto-generate PNG app icons for Play Store"
+          git push
