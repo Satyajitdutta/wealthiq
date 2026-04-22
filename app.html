@@ -8591,8 +8591,21 @@ async function siUnlockPdf() {
 
 /* ── Multi-image screenshot upload ────────────────────────── */
 function siHandleMultiImages(input) {
-  const files = Array.from(input.files || []);
+  let files = Array.from(input.files || []);
   if (!files.length) return;
+
+  // Restriction: Max 10 images
+  if (files.length > 10) {
+    showToast('⚠️', 'Max 10 images allowed at once. Please select the most relevant pages.');
+    files = files.slice(0, 10);
+  }
+
+  // Restriction: Check for massive individual files (> 15MB)
+  const tooLarge = files.some(f => f.size > 15 * 1024 * 1024);
+  if (tooLarge) {
+    showToast('⚠️', 'Some images are too large. Please use smaller files.');
+    return;
+  }
 
   SI.multiImages = files;
   const countEl = document.getElementById('si-multi-count');
@@ -8684,7 +8697,8 @@ async function siSendMultiImages() {
     }
 
     // Step 3: Convert stitched canvas to compressed JPEG
-    const b64 = cv.toDataURL('image/jpeg', 0.72).split(',')[1];
+    // Aggressive compression (0.6) to stay under Vercel's 4.5MB limit for multi-image
+    const b64 = cv.toDataURL('image/jpeg', 0.6).split(',')[1];
     console.log('[SmartImport] Stitched', files.length, 'images →', Math.round(b64.length / 1024), 'KB');
 
     // Step 4: Send as a regular single-image payload (uses the proven path)
@@ -8712,7 +8726,7 @@ function siLoadImage(file) {
 }
 
 /* ── Compress a single image file via canvas ─────────────── */
-function siCompressImage(file, maxWidth = 1400, quality = 0.65) {
+function siCompressImage(file, maxWidth = 1200, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -8924,8 +8938,8 @@ async function siHandleFile(idx, input) {
   input.value = '';            // allow re-selecting same file
   if (!file) return;
 
-  // Guard: max 10 MB client-side
-  if (file.size > 10 * 1024 * 1024) {
+  // Guard: max 12 MB client-side (we will compress it anyway, but 12MB is a safe buffer for raw data)
+  if (file.size > 12 * 1024 * 1024) {
     siSetCard(idx, 'err', 0, siGetErr(idx, 'too_large'));
     if (idx === 2) siShowEmiFallback();
     return;

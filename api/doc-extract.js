@@ -299,19 +299,29 @@ export default async function handler(req, res) {
           if (!text) throw new Error('Gemini returned no extraction text');
 
           // Robust JSON extraction (find the block between the first { and last })
-          const start = text.indexOf('{');
-          const end   = text.lastIndexOf('}');
-          if (start === -1 || end === -1) {
-             throw new Error('No JSON object found in Gemini response');
+          // Robust JSON extraction: look for markdown blocks or the last { } pair
+          let jsonStr = '';
+          const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+          if (jsonMatch) {
+            jsonStr = jsonMatch[1];
+          } else {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1) {
+              jsonStr = text.slice(start, end + 1);
+            }
           }
-          
-          const jsonStr = text.slice(start, end + 1);
+
+          if (!jsonStr) throw new Error('No JSON object found in Gemini response');
+
           let extracted;
           try {
             extracted = JSON.parse(jsonStr);
           } catch (e) {
-            // Attempt to fix common Gemini JSON formatting issues (like trailing commas)
-            const cleaned = jsonStr.replace(/,\s*([\]}])/g, '$1');
+            // Clean common LLM JSON errors (like trailing commas)
+            const cleaned = jsonStr
+              .replace(/,\s*([\]}])/g, '$1') // remove trailing commas before ] or }
+              .replace(/[\n\r\t]/g, ' ');   // flatten newlines
             extracted = JSON.parse(cleaned);
           }
           
