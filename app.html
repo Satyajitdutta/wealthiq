@@ -3697,6 +3697,42 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
       <div id="si-rv-rows"></div>
       <div class="si-rv-gap" id="si-rv-gap"></div>
+
+      <!-- Add Missing Recurring Obligations Section -->
+      <div id="si-add-missing-section" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bd2)">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--indigo);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Anything Missed?
+        </div>
+        <div style="font-size:0.68rem;color:var(--t2);margin-bottom:0.65rem;line-height:1.45">
+          <strong>Add any recurring obligations not detected above:</strong> Consumer loans with cryptic merchant names, utilities that didn't match, subscriptions, insurance premiums, or any fixed monthly expense you can't skip.
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:flex-end">
+          <div style="flex:1">
+            <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.3rem;font-weight:600">Monthly amount (₹)</div>
+            <input id="si-add-missing-amount" type="number" placeholder="e.g. 5000"
+              style="width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;outline:none;box-sizing:border-box">
+          </div>
+          <div style="flex:1">
+            <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.3rem;font-weight:600">Type (optional)</div>
+            <select id="si-add-missing-type" style="width:100%;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;outline:none;box-sizing:border-box">
+              <option value="">Not sure</option>
+              <option value="EMI">Consumer Loan/EMI</option>
+              <option value="Utility">Utility Bill</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Subscription">Subscription</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <button onclick="siAddMissingObligation()" style="flex-shrink:0;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:8px;padding:0.5rem 0.75rem;color:var(--indigo);font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s">
+            + Add
+          </button>
+        </div>
+        <div id="si-added-obligations" style="margin-top:0.65rem;display:none;background:rgba(99,102,241,0.05);border-radius:8px;padding:0.65rem">
+          <div style="font-size:0.65rem;color:var(--t3);margin-bottom:0.4rem;font-weight:600">✓ Added Obligations:</div>
+          <div id="si-added-list" style="display:flex;flex-direction:column;gap:0.35rem"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Primary CTA -->
@@ -8204,7 +8240,8 @@ function renderTaxStrategyPlanner() {
 /* ── State ────────────────────────────────────────────────── */
 const SI = {
   results: [null, null, null],  // per-card extraction results
-  merged:  {}                   // merged result from all uploaded docs
+  merged:  {},                  // merged result from all uploaded docs
+  addedObligations: []          // manually added recurring obligations not auto-detected
 };
 
 /* ── Local format helper ──────────────────────────────────── */
@@ -8220,6 +8257,10 @@ function openSmartImport() {
 function closeSmartImport() {
   const ov = document.getElementById('si-ov');
   if (ov) { ov.classList.remove('open'); document.body.style.overflow = ''; }
+  // Reset for next use
+  SI.results = [null, null, null];
+  SI.merged = {};
+  SI.addedObligations = [];
 }
 function siSkip() {
   sessionStorage.setItem('si_skip', '1');
@@ -8378,6 +8419,69 @@ function siSaveManualEMI(val) {
     SI.merged.emi_total = emi;
     if (Object.keys(SI.merged).length > 1) siUpdateReview();
   }
+}
+
+/* ── Add missing recurring obligations ────────────────────── */
+function siAddMissingObligation() {
+  const amtEl = document.getElementById('si-add-missing-amount');
+  const typeEl = document.getElementById('si-add-missing-type');
+  const amt = parseFloat(amtEl?.value || 0);
+  const type = typeEl?.value || 'Other';
+
+  if (isNaN(amt) || amt <= 0) {
+    showToast('⚠️', 'Enter an amount greater than 0');
+    return;
+  }
+
+  SI.addedObligations.push({ amount: amt, type });
+
+  // Recalculate totals
+  const totalAdded = SI.addedObligations.reduce((sum, o) => sum + o.amount, 0);
+  const baseTotal = SI.merged.emi_total || 0;
+  SI.merged.total_monthly_obligations = (baseTotal + totalAdded) || null;
+
+  // Clear inputs
+  if (amtEl) amtEl.value = '';
+  if (typeEl) typeEl.value = '';
+
+  // Update UI
+  siRenderAddedObligations();
+  siUpdateReview();
+  showToast('✓', `Added ₹${amt.toLocaleString('en-IN')}`);
+}
+
+function siRenderAddedObligations() {
+  const container = document.getElementById('si-added-obligations');
+  const listEl = document.getElementById('si-added-list');
+
+  if (!SI.addedObligations || SI.addedObligations.length === 0) {
+    if (container) container.style.display = 'none';
+    return;
+  }
+
+  if (container) container.style.display = 'block';
+  if (listEl) {
+    listEl.innerHTML = SI.addedObligations.map((o, i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0.4rem;background:rgba(99,102,241,0.08);border-radius:6px;font-size:0.68rem">
+        <div>
+          <span style="font-weight:600;color:var(--indigo)">₹${o.amount.toLocaleString('en-IN')}</span>
+          <span style="color:var(--t3);margin-left:0.3rem">${o.type}</span>
+        </div>
+        <button onclick="siRemoveObligation(${i})" style="background:none;border:none;color:var(--t3);cursor:pointer;padding:0.2rem 0.3rem;font-size:0.75rem">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function siRemoveObligation(idx) {
+  SI.addedObligations.splice(idx, 1);
+  siRenderAddedObligations();
+
+  const totalAdded = SI.addedObligations.reduce((sum, o) => sum + o.amount, 0);
+  const baseTotal = SI.merged.emi_total || 0;
+  SI.merged.total_monthly_obligations = (baseTotal + totalAdded) || null;
+
+  siUpdateReview();
 }
 
 /* ── Handle file selected ─────────────────────────────────── */
@@ -8568,9 +8672,21 @@ function siApply() {
   // Health premium (80D)
   if (m.section_80d) set('healthPremium', 'p-health-prem', m.section_80d);
 
-  // EMIs (from extraction OR manual input fallback)
-  const manualEMI = parseFloat(document.getElementById('si-emi-input')?.value);
-  const emiVal = m.emi_total || (!isNaN(manualEMI) && manualEMI > 0 ? manualEMI : null);
+  // EMIs (from extraction OR manual input fallback OR manually added obligations)
+  let emiVal = m.emi_total || 0;
+
+  // Add any manually entered missing obligations
+  if (SI.addedObligations && SI.addedObligations.length > 0) {
+    const addedTotal = SI.addedObligations.reduce((sum, o) => sum + o.amount, 0);
+    emiVal += addedTotal;
+  }
+
+  // Fallback: manual EMI input (if no extraction or manual additions)
+  if (!emiVal) {
+    const manualEMI = parseFloat(document.getElementById('si-emi-input')?.value);
+    emiVal = !isNaN(manualEMI) && manualEMI > 0 ? manualEMI : null;
+  }
+
   if (emiVal) set('otherEMI', 'p-emi', emiVal);
 
   // Monthly PF contribution (stored separately)
