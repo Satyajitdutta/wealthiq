@@ -1,5 +1,5 @@
 // Artha-IQ — Smart Import: Document Intelligence Extractor
-// Uses Gemini 2.5 Flash (same key as GOT Advisor) — vision + PDF inline data.
+// Uses Gemini 3 Flash (April 2026 Stable) — vision + PDF inline data.
 // Extracts structured financial data from salary slips, Form 16, bank statements.
 // © 2026 PITHONIX AI INDIA PRIVATE LIMITED. All Rights Reserved.
 
@@ -17,11 +17,9 @@ const CITY_TIER_MAP = {
   'indore': 'tier2', 'coimbatore': 'tier2', 'kochi': 'tier2',
   'gurgaon': 'tier1', 'noida': 'tier1', 'faridabad': 'tier1',
   'ghaziabad': 'tier2', 'ludhiana': 'tier2', 'agra': 'tier2',
-  // Add more as needed
 };
 
 const UTILITY_PROVIDERS_BY_CITY = {
-  // ── HYDERABAD (Tier 1) ──
   'hyderabad': {
     electricity: ['TPDDL', 'TSSPDCL', 'TGGENCO', 'Telangana Power'],
     water: ['HMWSSB', 'Hyderabad Metro Water Supply'],
@@ -31,7 +29,6 @@ const UTILITY_PROVIDERS_BY_CITY = {
     insurance: ['LIC', 'ICICI Prudential', 'Bajaj', 'HDFC Life'],
     others: ['Netflix', 'Amazon Prime', 'Disney+', 'Spotify', 'Swiggy', 'Zomato']
   },
-  // ── BANGALORE (Tier 1) ──
   'bangalore': {
     electricity: ['BESCOM', 'Bangalore Electric', 'KERC'],
     water: ['BWSSB', 'Bangalore Water Supply'],
@@ -41,7 +38,6 @@ const UTILITY_PROVIDERS_BY_CITY = {
     insurance: ['LIC', 'ICICI Prudential', 'Bajaj', 'HDFC Life'],
     others: ['Netflix', 'Amazon Prime', 'Disney+', 'Spotify', 'Swiggy', 'Zomato']
   },
-  // ── DELHI/NCR (Tier 1) ──
   'delhi': {
     electricity: ['TPDDL', 'TPDDL', 'BRPL', 'BYPL'],
     water: ['DJB', 'Delhi Jal Board'],
@@ -51,7 +47,6 @@ const UTILITY_PROVIDERS_BY_CITY = {
     insurance: ['LIC', 'ICICI Prudential', 'Bajaj', 'HDFC Life'],
     others: ['Netflix', 'Amazon Prime', 'Disney+', 'Spotify', 'Swiggy', 'Zomato']
   },
-  // ── MUMBAI (Tier 1) ──
   'mumbai': {
     electricity: ['MSEDCL', 'BEST', 'Mahavitran', 'PowerGrid'],
     water: ['MCGM', 'Mumbai Municipal Corporation'],
@@ -61,7 +56,6 @@ const UTILITY_PROVIDERS_BY_CITY = {
     insurance: ['LIC', 'ICICI Prudential', 'Bajaj', 'HDFC Life'],
     others: ['Netflix', 'Amazon Prime', 'Disney+', 'Spotify', 'Swiggy', 'Zomato']
   },
-  // ── Chennai (Tier 1) ──
   'chennai': {
     electricity: ['TANGEDCO', 'Chennai Electricity'],
     water: ['CMWSSB', 'Chennai Metro Water Supply'],
@@ -76,159 +70,83 @@ const UTILITY_PROVIDERS_BY_CITY = {
 function getCityTier(cityName) {
   if (!cityName) return 'tier1';
   const city = cityName.toLowerCase().trim();
-  return CITY_TIER_MAP[city] || 'tier1'; // default to tier1
+  return CITY_TIER_MAP[city] || 'tier1';
 }
 
 function getUtilityProviders(cityName) {
-  if (!cityName) return UTILITY_PROVIDERS_BY_CITY['hyderabad']; // fallback
+  if (!cityName) return UTILITY_PROVIDERS_BY_CITY['hyderabad'];
   const city = cityName.toLowerCase().trim();
   return UTILITY_PROVIDERS_BY_CITY[city] || UTILITY_PROVIDERS_BY_CITY['bangalore'];
 }
 
 function buildCityContextPrompt(cityName) {
-  // If city provided, use specific providers; else use comprehensive Tier-1 list
   if (cityName && UTILITY_PROVIDERS_BY_CITY[cityName.toLowerCase()]) {
     const providers = getUtilityProviders(cityName);
     return `
 User's city: ${cityName}
-
-For bank statements, identify recurring charges by these provider categories specific to this city:
+Identify recurring charges for:
 - Electricity: ${providers.electricity.join(', ')}
 - Water: ${providers.water.join(', ')}
 - Gas: ${providers.gas.join(', ')}
 - Internet: ${providers.internet.join(', ')}
 - Mobile: ${providers.mobile.join(', ')}
-- Insurance (premiums/debits): ${providers.insurance.join(', ')}
-- Subscriptions: ${providers.others.join(', ')}
-
-Recurring = appears monthly or on predictable dates. Sum these separately from EMI_TOTAL.`;
+- Insurance: ${providers.insurance.join(', ')}
+- Subscriptions: ${providers.others.join(', ')}`;
   }
-
-  // Comprehensive Tier-1 fallback (covers Hyderabad, Bangalore, Delhi, Mumbai, Chennai)
-  return `
-For bank statements, intelligently identify recurring utilities by looking for these provider patterns:
-
-ELECTRICITY (varies by city/state):
-  - Telangana: TPDDL, TSSPDCL | Karnataka: BESCOM | Maharashtra: MSEDCL, BEST | Delhi: TPDDL, BRPL, BYPL | Tamil Nadu: TANGEDCO
-
-WATER/MUNICIPAL:
-  - Hyderabad: HMWSSB | Bangalore: BWSSB | Delhi: DJB | Mumbai: MCGM | Chennai: CMWSSB
-
-GAS (LPG or piped):
-  - Common: Indraprastha Gas, TS Gas, Bharat Gas, HP Gas | Look for: Gas, LPG, Indraprastha
-
-INTERNET/BROADBAND:
-  - Common: ACT Fibernet, Airtel Broadband, Jio Fiber, Excitel, Hathway, You Broadband, Spectranet
-
-MOBILE/TELECOM:
-  - Common: Airtel, Jio, VI, Vodafone, BSNL | Look for: "Airtel Mo", "Jio", "VI", mobile charges
-
-INSURANCE (premiums, life, health):
-  - Common: LIC, ICICI Prudential, Bajaj, HDFC Life, Max Life | Look for: "Insurance", "Premium", "LIC", company initials
-
-SUBSCRIPTIONS & UTILITIES:
-  - Common: Netflix, Amazon Prime, Disney+, Spotify, Swiggy, Zomato, Urban Company, etc.
-
-FILTERING RULES — Only count as "recurring" if:
-  1. FIXED AMOUNT: Same or similar amount each month (±10% variance acceptable)
-  2. PREDICTABLE DATE: Same date each month or on a known billing cycle
-  3. NON-DISCRETIONARY: Not a restaurant/store/shopping merchant (no "shop", "restaurant", "cafe", "market", "retail")
-  4. KNOWN PROVIDER: Matches electricity, water, gas, insurance, or major subscription brands
-
-EXCLUDE these (they're discretionary/occasional, not obligations):
-  - Small merchants (pan shops, food stalls, local stores)
-  - Groceries/shopping (Amazon, Swiggy, Zomato unless subscription plan)
-  - Entertainment (PVR, cinema) unless subscription
-  - Variable food delivery charges
-
-CALCULATE:
-  - emi_total = sum of loan EMIs only (Bajaj, LIC Housing, HDFC Bank, PPR, etc.)
-  - recurring_utilities = sum of high-confidence recurring utilities ONLY (electricity, water, gas, insurance, mobile, broadband)
-  - total_monthly_obligations = emi_total + recurring_utilities
-
-Note: User will review and adjust via the manual form if needed.`;
+  return `Intelligently identify recurring utility/EMI charges and return structure.`;
 }
 
 function buildExtractPrompt(cityContext = '') {
-  return `You are a financial data extraction engine for Artha-IQ, India's personal finance intelligence platform.
+  return `You are a financial extraction engine. Extract financial data from salary slips, Form 16, or bank statements.
+Return ONLY valid JSON.
 
-A user has uploaded a financial document. It is one of: salary slip, Form 16, or bank statement (Indian).
-
-Extract every financial field you can identify. Return ONLY valid JSON — no explanation, no markdown, no code fences.
-
-JSON schema (use null for any field not found in the document):
+Schema:
 {
   "doc_type": "salary_slip" | "form_16" | "bank_statement" | "unknown",
-  "confidence": <0.0 to 1.0 — how clearly readable is this document>,
-
-  "employee_name":     <string | null>,
-  "employer_name":     <string | null>,
-  "designation":       <string | null>,
-  "month_year":        <"MMM YYYY" | null>,
-  "city":              <city name | null>,
-
-  "take_home":         <monthly take-home pay in ₹ as a number | null>,
-  "gross_salary":      <monthly gross salary in ₹ as a number | null>,
-  "basic":             <monthly basic pay in ₹ as a number | null>,
-  "hra":               <monthly HRA in ₹ as a number | null>,
-  "special_allowance": <monthly special allowance in ₹ as a number | null>,
-  "pf_employee":       <monthly employee PF deduction in ₹ as a number | null>,
-  "professional_tax":  <monthly professional tax in ₹ as a number | null>,
-  "tds_monthly":       <monthly TDS deducted in ₹ as a number | null>,
-
-  "annual_income":     <total annual income in ₹ as a number | null>,
-  "tax_regime":        <"new" | "old" | null>,
-  "section_80c":       <annual 80C total in ₹ as a number | null>,
-  "section_80d":       <annual 80D total in ₹ as a number | null>,
-  "nps_80ccd":         <annual NPS 80CCD 1B in ₹ as a number | null>,
-  "annual_tds":        <annual total TDS in ₹ as a number | null>,
-
-  "monthly_inflow":     <total credits in ₹ as a number | null>,
-  "monthly_outflow":    <total debits in ₹ as a number | null>,
-  "avg_balance":        <average balance in ₹ as a number | null>,
-  "closing_balance":    <final balance in ₹ as a number | null>,
-  "emi_total":          <total monthly loan EMIs in ₹ as a number | null>,
-  "recurring_utilities": <total monthly recurring bills/subs in ₹ as a number | null>,
-  "recurring_debits":   [
-    { "name": <string>, "amount": <number>, "category": "emi" | "utility" | "subscription", "date": <string | null> }
-  ],
-
-  "fields_extracted":   <integer count of non-null fields above, excluding doc_type, confidence, recurring_debits>
+  "confidence": number,
+  "employee_name": string,
+  "employer_name": string,
+  "designation": string,
+  "month_year": string,
+  "city": string,
+  "take_home": number,
+  "gross_salary": number,
+  "basic": number,
+  "hra": number,
+  "pf_employee": number,
+  "tds_monthly": number,
+  "annual_income": number,
+  "tax_regime": "new" | "old",
+  "section_80c": number,
+  "section_80d": number,
+  "nps_80ccd": number,
+  "monthly_inflow": number,
+  "monthly_outflow": number,
+  "avg_balance": number,
+  "closing_balance": number,
+  "emi_total": number,
+  "recurring_debits": [{ "name": string, "amount": number, "category": string, "date": string }],
+  "fields_extracted": number
 }
 
 Rules:
-- All monetary values must be plain numbers in Indian Rupees (no ₹ symbol, no commas).
-- For bank statements: list high-confidence recurring debits in the recurring_debits array.
-- category: "emi" for loans, "utility" for bills (electricity/water/gas/mobile/internet), "subscription" for OTT/apps.
-- total_monthly_obligations MUST equal the sum of all transaction amounts in recurring_debits.
+- Plain numbers, no symbols.
+- Sum high-confidence EMIs and recurring utilities separately.
 - Return ONLY the JSON object.
 
 ${cityContext}`;
 }
 
-// (EXTRACT_PROMPT_TEMPLATE kept for legacy — active prompt built dynamically via buildExtractPrompt)
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
-  if (req.method !== 'POST')   { res.status(405).json({ error: 'POST only' }); return; }
+  if (req.method === 'OPTIONS') { res.status(240).end(); return; }
+  if (req.method !== 'POST') { res.status(405).json({ error: 'POST only' }); return; }
 
-  // Parse body
   let body;
   try {
-    if (typeof req.body === 'object' && req.body !== null) {
-      body = req.body;
-    } else {
-      const raw = await new Promise((resolve, reject) => {
-        let d = '';
-        req.on('data',  c => d += c);
-        req.on('end',   () => resolve(d));
-        req.on('error', reject);
-      });
-      body = JSON.parse(raw);
-    }
+    body = (typeof req.body === 'object' && req.body !== null) ? req.body : JSON.parse(req.body);
   } catch (e) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
@@ -239,45 +157,39 @@ export default async function handler(req, res) {
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-  if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY missing' });
+  // Using gemini-3-flash (April 2026 Stable)
+  const modelName = 'gemini-3-flash';
 
-  const cityContext   = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
+  const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext);
 
   let parts;
   if (docText) {
-    parts = [
-      { text: `DOCUMENT TEXT (all pages):\n\n${docText}` },
-      { text: extractPrompt }
-    ];
+    parts = [{ text: `DOCUMENT TEXT:\n${docText}` }, { text: extractPrompt }];
   } else if (images && Array.isArray(images) && images.length > 0) {
     parts = [
-      { text: `Analyse these ${images.length} screenshots together.` },
+      { text: `Analyse this page.` },
       ...images.map(img => ({ inlineData: { mimeType: img.mimeType || 'image/jpeg', data: img.data } })),
       { text: extractPrompt }
     ];
   } else {
-    parts = [ { inlineData: { mimeType, data } }, { text: extractPrompt } ];
+    parts = [{ inlineData: { mimeType, data } }, { text: extractPrompt }];
   }
 
   const geminiBody = JSON.stringify({
     contents: [{ parts }],
     generationConfig: {
-      temperature:      0.1,
-      maxOutputTokens:  4096, // increased for transaction lists
-      responseMimeType: 'application/json',
-      thinkingConfig: {
-        thinkingBudget: -1, // dynamic reasoning
-        includeThoughts: true
-      }
+      temperature: 0.1,
+      maxOutputTokens: 4096,
+      responseMimeType: 'application/json'
     }
   });
 
   return new Promise((resolve) => {
     const geminiReq = https.request({
       hostname: 'generativelanguage.googleapis.com',
-      path:     `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      method:  'POST',
+      path: `/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     }, (geminiRes) => {
       geminiRes.setEncoding('utf8');
@@ -288,55 +200,39 @@ export default async function handler(req, res) {
           const parsed = JSON.parse(raw);
           if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
 
-          const parts = parsed?.candidates?.[0]?.content?.parts || [];
+          const candidateParts = parsed?.candidates?.[0]?.content?.parts || [];
           let text = '';
-          for (const p of parts) {
-            if (p.thought) continue; // Skip thinking/reasoning blocks
-            if (p.text) text += p.text + '\n'; 
+          for (const p of candidateParts) {
+            if (p.thought) continue;
+            if (p.text) text += p.text + '\n';
           }
-          
-          if (!text) throw new Error('Gemini returned no extraction text');
 
-          // Robust JSON extraction: search for markdown blocks first, then largest brace block
+          if (!text) throw new Error('No response from Gemini');
+
+          // Robust extraction
           let jsonStr = '';
-          const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-          if (jsonMatch) {
-            jsonStr = jsonMatch[1];
+          const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+          if (match) {
+            jsonStr = match[1];
           } else {
-            const start = text.indexOf('{');
-            const end = text.lastIndexOf('}');
-            if (start !== -1 && end !== -1) {
-              jsonStr = text.slice(start, end + 1);
-            }
+            const s = text.indexOf('{'), e = text.lastIndexOf('}');
+            if (s !== -1 && e !== -1) jsonStr = text.slice(s, e + 1);
           }
 
-          if (!jsonStr) throw new Error('No JSON object found in Gemini response');
+          if (!jsonStr) throw new Error('No JSON object found');
 
           let extracted;
           try {
             extracted = JSON.parse(jsonStr);
           } catch (e) {
-            // Clean common LLM JSON errors (like trailing commas)
-            const cleaned = jsonStr
-              .replace(/,\s*([\]}])/g, '$1') // remove trailing commas before ] or }
-              .replace(/[\n\r\t]/g, ' ');   // flatten newlines
+            const cleaned = jsonStr.replace(/,\s*([\]}])/g, '$1').replace(/[\n\r\t]/g, ' ');
             extracted = JSON.parse(cleaned);
           }
-          
-          // Detect poor extraction
-          const hasData = extracted.take_home || extracted.annual_income || extracted.monthly_inflow || extracted.monthly_outflow || extracted.emi_total;
-          if ((extracted.confidence || 0) < 0.15 && !hasData) {
-            return res.status(200).json({ success: false, errorCode: 'pdf_unreadable', error: 'No financial data identified' });
-          }
+
           res.status(200).json({ success: true, extracted });
         } catch (e) {
-          console.error('[doc-extract] parse error:', e);
-          res.status(200).json({ 
-            success: false, 
-            errorCode: 'parse_error',
-            error: e.message || 'Could not extract data',
-            aiHint: raw ? raw.slice(0, 1500) : 'No response from AI' 
-          });
+          console.error('[doc-extract] error:', e);
+          res.status(200).json({ success: false, errorCode: 'parse_error', error: e.message });
         }
         resolve();
       });

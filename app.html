@@ -8594,11 +8594,9 @@ function siHandleMultiImages(input) {
   let files = Array.from(input.files || []);
   if (!files.length) return;
 
-  // Restriction: Max 10 images
-  if (files.length > 10) {
-    showToast('⚠️', 'Max 10 images allowed at once. Please select the most relevant pages.');
-    files = files.slice(0, 10);
-  }
+  // Remove hard limit; handle via sequential processing
+  /* if (files.length > 10) { ... } */
+
 
   // Restriction: Check for massive individual files (> 15MB)
   const tooLarge = files.some(f => f.size > 15 * 1024 * 1024);
@@ -8607,7 +8605,10 @@ function siHandleMultiImages(input) {
     return;
   }
 
-  SI.multiImages = files;
+  // Append to existing list
+  if (!SI.multiImages) SI.multiImages = [];
+  SI.multiImages = SI.multiImages.concat(files);
+  
   const countEl = document.getElementById('si-multi-count');
   const thumbEl = document.getElementById('si-multi-thumbs');
   const sendBtn = document.getElementById('si-multi-send-btn');
@@ -8660,54 +8661,30 @@ async function siSendMultiImages() {
 
   siSetCard(2, 'proc');
   const sendBtn = document.getElementById('si-multi-send-btn');
-  if (sendBtn) { sendBtn.textContent = '⏳ Stitching pages…'; sendBtn.disabled = true; }
+  if (sendBtn) { sendBtn.disabled = true; }
+
+  // Reset internal state for a clean run
+  SI.results[2] = null;
+  SI.recurring_debits = [];
 
   try {
-    // Step 1: Load all images into Image objects
-    const imgs = [];
     for (let i = 0; i < files.length; i++) {
-      if (sendBtn) sendBtn.textContent = `⏳ Loading ${i + 1}/${files.length}…`;
-      const img = await siLoadImage(files[i]);
-      imgs.push(img);
+      if (sendBtn) sendBtn.textContent = `⏳ Analysing Page ${i + 1} of ${files.length}…`;
+      
+      // Step 1: Compress individual image (stay under per-request limits)
+      const compressed = await siCompressImage(files[i], 1200, 0.7);
+      
+      // Step 2: Submit and wait (passing 'true' to merge results)
+      await siSubmitPayload(2, compressed, true);
     }
 
-    // Step 2: Stitch all images into ONE tall canvas (same technique as siPdfToJpeg)
-    if (sendBtn) sendBtn.textContent = '⏳ Stitching pages…';
-    const MAX_W = 1200; // max width for each page
-    let totalH = 0, maxW = 0;
-    const scaled = imgs.map(img => {
-      let w = img.width, h = img.height;
-      if (w > MAX_W) { h = Math.round(h * (MAX_W / w)); w = MAX_W; }
-      totalH += h;
-      maxW = Math.max(maxW, w);
-      return { img, w, h };
-    });
-
-    const cv = document.createElement('canvas');
-    cv.width  = maxW;
-    cv.height = totalH;
-    const ctx = cv.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, maxW, totalH);
-
-    let y = 0;
-    for (const { img, w, h } of scaled) {
-      ctx.drawImage(img, 0, y, w, h);
-      y += h;
+    if (sendBtn) { 
+      sendBtn.textContent = '✅ Analysis Complete'; 
+      setTimeout(() => {
+        sendBtn.textContent = '✦ Analyse Screenshots';
+        sendBtn.disabled = false;
+      }, 3000);
     }
-
-    // Step 3: Convert stitched canvas to compressed JPEG
-    // Aggressive compression (0.6) to stay under Vercel's 4.5MB limit for multi-image
-    const b64 = cv.toDataURL('image/jpeg', 0.6).split(',')[1];
-    console.log('[SmartImport] Stitched', files.length, 'images →', Math.round(b64.length / 1024), 'KB');
-
-    // Step 4: Send as a regular single-image payload (uses the proven path)
-    if (sendBtn) sendBtn.textContent = '⏳ Analysing…';
-    await siSubmitPayload(2, { mimeType: 'image/jpeg', data: b64 });
-
-    // Cleanup
-    imgs.forEach(img => URL.revokeObjectURL(img.src));
-
   } catch (e) {
     console.error('[SmartImport] multi-image error:', e);
     siSetCard(2, 'err', 0, siGetErr(2, 'default'));
@@ -8755,7 +8732,7 @@ function siCompressImage(file, maxWidth = 1200, quality = 0.6) {
 }
 
 /* ── Core: submit payload to API and handle result ──────────── */
-async function siSubmitPayload(idx, payload) {
+async function siSubmitPayload(idx, payload, isMerge = false) {
   const bodyStr = JSON.stringify({ ...payload, city: W.city || null });
   console.log(`[SmartImport] Sending ${idx} → ${Math.round(bodyStr.length / 1024)} KB`);
 
@@ -8835,7 +8812,30 @@ async function siSubmitPayload(idx, payload) {
   const ext = json.extracted;
   if (!ext) throw new Error('No data');
 
-  if (idx === 2 && Array.isArray(ext.recurring_debits)) {
+  if (isMerge && SI.results[idx]) {
+    const old = SI.results[idx];
+    // Accumulate monetary fields
+    ext.monthly_inflow  = (ext.monthly_inflow || 0) + (old.monthly_inflow || 0);
+    ext.monthly_outflow = (ext.monthly_outflow || 0) + (old.monthly_outflow || 0);
+    ext.emi_total       = (ext.emi_total || 0) + (old.emi_total || 0);
+    
+    // Carry over stable fields if missing in new page
+    if (!ext.employee_name) ext.employee_name = old.employee_name;
+    if (!ext.employer_name) ext.employer_name = old.employer_name;
+    
+    // Merge transaction lists
+    if (idx === 2 && Array.isArray(ext.recurring_debits)) {
+      const existing = SI.recurring_debits || [];
+      const incoming = ext.recurring_debits;
+      incoming.forEach(d => {
+        if (!existing.some(e => e.name === d.name && e.amount === d.amount)) {
+          existing.push(d);
+        }
+      });
+      SI.recurring_debits = existing;
+      ext.recurring_debits = existing; // sync back to ext for view update
+    }
+  } else if (idx === 2 && Array.isArray(ext.recurring_debits)) {
     SI.recurring_debits = ext.recurring_debits;
   }
 
