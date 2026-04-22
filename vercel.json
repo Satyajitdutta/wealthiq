@@ -2,6 +2,7 @@
   "version": 2,
   "functions": {
     "api/got-advice.js":     { "maxDuration": 60 },
+    "api/doc-extract.js":   { "maxDuration": 60 },
     "api/auth-send.js":      { "maxDuration": 15 },
     "api/auth-verify.js":    { "maxDuration": 10 },
     "api/profile-save.js":   { "maxDuration": 15 },

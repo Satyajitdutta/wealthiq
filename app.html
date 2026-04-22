@@ -8632,21 +8632,56 @@ async function siSendMultiImages() {
 
   siSetCard(2, 'proc');
   const sendBtn = document.getElementById('si-multi-send-btn');
-  if (sendBtn) { sendBtn.textContent = '⏳ Analysing…'; sendBtn.disabled = true; }
+  if (sendBtn) { sendBtn.textContent = '⏳ Compressing images…'; sendBtn.disabled = true; }
 
   try {
-    // Convert each image to base64
-    const images = await Promise.all(files.map(async f => ({
-      mimeType: f.type || 'image/jpeg',
-      data: await siToB64(f)
-    })));
+    // Compress each image to max 1400px width, JPEG @65% — keeps total under Vercel's 4.5 MB limit
+    const images = [];
+    for (let i = 0; i < files.length; i++) {
+      if (sendBtn) sendBtn.textContent = `⏳ Processing ${i + 1}/${files.length}…`;
+      const compressed = await siCompressImage(files[i], 1400, 0.65);
+      images.push(compressed);
+    }
 
+    if (sendBtn) sendBtn.textContent = '⏳ Analysing…';
     await siSubmitPayload(2, { images });
 
   } catch (e) {
+    console.error('[SmartImport] multi-image error:', e);
     siSetCard(2, 'err', 0, siGetErr(2, 'default'));
     if (sendBtn) { sendBtn.textContent = '✦ Analyse These Screenshots'; sendBtn.disabled = false; }
   }
+}
+
+/* ── Compress image via canvas: resize + JPEG quality ─────── */
+// Keeps images readable for OCR while drastically reducing payload size.
+// A typical 3 MB phone screenshot → ~150-250 KB after this.
+function siCompressImage(file, maxWidth = 1400, quality = 0.65) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxWidth) {
+        h = Math.round(h * (maxWidth / w));
+        w = maxWidth;
+      }
+      const cv = document.createElement('canvas');
+      cv.width = w;
+      cv.height = h;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = cv.toDataURL('image/jpeg', quality);
+      URL.revokeObjectURL(img.src);
+      resolve({
+        mimeType: 'image/jpeg',
+        data: dataUrl.split(',')[1]
+      });
+    };
+    img.onerror = () => reject(new Error('Failed to load image for compression'));
+    img.src = URL.createObjectURL(file);
+  });
 }
 
 /* ── Core: submit payload to API and handle result ──────────── */
@@ -8810,15 +8845,15 @@ async function siHandleFile(idx, input) {
           siShowEmiFallback(true); // show password section
           return;
         }
-        // Other PDF.js failure (corrupt, etc.) — try sending raw to Gemini
+        // Other PDF.js failure (corrupt, etc.) — compress and send as image
         console.warn('[SmartImport] PDF.js failed, sending raw:', pdfErr.message);
-        const b64 = await siToB64(file);
-        payload = { mimeType, data: b64 };
+        const compressed = await siCompressImage(file, 1600, 0.7);
+        payload = { mimeType: compressed.mimeType, data: compressed.data };
       }
     } else {
-      // Image (JPG/PNG) — send directly
-      const b64 = await siToB64(file);
-      payload = { mimeType, data: b64 };
+      // Image (JPG/PNG) — compress before sending
+      const compressed = await siCompressImage(file, 1600, 0.7);
+      payload = { mimeType: compressed.mimeType, data: compressed.data };
     }
 
     const res = await fetch('/api/doc-extract', {
