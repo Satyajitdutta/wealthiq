@@ -183,11 +183,12 @@ JSON schema (use null for any field not found in the document):
   "nps_80ccd":         <annual NPS 80CCD 1B in ₹ as a number | null>,
   "annual_tds":        <annual total TDS in ₹ as a number | null>,
 
-  "avg_monthly_credit": <average monthly credit in ₹ as a number | null>,
-  "avg_monthly_debit":  <average monthly debit in ₹ as a number | null>,
+  "monthly_inflow":     <total credits in ₹ as a number | null>,
+  "monthly_outflow":    <total debits in ₹ as a number | null>,
+  "avg_balance":        <average balance in ₹ as a number | null>,
+  "closing_balance":    <final balance in ₹ as a number | null>,
   "emi_total":          <total monthly loan EMIs in ₹ as a number | null>,
   "recurring_utilities": <total monthly recurring bills/subs in ₹ as a number | null>,
-  "total_monthly_obligations": <emi_total + recurring_utilities | null>,
   "recurring_debits":   [
     { "name": <string>, "amount": <number>, "category": "emi" | "utility" | "subscription", "date": <string | null> }
   ],
@@ -314,19 +315,19 @@ export default async function handler(req, res) {
             extracted = JSON.parse(cleaned);
           }
           
-          // Detect poor extraction (confidence < 0.15 AND no core fields)
-          const hasData = extracted.take_home || extracted.annual_income || extracted.avg_monthly_credit || extracted.emi_total;
+          // Detect poor extraction
+          const hasData = extracted.take_home || extracted.annual_income || extracted.monthly_inflow || extracted.monthly_outflow || extracted.emi_total;
           if ((extracted.confidence || 0) < 0.15 && !hasData) {
-            return res.status(200).json({ success: false, errorCode: 'pdf_unreadable' });
+            return res.status(200).json({ success: false, errorCode: 'pdf_unreadable', error: 'No financial data identified' });
           }
           res.status(200).json({ success: true, extracted });
         } catch (e) {
-          console.error('[doc-extract] parse error:', e.message);
+          console.error('[doc-extract] parse error:', e);
           res.status(200).json({ 
             success: false, 
             errorCode: 'parse_error',
             error: e.message || 'Could not extract data',
-            aiHint: raw.slice(0, 1000) // increased for better debugging
+            aiHint: raw ? raw.slice(0, 1500) : 'No response from AI' 
           });
         }
         resolve();
