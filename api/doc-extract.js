@@ -288,20 +288,18 @@ export default async function handler(req, res) {
           const parsed = JSON.parse(raw);
           if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
 
-          // Thinking models return multiple parts. Find the one that's NOT a thought.
           const parts = parsed?.candidates?.[0]?.content?.parts || [];
           let text = '';
           for (const p of parts) {
             if (p.thought) continue; // Skip thinking/reasoning blocks
-            if (p.text) { text = p.text; break; }
+            if (p.text) text += p.text + '\n'; 
           }
           
           if (!text) throw new Error('Gemini returned no extraction text');
 
-          // Robust JSON extraction (find the block between the first { and last })
-          // Robust JSON extraction: look for markdown blocks or the last { } pair
+          // Robust JSON extraction: search for markdown blocks first, then largest brace block
           let jsonStr = '';
-          const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+          const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
           if (jsonMatch) {
             jsonStr = jsonMatch[1];
           } else {
