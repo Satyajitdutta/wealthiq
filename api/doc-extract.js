@@ -281,13 +281,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const { mimeType, data, city } = body;
-  if (!mimeType || !data) {
-    return res.status(400).json({ error: 'Missing mimeType or data' });
+  const { mimeType, data, docText, city } = body;
+
+  // Must have either image data OR extracted text
+  if (!docText && (!mimeType || !data)) {
+    return res.status(400).json({ error: 'Missing mimeType/data or docText' });
   }
 
-  // Reject payloads over ~10 MB base64 (≈ 7.5 MB file)
-  if (data.length > 10_000_000) {
+  // Reject oversized image payloads (text payloads are always compact)
+  if (data && data.length > 10_000_000) {
     return res.status(413).json({ error: 'File too large — please upload max 7 MB', errorCode: 'too_large' });
   }
 
@@ -296,29 +298,36 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
   }
 
-  // Build city-aware extraction prompt (if city passed from frontend, use it; else generic Tier-1)
-  const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
+  // Build city-aware extraction prompt
+  const cityContext  = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext);
 
-  // Build Gemini request — inlineData works for both PDF and images
+  // Build Gemini request — two modes:
+  //   docText:  text parts only (digital PDFs — all pages, most accurate)
+  //   data:     inlineData (images, scanned PDFs — vision model)
+  let parts;
+  if (docText) {
+    // Text mode: full document text from all pages + extraction prompt
+    parts = [
+      { text: `BANK/FINANCIAL DOCUMENT TEXT (all pages):\n\n${docText}` },
+      { text: extractPrompt }
+    ];
+    console.log('[doc-extract] mode: text | chars:', docText.length, '| city:', city || 'auto');
+  } else {
+    // Vision mode: inline image/PDF data
+    parts = [
+      { inlineData: { mimeType, data } },
+      { text: extractPrompt }
+    ];
+    console.log('[doc-extract] mode: vision | mimeType:', mimeType, '| city:', city || 'auto');
+  }
+
   const geminiBody = JSON.stringify({
-    contents: [{
-      parts: [
-        {
-          inlineData: {
-            mimeType: mimeType,
-            data:     data
-          }
-        },
-        {
-          text: extractPrompt
-        }
-      ]
-    }],
+    contents: [{ parts }],
     generationConfig: {
-      temperature:        0.1,
-      maxOutputTokens:    1024,
-      responseMimeType:   'application/json'   // forces clean JSON output
+      temperature:      0.1,
+      maxOutputTokens:  2048,   // increased: text mode returns richer detail
+      responseMimeType: 'application/json'
     }
   });
 
