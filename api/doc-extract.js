@@ -168,8 +168,8 @@ export default async function handler(req, res) {
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-  // Using gemini-3-flash (April 2026 Stable)
-  const modelName = 'gemini-3-flash';
+  // Using gemini-2.5-flash (stable, matches got-advice.js)
+  const modelName = 'gemini-2.5-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
