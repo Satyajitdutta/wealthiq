@@ -7616,6 +7616,8 @@ function wizSetStage(stage) {
   document.querySelectorAll('.wiz-stage-pill').forEach(p =>
     p.classList.toggle('active', p.dataset.stage === stage)
   );
+  // Auto-advance after brief delay so user sees selection
+  setTimeout(() => wizNext(), 280);
 }
 
 function wizSetRegime(regime) {
@@ -7623,6 +7625,8 @@ function wizSetRegime(regime) {
   document.querySelectorAll('.wiz-regime-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.regime === regime)
   );
+  // Auto-advance after brief delay
+  setTimeout(() => wizNext(), 280);
 }
 
 // ── Profile Summary Panel ─────────────────────────────────────────
