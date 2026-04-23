@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   if (!secret) { res.status(500).json({ error: 'Server misconfigured' }); return; }
 
   // Demo account — fixed OTP 000000
-  const isDemo = email === 'user@test.com';
+  const isDemo = email === 'user@test.com' || email === 'jeetworkdomain@gmail.com';
   if (isDemo && otp !== '000000') { res.status(401).json({ error: 'Demo code is 000000' }); return; }
 
   if (!isDemo) {

@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   }
 
   // Demo account — no email sent, fixed OTP
-  if (email === 'user@test.com') { res.status(200).json({ success: true }); return; }
+  if (email === 'user@test.com' || email === 'jeetworkdomain@gmail.com') { res.status(200).json({ success: true }); return; }
 
   const secret = (process.env.AUTH_SECRET || '').trim();
   const resendKey = (process.env.RESEND_API_KEY || '').trim();

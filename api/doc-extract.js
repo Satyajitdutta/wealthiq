@@ -4,6 +4,7 @@
 // © 2026 PITHONIX AI INDIA PRIVATE LIMITED. All Rights Reserved.
 
 import https from 'https';
+import { extractBankTransactions } from './bank_plugins/index.js';
 
 // ── City tier mapping & utility providers by region ──────────────────
 const CITY_TIER_MAP = {
@@ -96,7 +97,10 @@ Identify recurring charges for:
   return `Intelligently identify recurring utility/EMI charges and return structure.`;
 }
 
-function buildExtractPrompt(cityContext = '') {
+function buildExtractPrompt(cityContext = '', merchantsListStr = '') {
+  const merchantInstruction = merchantsListStr ? 
+    `\nMap these unique merchants to appropriate categories (e.g., Subscription, Utility, EMI, Shopping, Other):\n[\${merchantsListStr}]\n` : '';
+
   return `You are a financial extraction engine. Extract financial data from salary slips, Form 16, or bank statements.
 Return ONLY valid JSON.
 
@@ -125,16 +129,17 @@ Schema:
   "avg_balance": number,
   "closing_balance": number,
   "emi_total": number,
-  "recurring_debits": [{ "name": string, "amount": number, "category": string, "date": string }],
+  "merchant_categories": { "Unique Merchant Name From List": "Category" },
   "fields_extracted": number
 }
 
 Rules:
 - Plain numbers, no symbols.
 - Sum high-confidence EMIs and recurring utilities separately.
+- 'merchant_categories' MUST strictly be a dictionary mapping the provided short list of UNIQUE merchants to categories. DO NOT extract full transactions.
 - Return ONLY the JSON object.
 
-${cityContext}`;
+\${cityContext}\${merchantInstruction}`;
 }
 
 export default async function handler(req, res) {
@@ -156,12 +161,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing document data' });
   }
 
+  let localTxData = null;
+  let merchantsListStr = '';
+  if (docText) {
+    localTxData = extractBankTransactions(docText);
+    if (localTxData && localTxData.uniqueMerchants && localTxData.uniqueMerchants.length > 0) {
+      merchantsListStr = localTxData.uniqueMerchants.join(', ');
+    }
+  }
+
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   // Using gemini-3-flash (April 2026 Stable)
   const modelName = 'gemini-3-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
-  const extractPrompt = buildExtractPrompt(cityContext);
+  const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
 
   let parts;
   if (docText) {
@@ -227,6 +241,30 @@ export default async function handler(req, res) {
           } catch (e) {
             const cleaned = jsonStr.replace(/,\s*([\]}])/g, '$1').replace(/[\n\r\t]/g, ' ');
             extracted = JSON.parse(cleaned);
+          }
+
+          // Reassembly step: Combine local transactions with parsed categories
+          if (localTxData && extracted && extracted.merchant_categories) {
+            extracted.recurring_debits = [];
+            for (const tx of localTxData.transactions) {
+              for (const [merchant, category] of Object.entries(extracted.merchant_categories)) {
+                // Ensure the category is a relevant recurring one
+                const lCat = category.toLowerCase();
+                const isRecurring = lCat.includes('subscription') || lCat.includes('utility') || lCat.includes('emi') || lCat.includes('insurance');
+                
+                if (isRecurring && tx.description.toUpperCase().includes(merchant.toUpperCase())) {
+                  extracted.recurring_debits.push({
+                    name: merchant,
+                    amount: tx.amount,
+                    category: category,
+                    date: tx.date
+                  });
+                  break; // Only map a transaction to one category
+                }
+              }
+            }
+          } else if (!extracted.recurring_debits) {
+             extracted.recurring_debits = [];
           }
 
           res.status(200).json({ success: true, extracted });
