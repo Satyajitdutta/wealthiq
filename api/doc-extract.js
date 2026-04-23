@@ -168,10 +168,11 @@ export default async function handler(req, res) {
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-  // gemini-2.0-flash: stable, non-thinking, native JSON mode via responseMimeType.
-  // gemini-2.5-flash was intermittently returning empty responses (thinking budget
-  // consumed entire token budget, leaving no room for actual text output).
-  const modelName = 'gemini-2.0-flash';
+  // gemini-2.5-flash with thinkingBudget:0 — disables thinking mode entirely.
+  // When thinking is enabled (default), the model sometimes exhausts its token budget
+  // on internal reasoning and returns empty text output, causing parse_error.
+  // With thinkingBudget:0: fast, deterministic, and responseMimeType:json works correctly.
+  const modelName = 'gemini-2.5-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
@@ -194,7 +195,8 @@ export default async function handler(req, res) {
     generationConfig: {
       temperature: 0.1,
       maxOutputTokens: 4096,
-      responseMimeType: 'application/json'  // safe with 2.0-flash (non-thinking model)
+      responseMimeType: 'application/json',  // safe when thinkingBudget:0
+      thinkingConfig: { thinkingBudget: 0 }  // disable thinking for reliable JSON output
     }
   });
 
