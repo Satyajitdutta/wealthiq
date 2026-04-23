@@ -169,8 +169,8 @@ export default async function handler(req, res) {
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   // Using gemini-2.5-flash (stable, matches got-advice.js)
-  const modelName = 'gemini-2.5-flash-preview-04-17';
-  // Note: 2.5-flash uses thinking tokens. We handle thought parts separately.
+  const modelName = 'gemini-2.5-flash';
+  // Note: 2.5-flash uses thinking tokens — thought parts are skipped in parsing below.
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
