@@ -99,47 +99,44 @@ Identify recurring charges for:
 
 function buildExtractPrompt(cityContext = '', merchantsListStr = '') {
   const merchantInstruction = merchantsListStr ? 
-    `\nMap these unique merchants to appropriate categories (e.g., Subscription, Utility, EMI, Shopping, Other):\n[\${merchantsListStr}]\n` : '';
+    '\nMap these unique merchants to appropriate categories (e.g., Subscription, Utility, EMI, Shopping, Other):\n[' + merchantsListStr + ']\n' : '';
 
-  return `You are a financial extraction engine. Extract financial data from salary slips, Form 16, or bank statements.
-Return ONLY valid JSON.
-
-Schema:
-{
-  "doc_type": "salary_slip" | "form_16" | "bank_statement" | "unknown",
-  "confidence": number,
-  "employee_name": string,
-  "employer_name": string,
-  "designation": string,
-  "month_year": string,
-  "city": string,
-  "take_home": number,
-  "gross_salary": number,
-  "basic": number,
-  "hra": number,
-  "pf_employee": number,
-  "tds_monthly": number,
-  "annual_income": number,
-  "tax_regime": "new" | "old",
-  "section_80c": number,
-  "section_80d": number,
-  "nps_80ccd": number,
-  "monthly_inflow": number,
-  "monthly_outflow": number,
-  "avg_balance": number,
-  "closing_balance": number,
-  "emi_total": number,
-  "merchant_categories": { "Unique Merchant Name From List": "Category" },
-  "fields_extracted": number
-}
-
-Rules:
-- Plain numbers, no symbols.
-- Sum high-confidence EMIs and recurring utilities separately.
-- 'merchant_categories' MUST strictly be a dictionary mapping the provided short list of UNIQUE merchants to categories. DO NOT extract full transactions.
-- Return ONLY the JSON object.
-
-\${cityContext}\${merchantInstruction}`;
+  return 'You are a financial extraction engine. Extract financial data from salary slips, Form 16, or bank statements.\n' +
+'Return ONLY valid JSON.\n\n' +
+'Schema:\n' +
+'{\n' +
+'  "doc_type": "salary_slip" | "form_16" | "bank_statement" | "unknown",\n' +
+'  "confidence": number,\n' +
+'  "employee_name": string,\n' +
+'  "employer_name": string,\n' +
+'  "designation": string,\n' +
+'  "month_year": string,\n' +
+'  "city": string,\n' +
+'  "take_home": number,\n' +
+'  "gross_salary": number,\n' +
+'  "basic": number,\n' +
+'  "hra": number,\n' +
+'  "pf_employee": number,\n' +
+'  "tds_monthly": number,\n' +
+'  "annual_income": number,\n' +
+'  "tax_regime": "new" | "old",\n' +
+'  "section_80c": number,\n' +
+'  "section_80d": number,\n' +
+'  "nps_80ccd": number,\n' +
+'  "monthly_inflow": number,\n' +
+'  "monthly_outflow": number,\n' +
+'  "avg_balance": number,\n' +
+'  "closing_balance": number,\n' +
+'  "emi_total": number,\n' +
+'  "merchant_categories": { "Unique Merchant Name From List": "Category" },\n' +
+'  "fields_extracted": number\n' +
+'}\n\n' +
+'Rules:\n' +
+'- Plain numbers, no symbols.\n' +
+'- Sum high-confidence EMIs and recurring utilities separately.\n' +
+'- merchant_categories MUST strictly be a dictionary mapping the provided short list of UNIQUE merchants to categories. DO NOT extract full transactions.\n' +
+'- Return ONLY the JSON object.\n\n' +
+cityContext + merchantInstruction;
 }
 
 export default async function handler(req, res) {
