@@ -28,7 +28,10 @@ const plugins = [
  * Route document text to the appropriate bank plugin parser.
  */
 export function extractBankTransactions(docText) {
-  const upperText = docText.substring(0, 5000).toUpperCase(); // Scan first few pages
+  // Scan only the first 400 chars — the issuing bank name is ALWAYS in the header (first 2-3 lines).
+  // Scanning more chars risks matching other banks referenced in transaction descriptions
+  // e.g. "HDFC HOME LOAN EMI" or "SBI NEFT TRANSFER" in an Axis Bank statement.
+  const upperText = docText.substring(0, 400).toUpperCase();
   
   let selectedPlugin = defaultPlugin;
   
