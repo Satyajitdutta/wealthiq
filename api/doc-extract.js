@@ -168,10 +168,10 @@ export default async function handler(req, res) {
   }
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-  // Using gemini-2.5-flash (stable, matches got-advice.js)
-  // gemini-2.5-flash confirmed working (same as got-advice.js).
-  // CRITICAL: do NOT add responseMimeType:'application/json' — breaks thinking mode.
-  const modelName = 'gemini-2.5-flash';
+  // gemini-2.0-flash: stable, non-thinking, native JSON mode via responseMimeType.
+  // gemini-2.5-flash was intermittently returning empty responses (thinking budget
+  // consumed entire token budget, leaving no room for actual text output).
+  const modelName = 'gemini-2.0-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
@@ -193,13 +193,13 @@ export default async function handler(req, res) {
     contents: [{ parts }],
     generationConfig: {
       temperature: 0.1,
-      maxOutputTokens: 8192
-      // No responseMimeType — we extract JSON ourselves robustly.
-      // responseMimeType:'application/json' breaks gemini-2.5-flash thinking mode.
+      maxOutputTokens: 4096,
+      responseMimeType: 'application/json'  // safe with 2.0-flash (non-thinking model)
     }
   });
 
-  return new Promise((resolve) => {
+  // Wraps Gemini call in a Promise; retries once on parse failure
+  const callGemini = () => new Promise((resolve) => {
     const geminiReq = https.request({
       hostname: 'generativelanguage.googleapis.com',
       path: `/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
@@ -209,108 +209,101 @@ export default async function handler(req, res) {
       geminiRes.setEncoding('utf8');
       let raw = '';
       geminiRes.on('data', c => raw += c);
-      geminiRes.on('end', () => {
-        try {
-          const parsed = JSON.parse(raw);
-          if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
-
-          const candidateParts = parsed?.candidates?.[0]?.content?.parts || [];
-          const finishReason  = parsed?.candidates?.[0]?.finishReason || 'UNKNOWN';
-          console.log(`[doc-extract] Gemini response: ${candidateParts.length} parts, finishReason=${finishReason}`);
-
-          let text = '';
-          for (const p of candidateParts) {
-            if (p.thought) {
-              console.log(`[doc-extract] Skipping thought part (${(p.text||'').length} chars)`);
-              continue;
-            }
-            if (p.text) {
-              text += p.text + '\n';
-              console.log(`[doc-extract] Text part: ${p.text.substring(0, 120).replace(/\n/g,' ')}...`);
-            }
-          }
-
-          // If no non-thought text, try including thought text as last resort
-          if (!text.trim()) {
-            console.warn('[doc-extract] No non-thought text found, trying thought parts...');
-            for (const p of candidateParts) {
-              if (p.text) text += p.text + '\n';
-            }
-          }
-
-          if (!text.trim()) throw new Error('No response from Gemini');
-          console.log(`[doc-extract] Full text length: ${text.length}`);
-
-          // Robust JSON extraction — handles markdown fences, raw JSON, and leading noise
-          let jsonStr = '';
-          // 1. Try ```json ... ``` fence
-          const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-          if (fenceMatch) {
-            jsonStr = fenceMatch[1].trim();
-            console.log('[doc-extract] Extracted via fence match');
-          }
-          // 2. Try outermost { ... }
-          if (!jsonStr) {
-            const s = text.indexOf('{');
-            const e = text.lastIndexOf('}');
-            if (s !== -1 && e !== -1 && e > s) {
-              jsonStr = text.slice(s, e + 1);
-              console.log('[doc-extract] Extracted via brace matching');
-            }
-          }
-
-          if (!jsonStr) {
-            console.error('[doc-extract] Raw response (first 500 chars):', text.substring(0, 500));
-            throw new Error('No JSON object found');
-          }
-
-          let extracted;
-          try {
-            extracted = JSON.parse(jsonStr);
-          } catch (parseErr) {
-            console.warn('[doc-extract] Initial parse failed, attempting cleanup:', parseErr.message);
-            // Remove trailing commas, control chars
-            const cleaned = jsonStr
-              .replace(/,\s*([\]}])/g, '$1')
-              .replace(/[\x00-\x09\x0b\x0c\x0e-\x1f]/g, '')
-              .replace(/\n/g, ' ');
-            extracted = JSON.parse(cleaned);
-          }
-
-          // Reassembly step: Combine local transactions with parsed categories
-          if (localTxData && extracted && extracted.merchant_categories) {
-            extracted.recurring_debits = [];
-            for (const tx of localTxData.transactions) {
-              for (const [merchant, category] of Object.entries(extracted.merchant_categories)) {
-                // Ensure the category is a relevant recurring one
-                const lCat = category.toLowerCase();
-                const isRecurring = lCat.includes('subscription') || lCat.includes('utility') || lCat.includes('emi') || lCat.includes('insurance');
-                
-                if (isRecurring && tx.description.toUpperCase().includes(merchant.toUpperCase())) {
-                  extracted.recurring_debits.push({
-                    name: merchant,
-                    amount: tx.amount,
-                    category: category,
-                    date: tx.date
-                  });
-                  break; // Only map a transaction to one category
-                }
-              }
-            }
-          } else if (!extracted.recurring_debits) {
-             extracted.recurring_debits = [];
-          }
-
-          res.status(200).json({ success: true, extracted });
-        } catch (e) {
-          console.error('[doc-extract] error:', e);
-          res.status(200).json({ success: false, errorCode: 'parse_error', error: e.message });
-        }
-        resolve();
-      });
+      geminiRes.on('end', () => resolve({ ok: true, raw }));
     });
-    geminiReq.on('error', e => { res.status(500).json({ error: e.message }); resolve(); });
+    geminiReq.on('error', e => resolve({ ok: false, error: e.message }));
     geminiReq.write(geminiBody);
     geminiReq.end();
+  });
+
+  const parseGeminiRaw = (raw) => {
+    const parsed = JSON.parse(raw);
+    if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
+
+    const candidateParts = parsed?.candidates?.[0]?.content?.parts || [];
+    const finishReason  = parsed?.candidates?.[0]?.finishReason || 'UNKNOWN';
+    console.log(`[doc-extract] Gemini parts=${candidateParts.length} finishReason=${finishReason}`);
+
+    // With responseMimeType:'application/json', the model returns clean JSON directly.
+    // Collect all non-thought text parts.
+    let text = candidateParts
+      .filter(p => !p.thought && p.text)
+      .map(p => p.text)
+      .join('')
+      .trim();
+
+    // Fallback: if model still mixed thinking in, grab any text
+    if (!text) {
+      text = candidateParts.filter(p => p.text).map(p => p.text).join('').trim();
+    }
+
+    if (!text) throw new Error('Empty response from Gemini');
+    console.log(`[doc-extract] Raw text length: ${text.length}`);
+
+    // Primary: direct JSON parse (works when responseMimeType is set)
+    try { return JSON.parse(text); } catch(_) {}
+
+    // Secondary: extract from fenced block
+    const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (fenceMatch) return JSON.parse(fenceMatch[1].trim());
+
+    // Tertiary: brace extraction
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    if (s !== -1 && e > s) {
+      const candidate = text.slice(s, e + 1)
+        .replace(/,\s*([\]}])/g, '$1')
+        .replace(/[\x00-\x09\x0b\x0c\x0e-\x1f]/g, '');
+      return JSON.parse(candidate);
+    }
+
+    console.error('[doc-extract] No JSON found. First 400 chars:', text.substring(0, 400));
+    throw new Error('No JSON object found');
+  };
+
+  return new Promise(async (resolve) => {
+    let extracted;
+    let lastError;
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (attempt > 1) {
+          console.log(`[doc-extract] Retry attempt ${attempt}...`);
+          await new Promise(r => setTimeout(r, 1500));
+        }
+        const result = await callGemini();
+        if (!result.ok) throw new Error(result.error);
+        extracted = parseGeminiRaw(result.raw);
+        break; // success
+      } catch (e) {
+        lastError = e;
+        console.warn(`[doc-extract] Attempt ${attempt} failed: ${e.message}`);
+      }
+    }
+
+    if (!extracted) {
+      res.status(200).json({ success: false, errorCode: 'parse_error', error: lastError?.message || 'Extraction failed' });
+      resolve();
+      return;
+    }
+
+    // Reassembly step: combine local transactions with parsed categories
+    if (localTxData && extracted && extracted.merchant_categories) {
+      extracted.recurring_debits = [];
+      for (const tx of localTxData.transactions) {
+        for (const [merchant, category] of Object.entries(extracted.merchant_categories)) {
+          const lCat = category.toLowerCase();
+          const isRecurring = lCat.includes('subscription') || lCat.includes('utility') || lCat.includes('emi') || lCat.includes('insurance');
+          if (isRecurring && tx.description.toUpperCase().includes(merchant.toUpperCase())) {
+            extracted.recurring_debits.push({ name: merchant, amount: tx.amount, category, date: tx.date });
+            break;
+          }
+        }
+      }
+    } else if (!extracted.recurring_debits) {
+      extracted.recurring_debits = [];
+    }
+
+    res.status(200).json({ success: true, extracted });
+    resolve();
   });
 }
