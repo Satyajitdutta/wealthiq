@@ -169,7 +169,8 @@ export default async function handler(req, res) {
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   // Using gemini-2.5-flash (stable, matches got-advice.js)
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.5-flash-preview-04-17';
+  // Note: 2.5-flash uses thinking tokens. We handle thought parts separately.
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
@@ -212,31 +213,65 @@ export default async function handler(req, res) {
           if (parsed.error) throw new Error(parsed.error.message || 'Gemini API Error');
 
           const candidateParts = parsed?.candidates?.[0]?.content?.parts || [];
+          const finishReason  = parsed?.candidates?.[0]?.finishReason || 'UNKNOWN';
+          console.log(`[doc-extract] Gemini response: ${candidateParts.length} parts, finishReason=${finishReason}`);
+
           let text = '';
           for (const p of candidateParts) {
-            if (p.thought) continue;
-            if (p.text) text += p.text + '\n';
+            if (p.thought) {
+              console.log(`[doc-extract] Skipping thought part (${(p.text||'').length} chars)`);
+              continue;
+            }
+            if (p.text) {
+              text += p.text + '\n';
+              console.log(`[doc-extract] Text part: ${p.text.substring(0, 120).replace(/\n/g,' ')}...`);
+            }
           }
 
-          if (!text) throw new Error('No response from Gemini');
+          // If no non-thought text, try including thought text as last resort
+          if (!text.trim()) {
+            console.warn('[doc-extract] No non-thought text found, trying thought parts...');
+            for (const p of candidateParts) {
+              if (p.text) text += p.text + '\n';
+            }
+          }
 
-          // Robust extraction
+          if (!text.trim()) throw new Error('No response from Gemini');
+          console.log(`[doc-extract] Full text length: ${text.length}`);
+
+          // Robust JSON extraction — handles markdown fences, raw JSON, and leading noise
           let jsonStr = '';
-          const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-          if (match) {
-            jsonStr = match[1];
-          } else {
-            const s = text.indexOf('{'), e = text.lastIndexOf('}');
-            if (s !== -1 && e !== -1) jsonStr = text.slice(s, e + 1);
+          // 1. Try ```json ... ``` fence
+          const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+          if (fenceMatch) {
+            jsonStr = fenceMatch[1].trim();
+            console.log('[doc-extract] Extracted via fence match');
+          }
+          // 2. Try outermost { ... }
+          if (!jsonStr) {
+            const s = text.indexOf('{');
+            const e = text.lastIndexOf('}');
+            if (s !== -1 && e !== -1 && e > s) {
+              jsonStr = text.slice(s, e + 1);
+              console.log('[doc-extract] Extracted via brace matching');
+            }
           }
 
-          if (!jsonStr) throw new Error('No JSON object found');
+          if (!jsonStr) {
+            console.error('[doc-extract] Raw response (first 500 chars):', text.substring(0, 500));
+            throw new Error('No JSON object found');
+          }
 
           let extracted;
           try {
             extracted = JSON.parse(jsonStr);
-          } catch (e) {
-            const cleaned = jsonStr.replace(/,\s*([\]}])/g, '$1').replace(/[\n\r\t]/g, ' ');
+          } catch (parseErr) {
+            console.warn('[doc-extract] Initial parse failed, attempting cleanup:', parseErr.message);
+            // Remove trailing commas, control chars
+            const cleaned = jsonStr
+              .replace(/,\s*([\]}])/g, '$1')
+              .replace(/[\x00-\x09\x0b\x0c\x0e-\x1f]/g, '')
+              .replace(/\n/g, ' ');
             extracted = JSON.parse(cleaned);
           }
 
