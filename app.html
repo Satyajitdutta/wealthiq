@@ -8840,7 +8840,15 @@ async function siSubmitPayload(idx, payload, isMerge = false) {
         })
       };
     } else {
-      res = await fetch('/api/doc-extract', {
+      // Large payloads (scanned PDFs as images) go directly to Railway to bypass
+      // Vercel's 4.5MB proxy body limit. Railway handles unlimited sizes.
+      // Small payloads (text, compressed images) stay on the Vercel proxy.
+      const VERCEL_SAFE_LIMIT = 2.5 * 1024 * 1024; // 2.5MB threshold
+      const RAILWAY_API = 'https://wealthiq-production.up.railway.app/api/doc-extract';
+      const apiUrl = bodyStr.length > VERCEL_SAFE_LIMIT ? RAILWAY_API : '/api/doc-extract';
+      console.log(`[SmartImport] Route → ${bodyStr.length > VERCEL_SAFE_LIMIT ? 'Railway direct (' + Math.round(bodyStr.length/1024) + 'KB)' : 'Vercel proxy'}`);
+
+      res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: bodyStr
