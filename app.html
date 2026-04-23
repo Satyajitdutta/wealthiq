@@ -8583,11 +8583,43 @@ function siTriggerMulti(idx) {
 }
 
 /* ── PDF Password Unlock ───────────────────────────────────── */
+
+// Show a consistent password prompt for any card index
+function siShowPdfPasswordPrompt(idx) {
+  // For bank statement (idx=2), use the existing rich fallback panel
+  if (idx === 2) {
+    siShowEmiFallback(true);
+    return;
+  }
+  // For salary slip / other cards — show a clean inline prompt via showToast + modal
+  // Reuse the bank statement password section by temporarily moving it into view
+  const fallback = document.getElementById('si-bank-fallback');
+  const pwdSec   = document.getElementById('si-pwd-section');
+  if (fallback && pwdSec) {
+    fallback.style.display = 'block';
+    // Hide the screenshot and manual EMI sections — only show the password section
+    Array.from(fallback.children).forEach(el => {
+      if (el !== pwdSec) el.style.display = 'none';
+    });
+    pwdSec.style.display = 'block';
+    // Scroll the password field into view
+    setTimeout(() => pwdSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  } else {
+    // Fallback: use a browser prompt (last resort)
+    const pwd = prompt('This PDF is password-protected.\n\nIndian bank statements are often locked with your PAN number or date of birth (e.g. ABCDE1234F or 15021980).\n\nEnter PDF password:');
+    if (pwd) {
+      document.getElementById('si-pwd-input').value = pwd;
+      siUnlockPdf();
+    }
+  }
+}
+
 async function siUnlockPdf() {
   const pwd = document.getElementById('si-pwd-input')?.value?.trim();
   if (!pwd) { showToast('⚠️', 'Enter your PDF password first'); return; }
   if (!SI.pendingPdfBuf) { showToast('⚠️', 'Upload the PDF again first'); return; }
 
+  const idx = SI.pendingPdfIdx ?? 2; // which card to update
   const btn = document.getElementById('si-pwd-btn');
   const errEl = document.getElementById('si-pwd-err');
   if (btn) { btn.textContent = '⏳ Unlocking…'; btn.disabled = true; }
@@ -8598,26 +8630,34 @@ async function siUnlockPdf() {
     const pdf = await window.pdfjsLib.getDocument({ data: SI.pendingPdfBuf, password: pwd }).promise;
 
     // Password worked — now extract text from all pages
-    siSetCard(2, 'proc');
+    siSetCard(idx, 'proc');
     const text = await siExtractTextFromLoadedPdf(pdf);
     const meaningfulChars = text.replace(/[\s\-\|]+/g, '').length;
+    console.log(`[SmartImport] Unlocked PDF: ${meaningfulChars} meaningful chars`);
 
     let payload;
     if (meaningfulChars > 800) {
       payload = { docText: text };
     } else {
-      // Scanned even after unlock — render all pages
+      // Scanned even after unlock — render all pages to JPEG
+      console.log('[SmartImport] Unlocked PDF is scanned — rendering to image');
       const b64 = await siRenderPdfToJpeg(pdf);
       payload = { mimeType: 'image/jpeg', data: b64 };
     }
 
-    await siSubmitPayload(2, payload);
+    // Hide the fallback panel now that we have the data
+    const fallback = document.getElementById('si-bank-fallback');
+    if (fallback) fallback.style.display = 'none';
+
+    await siSubmitPayload(idx, payload);
 
   } catch (e) {
     if (btn) { btn.textContent = '🔓 Unlock'; btn.disabled = false; }
     if (e.name === 'PasswordException') {
       if (errEl) errEl.style.display = 'block';
+      console.warn('[SmartImport] Wrong password entered');
     } else {
+      console.error('[SmartImport] Unlock error:', e.message);
       showToast('❌', 'Unlock failed — try uploading a screenshot instead');
     }
   }
@@ -9054,12 +9094,13 @@ async function siHandleFile(idx, input) {
       } catch (pdfErr) {
         console.warn('[SmartImport] PDF processing error:', pdfErr.name, pdfErr.message);
 
-        // Password-protected PDF — show unlock UI
-        if ((pdfErr.name === 'PasswordException' || pdfErr.message?.includes('password')) && idx === 2) {
+        // Password-protected PDF — show unlock UI for ALL document types
+        if (pdfErr.name === 'PasswordException' || pdfErr.message?.includes('password')) {
           console.warn('[SmartImport] PDF is password-protected — showing unlock UI');
-          SI.pendingPdfBuf = await file.arrayBuffer();
-          siSetCard(2, 'err', 0, siGetErr(2, 'pdf_unreadable'));
-          siShowEmiFallback(true);
+          try { SI.pendingPdfBuf = await file.arrayBuffer(); } catch(_) {}
+          SI.pendingPdfIdx = idx; // remember which card to update after unlock
+          siSetCard(idx, 'err', 0, 'PDF is password-protected — enter password below');
+          siShowPdfPasswordPrompt(idx);
           return;
         }
 
