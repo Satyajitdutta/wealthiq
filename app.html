@@ -3649,7 +3649,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- Card 3: Bank Statement -->
-      <div class="si-card si-card-3" id="si-card-2" onclick="if(event.target===this||this.contains(event.target)) return;" role="button" tabindex="0">
+      <div class="si-card si-card-3" id="si-card-2" role="button" tabindex="0">
         <div class="si-scan"></div>
         <div class="si-card-row">
           <div class="si-icon">
@@ -3672,11 +3672,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         </div>
         <!-- Dedicated Action Buttons -->
         <div class="si-btn-row">
-          <button class="si-btn-sub" onclick="siTrigger(2); event.stopPropagation();">
+          <button class="si-btn-sub" onclick="document.getElementById('si-f-pdf').click(); event.stopPropagation();">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Upload PDF
           </button>
-          <button class="si-btn-sub primary" onclick="siTriggerMulti(2); event.stopPropagation();">
+          <button class="si-btn-sub primary" onclick="document.getElementById('si-multi-file').click(); event.stopPropagation();">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             Add Screenshots
           </button>
@@ -3748,6 +3748,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <input type="file" id="si-f0" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(0,this)">
     <input type="file" id="si-f1" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(1,this)">
     <input type="file" id="si-f2" accept=".pdf,image/*" style="display:none" onchange="siHandleFile(2,this)">
+    <!-- Dedicated PDF-only input for bank statement Upload PDF button -->
+    <input type="file" id="si-f-pdf" accept=".pdf" style="display:none" onchange="siHandleFile(2,this)">
     <input type="file" id="si-multi-file" accept="image/*" multiple style="display:none" onchange="siHandleMultiImages(this)">
 
     <!-- Review panel (appears after first extraction) -->
@@ -9008,7 +9010,9 @@ async function siHandleFile(idx, input) {
   input.value = '';            // allow re-selecting same file
   if (!file) return;
 
-  // Guard: max 40 MB client-side (we will compress it anyway, but 40MB is a safe buffer for raw data)
+  console.log(`[SmartImport] File selected: ${file.name} (${Math.round(file.size/1024)}KB, ${file.type})`);
+
+  // Guard: max 40 MB client-side
   if (file.size > 40 * 1024 * 1024) {
     siSetCard(idx, 'err', 0, siGetErr(idx, 'too_large'));
     if (idx === 2) siShowEmiFallback();
@@ -9021,57 +9025,57 @@ async function siHandleFile(idx, input) {
     let mimeType = file.type ||
       (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
 
-    let payload;   // will be { mimeType, data } OR { docText }
+    let payload;
 
     if (mimeType === 'application/pdf') {
-      // Smart PDF handling: try text extraction first (works for ALL pages, no size limit)
-      // Falls back to full-page image render only if the PDF is scanned/image-based
+      console.log('[SmartImport] PDF detected — attempting text extraction');
       try {
         const { text, pages } = await siPdfExtractText(file);
         const meaningfulChars = text.replace(/[\s\-\|]+/g, '').length;
+        console.log(`[SmartImport] Text extracted: ${pages} pages, ${meaningfulChars} meaningful chars`);
 
         if (meaningfulChars > 800) {
-          // Digital PDF — text extracted successfully from all pages
           payload = { docText: text };
-          console.log(`[SmartImport] Text extracted: ${pages} pages, ${meaningfulChars} chars`);
+          console.log('[SmartImport] Using text mode');
         } else {
-          // Sparse text = scanned PDF — fall back to full image render
-          console.log('[SmartImport] Sparse text, falling back to image render');
+          console.log('[SmartImport] Sparse text — falling back to image render');
           const b64 = await siPdfToJpeg(file);
           payload = { mimeType: 'image/jpeg', data: b64 };
+          console.log(`[SmartImport] Image render done: ${Math.round(b64.length/1024)}KB`);
         }
       } catch (pdfErr) {
-        // Check if it's a password-protected PDF
-        if (pdfErr.name === 'PasswordException' && idx === 2) {
-          console.warn('[SmartImport] PDF is password-protected');
-          // Save the raw buffer so siUnlockPdf can retry with password
+        console.warn('[SmartImport] PDF processing error:', pdfErr.name, pdfErr.message);
+
+        // Password-protected PDF — show unlock UI
+        if ((pdfErr.name === 'PasswordException' || pdfErr.message?.includes('password')) && idx === 2) {
+          console.warn('[SmartImport] PDF is password-protected — showing unlock UI');
           SI.pendingPdfBuf = await file.arrayBuffer();
           siSetCard(2, 'err', 0, siGetErr(2, 'pdf_unreadable'));
-          siShowEmiFallback(true); // show password section
+          siShowEmiFallback(true);
           return;
         }
-        // Other PDF.js failure (corrupt, render issue) — try image render as last resort
-        console.warn('[SmartImport] PDF text extraction failed:', pdfErr.message);
+
+        // Other failure — try image render as fallback
+        console.warn('[SmartImport] Trying image render fallback');
         try {
           const b64 = await siPdfToJpeg(file);
           payload = { mimeType: 'image/jpeg', data: b64 };
+          console.log(`[SmartImport] Fallback image render OK: ${Math.round(b64.length/1024)}KB`);
         } catch (renderErr) {
-          console.error('[SmartImport] PDF render also failed:', renderErr.message);
-          if (idx === 2) {
-            siSetCard(2, 'err', 0, siGetErr(2, 'parse_error'));
-            siShowEmiFallback(false);
-            return;
-          }
-          throw renderErr;
+          console.error('[SmartImport] Both text and image extraction failed:', renderErr.message);
+          siSetCard(idx === 2 ? 2 : idx, 'err', 0, siGetErr(idx, 'parse_error'));
+          if (idx === 2) siShowEmiFallback(false);
+          return;
         }
       }
     } else {
-      // Image (JPG/PNG) — compress before sending
+      console.log('[SmartImport] Image file — compressing');
       const compressed = await siCompressImage(file, 1600, 0.7);
       payload = { mimeType: compressed.mimeType, data: compressed.data };
+      console.log(`[SmartImport] Compressed: ${Math.round(compressed.data.length/1024)}KB`);
     }
 
-    // Use the shared submit function (has proper error handling, logging, size checks)
+    console.log('[SmartImport] Submitting payload to API');
     await siSubmitPayload(idx, payload);
 
   } catch (e) {
