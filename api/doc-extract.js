@@ -169,9 +169,9 @@ export default async function handler(req, res) {
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   // Using gemini-2.5-flash (stable, matches got-advice.js)
-  // gemini-2.0-flash: stable, non-thinking, fast JSON extraction.
-  // gemini-2.5-flash is a thinking model — responseMimeType:'application/json' causes silent empty responses.
-  const modelName = 'gemini-2.0-flash';
+  // gemini-2.5-flash confirmed working (same as got-advice.js).
+  // CRITICAL: do NOT add responseMimeType:'application/json' — breaks thinking mode.
+  const modelName = 'gemini-2.5-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
