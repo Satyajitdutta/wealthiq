@@ -3695,11 +3695,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           PDF is password-protected
         </div>
-        <div style="font-size:0.68rem;color:var(--t2);margin-bottom:0.65rem;line-height:1.45">
-          Indian banks lock statements with your <strong style="color:var(--text)">PAN number</strong> or <strong style="color:var(--text)">date of birth</strong> (e.g. ABCDE1234F or 15021980). Enter it below to unlock.
+        <div style="font-size:0.68rem;color:var(--t2);margin-bottom:0.65rem;line-height:1.55">
+          Different banks use different patterns — check the email from your bank first. Common ones:
+          <div style="margin-top:0.5rem;display:grid;gap:0.3rem">
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">HDFC</span><span>9-digit Customer ID &nbsp;<span style="opacity:0.5">(e.g. 123456789)</span></span></div>
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">ICICI</span><span>First 4 letters of name (lowercase) + DDMM &nbsp;<span style="opacity:0.5">(e.g. amit1202)</span></span></div>
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">Axis</span><span>NAME (4 caps) + Customer ID &nbsp;<span style="opacity:0.5">(e.g. SATY12345678)</span></span></div>
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">SBI</span><span>11-digit Account No., &nbsp;<em>or</em>&nbsp; last 5 of mobile + DDMMYY</span></div>
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">Kotak</span><span>CRN (Customer Relationship Number)</span></div>
+            <div style="display:flex;gap:0.4rem;align-items:baseline"><span style="color:#f59e0b;font-weight:700;min-width:3.5rem;font-size:0.64rem">Others</span><span>PAN number &nbsp;<span style="opacity:0.5">(e.g. ABCDE1234F)</span>&nbsp; or DOB &nbsp;<span style="opacity:0.5">(DDMMYYYY)</span></span></div>
+          </div>
         </div>
         <div style="display:flex;gap:0.5rem;align-items:center">
-          <input id="si-pwd-input" type="password" placeholder="Enter PDF password (PAN / DOB)"
+          <input id="si-pwd-input" type="password" placeholder="Enter password (check bank email for format)"
             style="flex:1;background:var(--c3);border:1px solid rgba(245,158,11,0.4);border-radius:8px;padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;outline:none"
             onkeydown="if(event.key==='Enter') siUnlockPdf()">
           <button onclick="siUnlockPdf()" id="si-pwd-btn"
@@ -3707,7 +3715,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
             🔓 Unlock
           </button>
         </div>
-        <div id="si-pwd-err" style="display:none;font-size:0.65rem;color:#ef4444;margin-top:0.4rem">Wrong password — try your PAN or DOB (DDMMYYYY format)</div>
+        <div id="si-pwd-err" style="display:none;font-size:0.65rem;color:#ef4444;margin-top:0.4rem">Wrong password — check the bank email for the exact format (Customer ID, DDMM, PAN, etc.)</div>
       </div>
 
       <!-- Section 2: Upload Screenshots (one or many) -->
