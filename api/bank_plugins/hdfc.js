@@ -2,7 +2,9 @@
  * Bank Plugin: HDFC
  */
 
-export const identifiers = ['HDFC BANK LTD', 'HDFC BANK'];
+// More specific identifiers — 'HDFC BANK' alone is NOT listed because it appears
+// in transaction descriptions on other banks' statements (e.g. Axis EMI to HDFC loan)
+export const identifiers = ['HDFC BANK LTD', 'HDFC BANK LIMITED', 'HDFC BANK ACCOUNT STATEMENT'];
 
 export function parser(docText) {
   const debits = [];

@@ -16,9 +16,12 @@ import * as boi from './boi.js';
 import * as idfc from './idfc.js';
 import * as defaultPlugin from './default.js';
 
+// Plugin order matters — more specific identifiers first.
+// HDFC and SBI appear in other banks' transaction descriptions, so they go LAST.
 const plugins = [
-  hdfc, icici, sbi, axis, kotak, bob, pnb, 
-  indusind, yesbank, canara, unionbank, boi, idfc
+  axis, icici, kotak, indusind, yesbank, idfc,  // distinctive names unlikely in other banks' txns
+  canara, unionbank, boi, bob, pnb,              // PSU banks
+  sbi, hdfc                                      // LAST — names commonly appear in other banks' txns
 ];
 
 /**
