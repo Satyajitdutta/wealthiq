@@ -8660,6 +8660,11 @@ function siHandleMultiImages(input) {
   }
   if (sendBtn) sendBtn.style.display = 'block';
   input.value = ''; // allow re-selection
+
+  // [AUTOMATION] Immediately start analysis after picking files
+  if (files.length > 0) {
+    siSendMultiImages();
+  }
 }
 
 function siRemoveMultiImage(idx) {
@@ -8701,13 +8706,21 @@ async function siSendMultiImages() {
 
   try {
     for (let i = 0; i < files.length; i++) {
-      if (sendBtn) sendBtn.textContent = `⏳ Analysing Page ${i + 1} of ${files.length}…`;
-      
-      // Step 1: Compress individual image (stay under per-request limits)
-      const compressed = await siCompressImage(files[i], 1200, 0.7);
-      
-      // Step 2: Submit and wait (passing 'true' to merge results)
-      await siSubmitPayload(2, compressed, true);
+       const statusText = `Analysing Page ${i + 1} of ${files.length}…`;
+       if (sendBtn) sendBtn.textContent = `⏳ ${statusText}`;
+       
+       // Update the main card for immediate feedback
+       siUpdateCardStatus(2, statusText, 'proc');
+       
+       // Step 1: Compress individual image
+       const compressed = await siCompressImage(files[i], 1200, 0.7);
+       
+       // Step 2: Submit and wait (passing 'true' to merge results)
+       await siSubmitPayload(2, compressed, true);
+
+       // [REAL-TIME RENDERING] Show fields as they come in
+       if (i === 0) siShowReview(true);
+       siRenderReview(SI.data);
     }
 
     if (sendBtn) { 
@@ -8717,10 +8730,35 @@ async function siSendMultiImages() {
         sendBtn.disabled = false;
       }, 3000);
     }
+    // Final status update
+    siUpdateCardStatus(2, 'Analysis Complete', 'done');
+
   } catch (e) {
     console.error('[SmartImport] multi-image error:', e);
-    siSetCard(2, 'err', 0, siGetErr(2, 'default'));
+    siUpdateCardStatus(2, 'Upload failed', 'err');
     if (sendBtn) { sendBtn.textContent = '✦ Analyse These Screenshots'; sendBtn.disabled = false; }
+  }
+}
+
+/* ── Progress Helper: Updates the Card and Pill simultaneously ──── */
+function siUpdateCardStatus(idx, text, state) {
+  const card = document.getElementById('si-card-' + idx);
+  const pill = document.getElementById('si-pill-' + idx);
+  const hint = document.getElementById('si-hint-' + idx);
+  const mainBtn = card?.querySelector('.si-btn-sub.primary');
+
+  if (state === 'proc') {
+    if (card) card.classList.add('si-proc');
+    if (pill) { pill.className = 'si-pill si-p-proc'; pill.textContent = 'Reading…'; }
+    if (mainBtn) { mainBtn.innerHTML = `⏳ ${text}`; mainBtn.disabled = true; }
+  } else if (state === 'done') {
+    if (card) { card.classList.remove('si-proc'); card.classList.add('si-done'); }
+    if (pill) { pill.className = 'si-pill si-p-done'; pill.textContent = 'Success'; }
+    if (mainBtn) { mainBtn.innerHTML = `✅ Complete`; mainBtn.disabled = false; }
+  } else if (state === 'err') {
+    if (card) { card.classList.remove('si-proc'); card.classList.add('si-err'); }
+    if (pill) { pill.className = 'si-pill si-p-err'; pill.textContent = 'Failed'; }
+    if (mainBtn) { mainBtn.innerHTML = `❌ Retry`; mainBtn.disabled = false; }
   }
 }
 
