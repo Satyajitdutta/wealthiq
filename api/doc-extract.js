@@ -169,8 +169,9 @@ export default async function handler(req, res) {
 
   const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   // Using gemini-2.5-flash (stable, matches got-advice.js)
-  const modelName = 'gemini-2.5-flash';
-  // Note: 2.5-flash uses thinking tokens — thought parts are skipped in parsing below.
+  // gemini-2.0-flash: stable, non-thinking, fast JSON extraction.
+  // gemini-2.5-flash is a thinking model — responseMimeType:'application/json' causes silent empty responses.
+  const modelName = 'gemini-2.0-flash';
 
   const cityContext = city ? buildCityContextPrompt(city) : buildCityContextPrompt('hyderabad');
   const extractPrompt = buildExtractPrompt(cityContext, merchantsListStr);
@@ -192,8 +193,9 @@ export default async function handler(req, res) {
     contents: [{ parts }],
     generationConfig: {
       temperature: 0.1,
-      maxOutputTokens: 4096,
-      responseMimeType: 'application/json'
+      maxOutputTokens: 8192
+      // No responseMimeType — we extract JSON ourselves robustly.
+      // responseMimeType:'application/json' breaks gemini-2.5-flash thinking mode.
     }
   });
 
