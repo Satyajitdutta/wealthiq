@@ -129,12 +129,15 @@ function buildExtractPrompt(cityContext = '', merchantsListStr = '') {
 '  "closing_balance": number,\n' +
 '  "emi_total": number,\n' +
 '  "merchant_categories": { "Unique Merchant Name From List": "Category" },\n' +
-'  "fields_extracted": number\n' +
+'  "fields_extracted": number,\n' +
+'  "is_valid_financial_document": boolean,\n' +
+'  "invalid_reason": string\n' +
 '}\n\n' +
 'Rules:\n' +
 '- Plain numbers, no symbols.\n' +
 '- Sum high-confidence EMIs and recurring utilities separately.\n' +
 '- merchant_categories MUST strictly be a dictionary mapping the provided short list of UNIQUE merchants to categories. DO NOT extract full transactions.\n' +
+'- is_valid_financial_document MUST be true ONLY if the document is an actual, legitimate bank statement, salary slip, or Form 16. If it is a dummy PDF, a generic template, or an unrelated document, set it to false and populate "invalid_reason".\n' +
 '- Return ONLY the JSON object.\n\n' +
 cityContext + merchantInstruction;
 }
@@ -275,10 +278,19 @@ export default async function handler(req, res) {
         const result = await callGemini();
         if (!result.ok) throw new Error(result.error);
         extracted = parseGeminiRaw(result.raw);
+        if (extracted && extracted.is_valid_financial_document === false) {
+          extracted._is_invalid = true;
+          throw new Error('INVALID_DOCUMENT: ' + (extracted.invalid_reason || 'The uploaded file is a dummy or unrelated document limit. Please upload an actual bank statement or salary slip.'));
+        }
         break; // success
       } catch (e) {
         lastError = e;
         console.warn(`[doc-extract] Attempt ${attempt} failed: ${e.message}`);
+        // Do not retry if we explicitly rejected the document as invalid
+        if (e.message.startsWith('INVALID_DOCUMENT:')) {
+          lastError = new Error(e.message.replace('INVALID_DOCUMENT: ', ''));
+          break;
+        }
       }
     }
 

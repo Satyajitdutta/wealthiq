@@ -1,38 +1,42 @@
-import json, urllib.request, ssl
+import pypdf, json, urllib.request, ssl, time
 
-# got-advice uses gemini-2.5-flash and it works.
-# The issue was responseMimeType: 'application/json' breaking thinking mode.
-# Let's test gemini-2.5-flash WITHOUT responseMimeType via Railway
-# by setting a special test flag... actually let's just fix the code.
+filepath = 'C:/Users/Administrator/Downloads/XXXXXXXXXXXXXXX7242-01-04-2026to17-04-2026 (1).pdf'
+reader = pypdf.PdfReader(filepath)
+reader.decrypt('SATY847564085')
+text = ''.join((p.extract_text() or '') + '\n' for p in reader.pages)
+print(f'PDF text: {len(text)} chars')
 
-# First let's confirm: what does got-advice.js actually use?
-# It uses gemini-2.5-flash at /v1beta/models/gemini-2.5-flash:generateContent
-# And it does NOT use responseMimeType.
-
-# Let's verify gemini-2.5-flash works by calling the Railway got-advice endpoint
-payload = json.dumps({
-    "profile": {
-        "name": "Test",
-        "age": 30,
-        "monthly_income": 100000,
-        "monthly_expenses": 50000,
-        "city": "hyderabad",
-        "risk": "moderate",
-        "goals": ["emergency_fund"]
-    }
-}).encode('utf-8')
-
+payload = json.dumps({'docText': text, 'city': 'hyderabad'}).encode('utf-8')
 ctx = ssl.create_default_context()
-req = urllib.request.Request(
-    'https://wealthiq-production.up.railway.app/api/got-advice',
-    data=payload,
-    headers={'Content-Type': 'application/json'},
-    method='POST'
-)
-try:
-    with urllib.request.urlopen(req, context=ctx, timeout=60) as r:
-        resp = json.loads(r.read().decode())
-        print('got-advice success:', resp.get('success', 'unknown'))
-        print('Has advice:', bool(resp.get('advice') or resp.get('report')))
-except Exception as e:
-    print(f'Error: {e}')
+
+print('Polling Railway every 20s for up to 3 min...')
+for attempt in range(9):
+    time.sleep(20)
+    try:
+        req = urllib.request.Request(
+            'https://wealthiq-production.up.railway.app/api/doc-extract',
+            data=payload,
+            headers={'Content-Type': 'application/json; charset=utf-8'},
+            method='POST'
+        )
+        with urllib.request.urlopen(req, context=ctx, timeout=90) as r:
+            resp = json.loads(r.read().decode())
+            if resp.get('success'):
+                ext = resp['extracted']
+                print(f'\n=== SUCCESS (attempt {attempt+1}) ===')
+                print('Doc type:', ext.get('doc_type'))
+                print('Monthly inflow:', ext.get('monthly_inflow'))
+                print('Monthly outflow:', ext.get('monthly_outflow'))
+                print('Closing balance:', ext.get('closing_balance'))
+                print('EMI total:', ext.get('emi_total'))
+                rd = ext.get('recurring_debits', [])
+                print(f'Recurring debits ({len(rd)}):')
+                for item in rd:
+                    print(f"  {item['name']}: Rs.{item['amount']} ({item.get('category','')})")
+                break
+            else:
+                print(f'Attempt {attempt+1}: {resp.get("errorCode")} | {str(resp.get("error",""))[:120]}')
+    except Exception as e:
+        print(f'Attempt {attempt+1}: exception - {e}')
+else:
+    print('All attempts failed.')
