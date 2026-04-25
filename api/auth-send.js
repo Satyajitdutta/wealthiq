@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
   try {
     const resend = new Resend(resendKey);
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: 'Pithonix WealthIQ <noreply@pithonix.ai>',
       to: deliverTo,
       subject: `${otp} — your WealthIQ login code`,
@@ -60,9 +60,15 @@ export default async function handler(req, res) {
 </div>
       `
     });
+    if (error) {
+      console.error('OTP send error (Resend):', JSON.stringify(error));
+      res.status(500).json({ error: 'Failed to send code' });
+      return;
+    }
+    console.log(`OTP sent to ${deliverTo} — Resend ID: ${data?.id}`);
     res.status(200).json({ success: true });
   } catch(e) {
-    console.error('OTP send error:', e.message);
+    console.error('OTP send exception:', e.message);
     res.status(500).json({ error: 'Failed to send code' });
   }
 }
