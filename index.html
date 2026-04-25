@@ -1202,7 +1202,7 @@ async function amVerify(){
     // Determine destination: respect ?_from=app redirect, or use _target module
     const _fromApp = new URLSearchParams(window.location.search).get('_from') === 'app';
     const _dest = '/app' + (_target ? '?m='+_target : _fromApp ? '' : '');
-    setTimeout(()=>{ window.location.href = _dest; }, 600);
+    setTimeout(()=>{ window.location.replace(_dest); }, 600);
   }catch(e){showErr('am-e2',e.message||'Invalid code.');btn.disabled=false;btn.textContent='Verify & Enter →'}
 }
 
@@ -1213,11 +1213,27 @@ function amBack(){
   const b=document.getElementById('am-s1btn');b.disabled=false;b.textContent='Send Login Code →';
 }
 
+function redirectIfLoggedIn(){
+  try{
+    const raw=localStorage.getItem('wealthiq_session');
+    if(!raw) return;
+    const s=JSON.parse(raw);
+    if(!s||!s.token) return;
+    const expiry=s.expiresAt||(s.createdAt?s.createdAt+30*24*60*60*1000:0);
+    if(expiry<Date.now()) return;
+    window.location.replace('/app');
+  }catch(e){}
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('am-email')?.addEventListener('keydown',e=>{if(e.key==='Enter')amSend()});
   // If redirected from /app (no session), auto-open auth modal
   if(new URLSearchParams(window.location.search).get('_from')==='app') openAuth();
+  else redirectIfLoggedIn();
 });
+
+// Handle bfcache restore (Android back button from /app lands here)
+window.addEventListener('pageshow',e=>{if(e.persisted) redirectIfLoggedIn();});
 </script>
 </body>
 </html>
