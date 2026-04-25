@@ -39,16 +39,10 @@ export default async function handler(req, res) {
   const secret = (process.env.AUTH_SECRET || '').trim();
   if (!secret) { res.status(500).json({ error: 'Server misconfigured' }); return; }
 
-  // Demo account — fixed OTP 000000
-  const isDemo = email === 'user@test.com' || email === 'jeetworkdomain@gmail.com';
-  if (isDemo && otp !== '000000') { res.status(401).json({ error: 'Demo code is 000000' }); return; }
-
-  if (!isDemo) {
-    const bucket = Math.floor(Date.now() / 300000);
-    const valid = otp === getOTP(secret, email, bucket) ||
-                  otp === getOTP(secret, email, bucket - 1);
-    if (!valid) { res.status(401).json({ error: 'Invalid or expired code. Try again.' }); return; }
-  }
+  const bucket = Math.floor(Date.now() / 300000);
+  const valid = otp === getOTP(secret, email, bucket) ||
+                otp === getOTP(secret, email, bucket - 1);
+  if (!valid) { res.status(401).json({ error: 'Invalid or expired code. Try again.' }); return; }
 
   const token = makeToken(secret, email);
   res.status(200).json({ success: true, token, email });

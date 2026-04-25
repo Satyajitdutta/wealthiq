@@ -30,9 +30,6 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'Valid email required' }); return;
   }
 
-  // Demo account — no email sent, fixed OTP
-  if (email === 'user@test.com' || email === 'jeetworkdomain@gmail.com') { res.status(200).json({ success: true }); return; }
-
   const secret = (process.env.AUTH_SECRET || '').trim();
   const resendKey = (process.env.RESEND_API_KEY || '').trim();
   if (!secret || !resendKey) { res.status(500).json({ error: 'Server misconfigured' }); return; }
@@ -40,8 +37,7 @@ export default async function handler(req, res) {
   const bucket = Math.floor(Date.now() / 300000); // 5-min buckets
   const otp = getOTP(secret, email, bucket);
 
-  // Demo showcase account — OTP routed to admin inbox
-  const deliverTo = email === 'test@demo.com' ? 'satyajitv.d@pithonix.ai' : email;
+  const deliverTo = email;
 
   try {
     const resend = new Resend(resendKey);
