@@ -1522,6 +1522,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <!-- Full Form Panel (hidden, used by JS for DOM ID access) -->
   <div id="prof-form-panel">
 
+  <!-- Smart Import CTA (always accessible on form panel) -->
+  <button class="si-prof-btn" onclick="openSmartImport()" style="margin-bottom:1.2rem">
+    <div class="si-prof-ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <div class="si-prof-txt">
+      <div class="si-prof-t">Smart Import</div>
+      <div class="si-prof-s">Upload salary slip or Form 16 — auto-update your profile</div>
+    </div>
+    <div class="si-prof-arr">→</div>
+  </button>
+
   <!-- Profile Photo + Name -->
   <div class="card">
     <div class="body" style="padding:1rem 1rem 0.75rem">
