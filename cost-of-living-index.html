@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost of Living Index — Compare Your Spend vs 14 Indian Cities | Artha-IQ</title>
+<meta name="description" content="Know if you're overpaying or underpaying in your city. Compare your spending against 14 Indian city benchmarks (Hyderabad, Bengaluru, Pune, Chennai, Delhi, Mumbai, Kolkata, Jaipur, etc). Free cost of living analysis.">
+<meta name="keywords" content="cost of living index India, city cost comparison, spending benchmark, cost of living calculator, city benchmarks India, Hyderabad Bengaluru Pune Chennai cost of living">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://wealth.pithonix.ai/cost-of-living-index.html">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030305;--blue:#3b82f6;--t:#f0f0f8;--t2:#8892a4;--t3:#4a5568}
+html{overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);padding-top:80px}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2.5rem;background:rgba(3,3,5,.88);backdrop-filter:blur(24px)}
+.n-logo{display:flex;align-items:center;gap:.6rem}
+.n-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+.n-wm{font-size:1.05rem;font-weight:800;color:#fff}
+.n-links{display:flex;gap:2rem;align-items:center}
+.n-lnk{font-size:.85rem;color:var(--t2)}
+.n-cta{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:.6rem 1.4rem;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer}
+.hero{padding:6rem 2rem 4rem;text-align:center;max-width:900px;margin:0 auto}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:#fff;margin-bottom:1.5rem}
+.hero p{font-size:1.1rem;color:var(--t2);max-width:640px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin:3rem 0}
+.stat{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.16);border-radius:14px;padding:2rem;text-align:center}
+.stat-val{font-size:2rem;font-weight:900;color:#f59e0b;margin-bottom:.4rem}
+.stat-label{font-size:.9rem;color:var(--t2)}
+.cta-section{max-width:900px;margin:4rem auto 0;padding:0 2rem}
+.cta-btn{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:1.2rem 3rem;color:#fff;font-size:1.05rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,.35);transition:all .2s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.5)}
+.features{max-width:900px;margin:4rem auto;padding:0 2rem}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-top:2rem}
+.feature-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:2rem}
+.feature-icon{font-size:2rem;margin-bottom:1rem}
+.feature-title{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.5rem}
+.feature-desc{font-size:.9rem;color:var(--t2);line-height:1.6}
+footer{border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem;text-align:center;margin-top:6rem;color:var(--t3);font-size:.8rem}
+.am-bg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center}
+.am-bg.open{display:flex}
+.am-box{background:#0a0f1e;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:2.5rem;max-width:420px;width:100%}
+.am-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:.9rem;color:#fff;margin-bottom:1rem;font-family:'DM Sans',sans-serif}
+.am-btn{width:100%;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:12px;padding:1rem;color:#fff;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+<nav>
+<a class="n-logo" href="/"><div class="n-mark"></div><span class="n-wm">Artha<em style="font-style:normal;background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">-IQ</em></span></a>
+<div class="n-links"><a class="n-lnk" href="/">Home</a><a class="n-cta" onclick="openAuth();return false">Sign In</a></div>
+</nav>
+
+<div class="hero">
+<h1>Cost of Living Index</h1>
+<p>Are you overpaying for your lifestyle? Compare your monthly spend against 14 Indian city benchmarks.</p>
+<div class="hero-stats">
+<div class="stat"><div class="stat-val">14 Cities</div><div class="stat-label">Hyderabad, Bengaluru, Pune, Chennai, Delhi, Mumbai, and more</div></div>
+<div class="stat"><div class="stat-val">Real Data</div><div class="stat-label">Based on actual GCC employee spending patterns</div></div>
+</div>
+</div>
+
+<div class="cta-section">
+<button class="cta-btn" onclick="openAuth('col')">Analyze Your Spend →</button>
+<p style="text-align:center;margin-top:1rem;font-size:.85rem;color:var(--t3)">Free analysis. See where your money goes.</p>
+</div>
+
+<div class="features">
+<h2 style="font-size:1.8rem;color:#fff;margin-bottom:1rem;text-align:center">What You Get</h2>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon">📊</div>
+<div class="feature-title">City Breakdown</div>
+<div class="feature-desc">See how your monthly spend compares across rent, food, transport, utilities, and lifestyle in each city.</div>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🎯</div>
+<div class="feature-title">Spend Benchmarks</div>
+<div class="feature-desc">Know if you're above, at, or below average for your city and income bracket.</div>
+</div>
+<div class="feature-card">
+<div class="feature-icon">💰</div>
+<div class="feature-title">Optimization Ideas</div>
+<div class="feature-desc">Identify categories where you can cut costs without sacrificing lifestyle quality.</div>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🚀</div>
+<div class="feature-title">Relocation Insights</div>
+<div class="feature-desc">Planning to move to another city? See exactly how your lifestyle costs will change.</div>
+</div>
+</div>
+</div>
+
+<footer>© 2026 Pithonix AI. Know your city. Know your spending.</footer>
+
+<div class="am-bg" id="amBg" onclick="if(event.target===event.currentTarget)closeAuth()">
+<div class="am-box">
+<button onclick="closeAuth()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer">✕</button>
+<div style="font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:1.5rem">Cost of Living Index</div>
+<input class="am-inp" id="am-email" type="email" placeholder="you@company.com">
+<button class="am-btn" onclick="amSend()">Compare My Spend →</button>
+</div>
+</div>
+
+<script>
+function openAuth(){document.getElementById('amBg').classList.add('open');document.getElementById('am-email').focus()}
+function closeAuth(){document.getElementById('amBg').classList.remove('open')}
+async function amSend(){const email=document.getElementById('am-email').value;if(!email)return;await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});setTimeout(()=>{window.location.replace('/app?m=col')},300)}
+</script>
+</body>
+</html>
