@@ -105,7 +105,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .hdr-brand{font-size:0.95rem;font-weight:800;background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hdr-title{font-size:0.78rem;color:var(--t2);margin-left:auto}
 .screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s;touch-action:manipulation;-webkit-user-select:text;user-select:text}
 .screen.active{display:block;opacity:1;transform:translateY(0)}
 .tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabbar::-webkit-scrollbar{display:none}
@@ -130,7 +130,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .field:last-child{margin-bottom:0}
 .field label{display:flex;justify-content:space-between;align-items:center;font-size:0.74rem;font-weight:600;color:var(--t2);margin-bottom:0.3rem;line-height:1.3}
 .field label em{font-style:normal;font-size:0.68rem;color:var(--t3);font-weight:400}
-input[type=number],input[type=text],select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--bd);border-radius:8px;padding:0.6rem 0.875rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;-webkit-appearance:none;appearance:none;transition:border-color 0.2s}
+input[type=number],input[type=text],select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--bd);border-radius:8px;padding:0.6rem 0.875rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;-webkit-appearance:none;appearance:none;transition:border-color 0.2s;touch-action:manipulation}
 input:focus,select:focus{outline:none;border-color:var(--blue);background:rgba(59,130,246,0.06)}
 input::placeholder{color:rgba(148,163,184,0.3)}
 select option{background:#1e293b}
@@ -571,6 +571,33 @@ select option{background:#1e293b}
   .tabbar{padding-bottom:env(safe-area-inset-bottom);height:calc(var(--tab) + env(safe-area-inset-bottom))}
   .screen{padding-bottom:calc(var(--tab) + env(safe-area-inset-bottom) + 1.5rem)}
   .tsz-wrap{padding-bottom:calc(var(--tab) + env(safe-area-inset-bottom) + 2rem)}
+}
+
+/* ── MOBILE RESPONSIVE FONT SIZES (≤480px) ──────────────────────── */
+@media (max-width:480px){
+  .field label{font-size:0.82rem}
+  .field label em{font-size:0.75rem}
+  input[type=number],input[type=text],select{font-size:1rem}
+  .tax-amt-wrap input{font-size:0.88rem}
+  .tax-inp-row label{font-size:0.82rem}
+  .tax-inp-row label em{font-size:0.7rem}
+  .tax-check-row span{font-size:0.78rem}
+  .tax-section-hdr span:first-child{font-size:0.88rem}
+  .body{padding:1rem}
+  .kpi .kv{font-size:1.3rem}
+  .kpi .kl{font-size:0.75rem}
+  .ded-label{font-size:0.82rem}
+  .ded-save{font-size:0.75rem}
+  .habit-label{font-size:0.88rem}
+  .habit-inp-wrap span{font-size:0.8rem}
+  .habit-input{width:80px}
+  .sub-card .sub-name{font-size:0.85rem}
+  .tc .tcv{font-size:1.5rem}
+  .tc .tcl{font-size:0.72rem}
+  .leak-meter .lm-v{font-size:2rem}
+  .goal-label{font-size:0.65rem}
+  .card-hdr h3{font-size:0.8rem}
+  .nudge-text{font-size:0.88rem}
 }
 
 /* ── DESKTOP LAYOUT ≥ 1024px ─────────────────────────────────── */
