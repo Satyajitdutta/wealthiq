@@ -105,7 +105,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .hdr-brand{font-size:0.95rem;font-weight:800;background:linear-gradient(90deg,var(--blue),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hdr-title{font-size:0.78rem;color:var(--t2);margin-left:auto}
 .screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s;touch-action:manipulation;-webkit-user-select:text;user-select:text}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:1rem 1rem calc(var(--tab) + 1.5rem);display:none;opacity:0;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 .screen.active{display:block;opacity:1;transform:translateY(0)}
 .tabbar{height:var(--tab);background:rgba(13,20,38,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:50;position:sticky;bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabbar::-webkit-scrollbar{display:none}
@@ -118,12 +118,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .tab.got-tab.active svg{stroke:var(--purple)}
 
 /* ── CARDS ─────────────────────────────────────────────────────── */
-.card{background:var(--c1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:0.75rem;overflow:hidden}
-.card-hdr{background:var(--c2);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--bd)}
+.card{background:var(--c1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:0.75rem;overflow:hidden;touch-action:pan-y}
+.card-hdr{background:var(--c2);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--bd);touch-action:pan-y}
 .card-hdr .pill{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .card-hdr h3{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--t2)}
 .card-hdr .badge{margin-left:auto;font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:10px}
-.body{padding:0.875rem 1rem}
+.body{padding:0.875rem 1rem;touch-action:pan-y}
 
 /* ── INPUTS ─────────────────────────────────────────────────────── */
 .field{margin-bottom:0.7rem}
