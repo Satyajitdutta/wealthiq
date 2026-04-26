@@ -76,6 +76,21 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- GEO Targeting — City Pages by Tier -->
+  <url>
+    <loc>https://wealth.pithonix.ai/financial-planning-tier1.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/financial-planning-tier2.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
   <!-- Blog Index -->
   <url>
     <loc>https://wealth.pithonix.ai/blog</loc>
