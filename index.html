@@ -1176,14 +1176,31 @@ async function amSend(){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('am-e1','Enter a valid email address.');return}
   hideErr('am-e1');_email=email;
   const btn=document.getElementById('am-s1btn');btn.disabled=true;btn.textContent='Sending…';
+  const tryFetch=async()=>{
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),12000);
+    try{
+      const r=await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email}),signal:ctrl.signal});
+      clearTimeout(t);return r;
+    }catch(e){clearTimeout(t);throw e;}
+  };
   try{
-    const r=await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    let r;
+    try{r=await tryFetch();}catch(e){
+      // Retry once after 2s (handles Railway cold-start)
+      btn.textContent='Retrying…';
+      await new Promise(res=>setTimeout(res,2000));
+      r=await tryFetch();
+    }
     const d=await r.json();if(!r.ok)throw new Error(d.error||'Failed to send');
     document.getElementById('am-to').textContent=email;
     document.getElementById('am-s1').style.display='none';
     document.getElementById('am-s2').style.display='block';
     setTimeout(()=>document.getElementById('am-otp')?.focus(),80);
-  }catch(e){showErr('am-e1',e.message||'Could not send code.');btn.disabled=false;btn.textContent='Send Login Code →'}
+  }catch(e){
+    const msg=e.name==='AbortError'?'Server took too long — please try again.':(e.message==='Failed to fetch'?'Network error — check your connection and try again.':e.message||'Could not send code.');
+    showErr('am-e1',msg);btn.disabled=false;btn.textContent='Send Login Code →';
+  }
 }
 
 async function amVerify(){
