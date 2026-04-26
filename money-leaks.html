@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Money Leaks Detector — Find Hidden Monthly Drains | Artha-IQ</title>
+<meta name="description" content="Discover where ₹5-15K disappears monthly. Subscriptions, lifestyle inflation, hidden costs. Find and fix your money leaks in minutes.">
+<meta name="keywords" content="money leaks detector, hidden expenses, spending audit, subscription tracker, lifestyle inflation, expense management">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://wealth.pithonix.ai/money-leaks.html">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030305;--blue:#3b82f6;--t:#f0f0f8;--t2:#8892a4;--t3:#4a5568}
+html{overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);padding-top:80px}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;padding:1.25rem 2.5rem;background:rgba(3,3,5,.88)}
+.n-logo{display:flex;align-items:center;gap:.6rem}
+.n-wm{font-size:1.05rem;font-weight:800;color:#fff}
+.n-cta{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:.6rem 1.4rem;color:#fff;cursor:pointer}
+.hero{padding:6rem 2rem 4rem;text-align:center;max-width:900px;margin:0 auto}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:#fff;margin-bottom:1.5rem}
+.hero p{font-size:1.1rem;color:var(--t2);max-width:640px;margin:0 auto 2.5rem}
+.stat{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.16);border-radius:14px;padding:2rem;margin:1.5rem 0;text-align:center}
+.stat-val{font-size:2rem;font-weight:900;color:#ef4444}
+.stat-label{font-size:.9rem;color:var(--t2);margin-top:.5rem}
+.cta-btn{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:1.2rem 3rem;color:#fff;font-size:1.05rem;font-weight:800;cursor:pointer;display:block;margin:2rem auto}
+footer{border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem;text-align:center;margin-top:6rem;color:var(--t3);font-size:.8rem}
+.am-bg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center}
+.am-bg.open{display:flex}
+.am-box{background:#0a0f1e;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:2.5rem;max-width:420px;width:100%}
+.am-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:.9rem;color:#fff;margin-bottom:1rem}
+.am-btn{width:100%;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:12px;padding:1rem;color:#fff;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<nav>
+<a class="n-logo" href="/"><span class="n-wm">Artha<em style="font-style:normal;background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">-IQ</em></span></a>
+<button class="n-cta" onclick="openAuth()">Sign In</button>
+</nav>
+
+<div class="hero">
+<h1>Money Leaks Detector</h1>
+<p>Find where ₹5-15K disappears monthly without you noticing. Subscriptions, lifestyle inflation, hidden costs.</p>
+<div class="stat"><div class="stat-val">₹96,000</div><div class="stat-label">Annual savings from fixing an ₹8K monthly leak</div></div>
+<div class="stat"><div class="stat-val">20 min</div><div class="stat-label">Time to audit 3 months of spending and identify all drains</div></div>
+<button class="cta-btn" onclick="openAuth('leaks')">Scan for Leaks Now →</button>
+<p style="font-size:.85rem;color:var(--t3);margin-top:1rem">Free analysis. No commitment.</p>
+</div>
+
+<footer>© 2026 Pithonix AI India.</footer>
+
+<div class="am-bg" id="amBg" onclick="if(event.target===event.currentTarget)closeAuth()">
+<div class="am-box">
+<button onclick="closeAuth()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;cursor:pointer">✕</button>
+<div style="font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:1.5rem">Money Leaks Detector</div>
+<input class="am-inp" id="am-email" type="email" placeholder="you@company.com">
+<button class="am-btn" onclick="amSend()">Find My Leaks →</button>
+</div>
+</div>
+
+<script>
+function openAuth(){document.getElementById('amBg').classList.add('open')}
+function closeAuth(){document.getElementById('amBg').classList.remove('open')}
+async function amSend(){const email=document.getElementById('am-email').value;if(!email)return;await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});setTimeout(()=>window.location.replace('/app?m=leaks'),300)}
+</script>
+</body>
+</html>
