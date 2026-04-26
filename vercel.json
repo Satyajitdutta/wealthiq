@@ -1,7 +1,5 @@
 {
   "cleanUrls": true,
-  "buildCommand": "",
-  "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://wealthiq-production.up.railway.app/api/$1" },
     { "source": "/app", "destination": "/app.html" },
