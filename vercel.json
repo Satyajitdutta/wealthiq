@@ -8,6 +8,8 @@
     { "source": "/refund", "destination": "/refund.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/onepager", "destination": "/onepager.html" }
+    { "source": "/onepager", "destination": "/onepager.html" },
+    { "source": "/icon-192.png", "destination": "/icons/icon-192.png" },
+    { "source": "/icon-512.png", "destination": "/icons/icon-512.png" }
   ]
 }
