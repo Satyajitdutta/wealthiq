@@ -1,18 +1,13 @@
 {
   "cleanUrls": true,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "app.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "destination": "https://wealthiq-production.up.railway.app/api/$1" },
-    { "src": "/app(?:/.*)?", "destination": "/app.html" },
-    { "src": "/blog(?:/.*)?", "destination": "/blog/index.html" },
-    { "src": "/terms", "destination": "/terms.html" },
-    { "src": "/refund", "destination": "/refund.html" },
-    { "src": "/privacy", "destination": "/privacy.html" },
-    { "src": "/contact", "destination": "/contact.html" },
-    { "src": "/onepager", "destination": "/onepager.html" },
-    { "src": "/(.*)", "destination": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://wealthiq-production.up.railway.app/api/$1" },
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/refund", "destination": "/refund.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/onepager", "destination": "/onepager.html" }
   ]
 }
