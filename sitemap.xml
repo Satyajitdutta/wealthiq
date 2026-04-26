@@ -55,6 +55,20 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://wealth.pithonix.ai/cost-of-living-index.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/government-schemes-finder.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Blog Index -->
   <url>
     <loc>https://wealth.pithonix.ai/blog</loc>
