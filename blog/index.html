@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030305">
+<title>Artha-IQ Blog — Personal Finance Insights for India's Salaried Professionals</title>
+<meta name="description" content="Financial insights on tax optimization, FIRE planning, money leaks, salary benchmarking, and wealth building for India's salaried professionals. Expert analysis on personal finance tools and strategies.">
+<meta name="keywords" content="financial blog India, tax planning blog, FIRE retirement planning, money management tips, personal finance advice India, salaried professional finance">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://wealth.pithonix.ai/blog">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wealth.pithonix.ai/blog">
+<meta property="og:title" content="Artha-IQ Blog — Financial Intelligence for Salaried Professionals">
+<meta property="og:description" content="Expert articles on tax optimization, FIRE planning, salary benchmarking, and personal finance strategies for India's salaried professionals.">
+<meta property="og:image" content="https://wealth.pithonix.ai/Artha-IQ Coverpage.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@PithonixAI">
+<meta name="geo.region" content="IN">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030305;--blue:#3b82f6;--teal:#06b6d4;--green:#22c55e;--t:#f0f0f8;--t2:#8892a4;--t3:#4a5568}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2.5rem;background:rgba(3,3,5,.88);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:blur(24px)}
+.n-logo{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.n-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.n-mark svg{width:20px;height:20px}
+.n-wm{font-size:1.05rem;font-weight:800;letter-spacing:-.01em;color:#fff}
+.n-wm em{font-style:normal;background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.n-links{display:flex;align-items:center;gap:2rem}
+.n-lnk{font-size:.85rem;font-weight:500;color:var(--t2);transition:color .2s}
+.n-lnk:hover{color:#fff}
+.n-lnk.active{color:var(--blue);font-weight:700}
+.n-cta{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:.6rem 1.4rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,.35);transition:all .2s}
+.n-cta:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(59,130,246,.5)}
+@media(max-width:700px){.n-links{display:none}}
+.blog-hero{padding:8rem 2rem 4rem;text-align:center;max-width:900px;margin:0 auto}
+.blog-h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-.045em;line-height:1.1;color:#fff;margin-bottom:1.25rem}
+.blog-h1 em{font-style:normal;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.blog-sub{font-size:1.1rem;color:var(--t2);max-width:580px;margin:0 auto 3rem;line-height:1.7}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2rem;max-width:1200px;margin:0 auto;padding:0 2rem 6rem}
+.blog-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+.blog-card:hover{border-color:rgba(59,130,246,.25);transform:translateY(-4px)}
+.bc-tag{padding:1.5rem 1.5rem 0;font-size:.7rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#3b82f6}
+.bc-body{padding:0 1.5rem 1.5rem;flex:1;display:flex;flex-direction:column}
+.bc-title{font-size:1.15rem;font-weight:800;color:#fff;line-height:1.3;margin-bottom:.75rem}
+.bc-excerpt{font-size:.9rem;color:var(--t2);line-height:1.65;margin-bottom:1.5rem;flex:1}
+.bc-cta{font-size:.85rem;font-weight:700;color:var(--blue);display:inline-flex;align-items:center;gap:.4rem}
+.bc-cta::after{content:'→';transition:transform .2s}
+.blog-card:hover .bc-cta::after{transform:translateX(4px)}
+footer{border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.f-brand{font-size:.95rem;font-weight:800;color:#fff;margin-bottom:.2rem}
+.f-meta{font-size:.72rem;color:var(--t3)}
+.f-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.f-links a{font-size:.8rem;color:var(--t3);transition:color .2s}
+.f-links a:hover{color:var(--t)}
+.am-bg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1rem}
+.am-bg.open{display:flex}
+.am-box{background:#0a0f1e;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:2.5rem;max-width:420px;width:100%;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.am-close{position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,.07);border:none;border-radius:50%;width:32px;height:32px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.am-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:1.75rem}
+.am-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center}
+.am-wm{font-size:1.05rem;font-weight:800;color:#fff}
+.am-wm em{font-style:normal;background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.am-h{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.4rem}
+.am-sub{font-size:.88rem;color:var(--t2);margin-bottom:1.5rem;line-height:1.6}
+.am-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:.9rem 1.1rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;margin-bottom:1rem;transition:border-color .2s}
+.am-inp:focus{outline:none;border-color:rgba(59,130,246,.5)}
+.am-btn{width:100%;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:12px;padding:1rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s}
+.am-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.45)}
+.am-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:.7rem 1rem;font-size:.85rem;color:#fca5a5;margin-bottom:1rem;display:none}
+.am-legal{font-size:.73rem;color:var(--t3);text-align:center;margin-top:1rem;line-height:1.5}
+.am-legal a{color:var(--t2);text-decoration:underline}
+.am-link{background:none;border:none;color:var(--t3);font-size:.83rem;cursor:pointer;width:100%;margin-top:.5rem;text-decoration:underline;font-family:'DM Sans',sans-serif}
+.am-sent{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#22c55e;margin-bottom:1rem;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.5rem .85rem;display:none}
+.am-otp{text-align:center;font-size:1.6rem;font-weight:800;letter-spacing:.4em}
+.am-spin{font-size:2rem;animation:spin 1s linear infinite;margin-bottom:1rem}
+@keyframes spin{100%{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+<nav>
+<a class="n-logo" href="/">
+<div class="n-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 20h4l1.6-4.3h4.8L16 20h4L12 3z" fill="white"/><rect x="9" y="13.5" width="6" height="1.8" fill="rgba(6,182,212,.85)" rx=".5"/></svg></div>
+<span class="n-wm">Artha<em>-IQ</em></span>
+</a>
+<div class="n-links">
+<a class="n-lnk" href="/#features">Features</a>
+<a class="n-lnk" href="/#pricing">Pricing</a>
+<a class="n-lnk active" href="/blog">Blog</a>
+<a class="n-cta" href="#" onclick="openAuth();return false">Get Started Free</a>
+</div>
+</nav>
+
+<div class="blog-hero">
+<h1 class="blog-h1">Financial Intelligence<br><em>for Salaried Professionals</em></h1>
+<p class="blog-sub">Expert articles on tax optimization, FIRE planning, salary benchmarking, money leaks, and wealth-building strategies for India's GCC and IT professionals.</p>
+</div>
+
+<div class="blog-grid">
+<a href="/blog/cleartax-vs-artha-iq.html" class="blog-card">
+<div class="bc-tag">Comparison</div>
+<div class="bc-body">
+<h3 class="bc-title">Cleartax vs Artha-IQ: You've Filed Your Taxes. But Did You Optimize Them?</h3>
+<p class="bc-excerpt">Filing your taxes is the end. Optimizing them is the journey. Learn why tax planning happens in April, not March — and what Artha-IQ does the other 11 months.</p>
+<span class="bc-cta">Read article</span>
+</div>
+</a>
+
+<a href="/blog/indmoney-vs-artha-iq.html" class="blog-card">
+<div class="bc-tag">Comparison</div>
+<div class="bc-body">
+<h3 class="bc-title">INDmoney vs Artha-IQ: Your Net Worth Is Tracked. But Where's the Money Leaking?</h3>
+<p class="bc-excerpt">INDmoney shows what you have. Artha-IQ shows where it never got there. Understanding the difference between tracking wealth and building it.</p>
+<span class="bc-cta">Read article</span>
+</div>
+</a>
+
+<a href="/blog/keka-vs-artha-iq.html" class="blog-card">
+<div class="bc-tag">Comparison</div>
+<div class="bc-body">
+<h3 class="bc-title">Keka vs Artha-IQ: Your HR Software Processes Your Salary. Artha-IQ Explains What It Means.</h3>
+<p class="bc-excerpt">Keka tells you what you earned. Artha-IQ tells you if you're earning market rate, how much after optimization, and your FIRE progress.</p>
+<span class="bc-cta">Read article</span>
+</div>
+</a>
+</div>
+
+<footer>
+<div>
+<div class="f-brand">Artha-IQ by Pithonix AI</div>
+<div class="f-meta">© 2026 PITHONIX AI INDIA PRIVATE LIMITED · CIN: U62090TS2026PTC213220</div>
+</div>
+<div class="f-links">
+<a href="/privacy">Privacy</a>
+<a href="/terms">Terms</a>
+<a href="/refund">Refund</a>
+<a href="/contact">Contact</a>
+</div>
+</footer>
+
+<div class="am-bg" id="amBg" onclick="amBgClick(event)">
+<div class="am-box">
+<button class="am-close" onclick="closeAuth()">✕</button>
+<div class="am-logo">
+<div class="am-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 20h4l1.6-4.3h4.8L16 20h4L12 3z" fill="white"/><rect x="9" y="13.5" width="6" height="1.8" fill="rgba(6,182,212,.85)" rx=".5"/></svg></div>
+<div class="am-wm">Artha<em>-IQ</em></div>
+</div>
+<div id="am-s1">
+<div class="am-h">Welcome.</div>
+<p class="am-sub">Enter your email — we'll send a one-time login code. No password, ever.</p>
+<input class="am-inp" id="am-email" type="email" placeholder="you@company.com" autocomplete="email" inputmode="email">
+<div class="am-err" id="am-e1"></div>
+<button class="am-btn" id="am-s1btn" onclick="amSend()">Send Login Code →</button>
+<p class="am-legal">By continuing you agree to our <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</p>
+</div>
+<div id="am-s2" style="display:none">
+<div class="am-h">Check your inbox.</div>
+<p class="am-sub">6-digit code sent to <strong id="am-to"></strong></p>
+<div class="am-sent"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Code sent</div>
+<input class="am-inp am-otp" id="am-otp" type="text" inputmode="numeric" placeholder="000000" maxlength="6" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6);if(this.value.length===6)amVerify()">
+<div class="am-err" id="am-e2"></div>
+<button class="am-btn" id="am-s2btn" onclick="amVerify()">Verify & Enter →</button>
+<button class="am-link" onclick="amBack()">← Change email</button>
+</div>
+<div id="am-s3" style="display:none;text-align:center;padding:2rem 0">
+<div class="am-spin">⚙️</div>
+<div style="font-size:1rem;font-weight:700">Getting your profile ready…</div>
+<div style="font-size:.85rem;color:var(--t2);margin-top:.4rem">Redirecting in a moment</div>
+</div>
+</div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('cvs');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  function draw(){
+    const id=ctx.createImageData(c.width,c.height);
+    const d=id.data;
+    for(let i=0;i<d.length;i+=4){
+      const v=Math.random()*30;
+      d[i]=d[i+1]=d[i+2]=v;d[i+3]=18;
+    }
+    ctx.putImageData(id,0,0);
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+function openAuth(){document.getElementById('amBg').classList.add('open');document.getElementById('am-email').focus()}
+function closeAuth(){document.getElementById('amBg').classList.remove('open')}
+function amBgClick(e){if(e.target===e.currentTarget)closeAuth()}
+async function amSend(){
+  const btn=document.getElementById('am-s1btn');
+  const email=document.getElementById('am-email').value.trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('am-e1','Please enter a valid email address.');return}
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    const r=await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const d=await r.json();
+    if(!r.ok){showErr('am-e1',d.error||'Failed to send code.');btn.disabled=false;btn.textContent='Send Login Code →';return}
+    document.getElementById('am-to').textContent=email;
+    document.getElementById('am-s1').style.display='none';
+    document.getElementById('am-s2').style.display='block';
+  }catch(e){showErr('am-e1','Network error. Please try again.');btn.disabled=false;btn.textContent='Send Login Code →'}
+}
+async function amVerify(){
+  const btn=document.getElementById('am-s2btn');
+  const email=document.getElementById('am-email').value.trim().toLowerCase();
+  const otp=document.getElementById('am-otp').value.trim();
+  if(otp.length!==6){showErr('am-e2','Enter the 6-digit code.');return}
+  btn.disabled=true;btn.textContent='Verifying…';
+  try{
+    const r=await fetch('/api/auth-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,otp})});
+    const d=await r.json();
+    if(!r.ok){showErr('am-e2',d.error||'Invalid code.');btn.disabled=false;btn.textContent='Verify & Enter →';return}
+    localStorage.setItem('wealthiq_session',JSON.stringify({token:d.token,email,createdAt:Date.now()}));
+    document.getElementById('am-s2').style.display='none';
+    document.getElementById('am-s3').style.display='block';
+    setTimeout(()=>{window.location.replace('/app');},600);
+  }catch(e){showErr('am-e2',e.message||'Invalid code.');btn.disabled=false;btn.textContent='Verify & Enter →'}
+}
+function amBack(){
+  document.getElementById('am-s2').style.display='none';
+  document.getElementById('am-s1').style.display='block';
+  document.getElementById('am-otp').value='';
+  hideErr('am-e2');
+  const b=document.getElementById('am-s1btn');b.disabled=false;b.textContent='Send Login Code →';
+}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block'}
+function hideErr(id){document.getElementById(id).style.display='none'}
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030305">
+<title>How to Calculate Your FIRE Number in India: Step-by-Step Guide | Artha-IQ</title>
+<meta name="description" content="Complete guide to calculating your FIRE (Financial Independence Retire Early) corpus as an Indian salaried professional. Includes inflation adjustment, expense analysis, and corpus calculation.">
+<meta name="keywords" content="FIRE number India, retirement corpus calculator, financial independence India, early retirement planning, FIRE calculator salaried professional">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://wealth.pithonix.ai/blog/fire-number-india-salaried.html">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://wealth.pithonix.ai/blog/fire-number-india-salaried.html">
+<meta property="og:title" content="How to Calculate Your FIRE Number in India">
+<meta property="og:description" content="Step-by-step guide to knowing exactly how much you need to retire early.">
+<meta property="og:image" content="https://wealth.pithonix.ai/Artha-IQ Coverpage.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@PithonixAI">
+<meta name="geo.region" content="IN">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to Calculate Your FIRE Number in India: A Step-by-Step Guide",
+  "description": "Calculate the exact corpus needed to retire early based on your expenses and life expectancy.",
+  "image": "https://wealth.pithonix.ai/Artha-IQ Coverpage.png",
+  "datePublished": "2026-04-26",
+  "author": {"@type": "Organization", "name": "Pithonix AI"},
+  "publisher": {"@type": "Organization", "name": "Artha-IQ"}
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030305;--blue:#3b82f6;--teal:#06b6d4;--t:#f0f0f8;--t2:#8892a4;--t3:#4a5568}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden;padding-top:80px}
+a{text-decoration:none;color:inherit}
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2.5rem;background:rgba(3,3,5,.88);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:blur(24px)}
+.n-logo{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.n-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.n-mark svg{width:20px;height:20px}
+.n-wm{font-size:1.05rem;font-weight:800;color:#fff}
+.n-wm em{font-style:normal;background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.n-links{display:flex;align-items:center;gap:2rem}
+.n-lnk{font-size:.85rem;font-weight:500;color:var(--t2)}
+.n-lnk.active{color:var(--blue);font-weight:700}
+.n-cta{background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:100px;padding:.6rem 1.4rem;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,.35)}
+.art-hero{padding:3rem 2rem 2rem;text-align:center;max-width:900px;margin:0 auto}
+.art-tag{display:inline-flex;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:100px;padding:.3rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:#93c5fd;margin-bottom:1.5rem}
+.art-h1{font-size:clamp(1.8rem,4.5vw,3rem);font-weight:900;color:#fff;margin-bottom:1.25rem}
+.art-sub{font-size:1.02rem;color:var(--t2);max-width:640px;margin:0 auto;line-height:1.7}
+.art-body{max-width:780px;margin:0 auto;padding:3.5rem 2rem 6rem}
+.art-body h2{font-size:1.6rem;font-weight:800;color:#fff;margin:3rem 0 1rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06)}
+.art-body h3{font-size:1.15rem;font-weight:700;color:#e2e8f0;margin:2rem 0 .6rem}
+.art-body p{font-size:1.02rem;line-height:1.85;color:var(--t2);margin-bottom:1.25rem}
+.art-body p strong{color:#e2e8f0}
+.art-body ul{margin:.75rem 0 1.5rem 1.5rem}
+.art-body li{font-size:.98rem;line-height:1.75;color:var(--t2);margin-bottom:.35rem}
+.calc-box{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.16);border-radius:14px;padding:1.5rem;margin:2rem 0;color:#cbd5e1;font-size:.96rem;line-height:1.7}
+.art-cta{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(99,102,241,.08));border:1px solid rgba(59,130,246,.2);border-radius:20px;padding:2.5rem;text-align:center;margin:3rem 0}
+.art-cta h3{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.6rem}
+.art-cta .btn-p{display:inline-block;background:linear-gradient(135deg,#3b82f6,#6366f1);border-radius:100px;padding:.85rem 2rem;color:#fff;font-weight:800;font-size:.95rem;box-shadow:0 4px 20px rgba(59,130,246,.4)}
+footer{border-top:1px solid rgba(255,255,255,.07);padding:2.5rem 2rem;display:flex;gap:1.5rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.f-brand{font-size:.95rem;font-weight:800;color:#fff}
+.f-links{display:flex;gap:1.5rem}
+.f-links a{font-size:.8rem;color:var(--t3)}
+.am-bg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
+.am-bg.open{display:flex}
+.am-box{background:#0a0f1e;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:2.5rem;max-width:420px;width:100%;position:relative}
+.am-close{position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,.07);border:none;border-radius:50%;width:32px;height:32px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.am-h{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:.4rem}
+.am-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:.9rem 1.1rem;color:#fff;font-size:.95rem;margin-bottom:1rem}
+.am-btn{width:100%;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;border-radius:12px;padding:1rem;color:#fff;font-weight:700;cursor:pointer}
+.am-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:.7rem 1rem;font-size:.85rem;color:#fca5a5;margin-bottom:1rem;display:none}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+<nav>
+<a class="n-logo" href="/"><div class="n-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 20h4l1.6-4.3h4.8L16 20h4L12 3z" fill="white"/></svg></div><span class="n-wm">Artha<em>-IQ</em></span></a>
+<div class="n-links">
+<a class="n-lnk" href="/#features">Features</a>
+<a class="n-lnk" href="/#pricing">Pricing</a>
+<a class="n-lnk active" href="/blog">Blog</a>
+<a class="n-cta" href="#" onclick="openAuth();return false">Get Started Free</a>
+</div>
+</nav>
+
+<div class="art-hero">
+<div class="art-tag">FIRE Planning</div>
+<h1 class="art-h1">How to Calculate Your FIRE Number:<br>The Step-By-Step Math</h1>
+<p class="art-sub">Most people have no idea how much they actually need to retire early. Here's the exact formula using your income, expenses, and life expectancy.</p>
+</div>
+
+<div class="art-body">
+<h2>Why Knowing Your FIRE Number Changes Everything</h2>
+<p>Without knowing your FIRE number, retirement planning is guesswork. You're saving "for later" without knowing what "later" actually costs. This post gives you the formula to calculate exactly how much you need.</p>
+
+<h2>The FIRE Formula (Simple Version)</h2>
+<p><strong>FIRE Corpus = Annual Expenses × (Years Until Death)</strong></p>
+<p>But this is too simple and ignores inflation. Real version:</p>
+
+<div class="calc-box">
+<strong>FIRE Corpus = (Annual Expenses × Inflation-Adjusted Years) / Safe Withdrawal Rate</strong>
+<br><br>
+Where:<br>
+- Annual Expenses = Current annual spending<br>
+- Inflation = 6% (typical India inflation)<br>
+- Years = Life expectancy minus target retirement age<br>
+- Safe Withdrawal Rate = 4% (take 4% annually from corpus)
+</div>
+
+<h2>Step 1: Know Your Current Annual Expenses</h2>
+<p>This is critical. Most people underestimate. Track your actual spend (housing, food, transport, subscriptions, entertainment). Don't guess.</p>
+<p>For a single professional in Bengaluru: ₹30,000-60,000/month = ₹3.6-7.2 lakh/year. For a family: ₹80,000-150,000/month = ₹9.6-18 lakh/year.</p>
+
+<h2>Step 2: Adjust for Inflation</h2>
+<p>At 6% inflation, your expenses in 20 years will be roughly 3.2x today's level. If you spend ₹5 lakh today, you'll need ₹16 lakh/year at retirement in 20 years.</p>
+
+<h2>Step 3: Calculate Total Corpus Needed</h2>
+<div class="calc-box">
+<strong>Example: 35-year-old, retires at 45, lives to 85 = 40 years of retirement</strong><br>
+Current spend: ₹6 lakh/year<br>
+Expenses in year 1 of retirement: ₹6L × (1.06^10) = ₹10.7 lakh<br>
+For 40 years at 6% inflation, 12% return: ~₹3 crore needed<br>
+<br>
+<strong>Safe Withdrawal Rate: 4% of corpus/year</strong><br>
+₹3 crore × 4% = ₹12 lakh/year (adjusts with inflation automatically)
+</div>
+
+<h2>Monthly Savings Gap</h2>
+<p>Once you know your FIRE number, calculate the monthly SIP needed:</p>
+<p><strong>Monthly SIP = (FIRE Corpus - Current Investments) / (Months Until Retirement × Growth Factor)</strong></p>
+<p>At 12% annual returns over 10 years, a ₹20,000/month SIP builds ₹35 lakh.</p>
+
+<h2>Reality Check: Most People Are Closer Than They Think</h2>
+<p>If you're saving ₹2-3 lakh/year in tax-optimized investments (NPS + PPF + ELSS), in 15 years with 12% growth, you'll have ₹80-120 lakh. That's enough to sustain ₹6-8 lakh/year spending in retirement with a 4% safe withdrawal rate.</p>
+
+<div class="art-cta">
+<h3>Calculate Your Exact FIRE Number</h3>
+<p>Stop guessing. Artha-IQ calculates your FIRE corpus based on your income, expenses, and retirement age.</p>
+<button class="btn-p" onclick="openAuth('fire')">Get Your FIRE Plan →</button>
+</div>
+</div>
+
+<footer>
+<div><div class="f-brand">Artha-IQ by Pithonix AI</div></div>
+<div class="f-links"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/blog">Blog</a></div>
+</footer>
+
+<div class="am-bg" id="amBg" onclick="if(event.target===event.currentTarget)closeAuth()">
+<div class="am-box">
+<button class="am-close" onclick="closeAuth()">✕</button>
+<div id="am-s1">
+<div class="am-h">Welcome.</div>
+<input class="am-inp" id="am-email" type="email" placeholder="you@company.com">
+<div class="am-err" id="am-e1"></div>
+<button class="am-btn" id="am-s1btn" onclick="amSend()">Send Code →</button>
+</div>
+<div id="am-s2" style="display:none">
+<div class="am-h">Check inbox.</div>
+<input class="am-inp" id="am-otp" type="text" inputmode="numeric" placeholder="000000" maxlength="6">
+<div class="am-err" id="am-e2"></div>
+<button class="am-btn" id="am-s2btn" onclick="amVerify()">Verify →</button>
+<button style="background:none;border:none;color:var(--t3);margin-top:.5rem;cursor:pointer;width:100%;text-decoration:underline" onclick="amBack()">← Change</button>
+</div>
+</div>
+</div>
+
+<script>
+(function(){const c=document.getElementById('cvs');if(!c)return;const ctx=c.getContext('2d');function resize(){c.width=window.innerWidth;c.height=window.innerHeight}resize();window.addEventListener('resize',resize);function draw(){const id=ctx.createImageData(c.width,c.height);const d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*30;d[i]=d[i+1]=d[i+2]=v;d[i+3]=18}ctx.putImageData(id,0,0);requestAnimationFrame(draw)}draw()})();
+function openAuth(){document.getElementById('amBg').classList.add('open');document.getElementById('am-email').focus()}
+function closeAuth(){document.getElementById('amBg').classList.remove('open')}
+async function amSend(){const btn=document.getElementById('am-s1btn');const email=document.getElementById('am-email').value.trim().toLowerCase();if(!email.includes('@')){alert('Valid email required');return}btn.disabled=true;btn.textContent='Sending…';const r=await fetch('/api/auth-send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});const d=await r.json();if(!r.ok){alert(d.error);btn.disabled=false;btn.textContent='Send Code →';return}document.getElementById('am-s1').style.display='none';document.getElementById('am-s2').style.display='block'}
+async function amVerify(){const btn=document.getElementById('am-s2btn');const email=document.getElementById('am-email').value.trim().toLowerCase();const otp=document.getElementById('am-otp').value;if(otp.length!==6){alert('6 digits');return}btn.disabled=true;const r=await fetch('/api/auth-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,otp})});const d=await r.json();if(!r.ok){alert(d.error);btn.disabled=false;return}localStorage.setItem('wealthiq_session',JSON.stringify({token:d.token,email}));setTimeout(()=>{window.location.replace('/app')},300)}
+function amBack(){document.getElementById('am-s1').style.display='block';document.getElementById('am-s2').style.display='none';document.getElementById('am-otp').value=''}
+</script>
+</body>
+</html>
