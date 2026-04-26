@@ -7704,6 +7704,13 @@ function renderProfileSummaryPanel() {
 
   const hasProfile = W.monthlyIncome > 0 || (W.displayName && W.displayName.length > 0);
 
+  if (!hasProfile) {
+    // No profile data — open Smart Import so user can upload documents
+    sessionStorage.removeItem('si_skip');
+    setTimeout(() => openSmartImport(), 650);
+    return;
+  }
+
   if (hasProfile) {
     panel.style.display = 'block';
     if (formPanel) formPanel.style.display = 'none';
@@ -7752,8 +7759,9 @@ function renderProfileSummaryPanel() {
 // ── Auto-open wizard for truly new users ─────────────────────────
 function initWizardOnLoad() {
   const isNewUser = !W.monthlyIncome && !W.displayName && !W.monthlySavings;
-  if (isNewUser && !sessionStorage.getItem('si_skip')) {
-    // New user — show Smart Import first (faster than typing the full wizard)
+  if (isNewUser) {
+    // Always show Smart Import first for users with no profile
+    sessionStorage.removeItem('si_skip');
     setTimeout(() => openSmartImport(), 650);
   } else {
     renderProfileSummaryPanel();
