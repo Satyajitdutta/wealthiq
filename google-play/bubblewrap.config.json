@@ -8,8 +8,8 @@
   "themeColor": "#080d1a",
   "backgroundColor": "#080d1a",
   "startUrl": "/",
-  "iconUrl": "https://wealth.pithonix.ai/icon-512.png",
-  "maskableIconUrl": "https://wealth.pithonix.ai/icon-512-maskable.png",
+  "iconUrl": "https://wealth.pithonix.ai/icons/icon-512.png",
+  "maskableIconUrl": "https://wealth.pithonix.ai/icons/icon-512.png",
   "appVersion": "1",
   "appVersionName": "1.0.0",
   "signingKey": {

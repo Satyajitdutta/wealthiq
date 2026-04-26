@@ -1,8 +1,14 @@
 // Artha-IQ Service Worker
 // © 2026 PITHONIX AI INDIA PRIVATE LIMITED. All Rights Reserved.
 
-const CACHE = 'arthiq-v1';
-const PRECACHE = ['/'];
+const CACHE = 'arthiq-v2';
+const PRECACHE = [
+  '/',
+  '/app',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -19,12 +25,21 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Only handle GET requests for same-origin pages; pass API calls through
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
+  // Never intercept API calls — always go to network
   if (url.pathname.startsWith('/api/')) return;
 
+  // Network-first: serve live content, update cache, fall back to cache offline
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });

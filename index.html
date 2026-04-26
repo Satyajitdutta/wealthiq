@@ -1252,6 +1252,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 // Handle bfcache restore (Android back button from /app lands here)
 window.addEventListener('pageshow',e=>{if(e.persisted) redirectIfLoggedIn();});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 </script>
 </body>
 </html>
