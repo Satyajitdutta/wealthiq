@@ -4004,6 +4004,13 @@ function backToEmail() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // Fix: prevent number inputs from stealing scroll wheel — blur on wheel so
+  // scroll propagates to the .screen container instead of changing input values
+  document.addEventListener('wheel', () => {
+    const el = document.activeElement;
+    if (el && el.tagName === 'INPUT' && el.type === 'number') el.blur();
+  }, { passive: true });
+
   // Inject disclaimer into all auto-calculate screens
   const DISCLAIMER_HTML = `<div style="margin-top:1.25rem;padding:0.65rem 0.875rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:9px;display:flex;gap:0.5rem;align-items:flex-start">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
