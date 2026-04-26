@@ -5,7 +5,7 @@
   <!-- Landing page — highest priority -->
   <url>
     <loc>https://wealth.pithonix.ai/</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://wealth.pithonix.ai/"/>
@@ -14,36 +14,158 @@
   <!-- App -->
   <url>
     <loc>https://wealth.pithonix.ai/app</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+
+  <!-- Feature Landing Pages -->
+  <url>
+    <loc>https://wealth.pithonix.ai/tax-optimizer.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/fire-planner.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/money-leaks.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/salary-benchmarking.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/insurance-audit.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog Index -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Blog Posts — Comparisons -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/cleartax-vs-artha-iq.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/indmoney-vs-artha-iq.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/keka-vs-artha-iq.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Tax Planning -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/old-vs-new-tax-regime-2026.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — FIRE Planning -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/fire-number-india-salaried.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Spending Intelligence -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/money-leaks-destroying-wealth.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Salary Intelligence -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/gcc-salary-benchmarking-india.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Insurance Planning -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/term-insurance-calculator-india.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Government Schemes -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/government-schemes-salaried-india.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Posts — Financial Wellness -->
+  <url>
+    <loc>https://wealth.pithonix.ai/blog/financial-health-score-india.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- Legal pages -->
   <url>
     <loc>https://wealth.pithonix.ai/privacy</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://wealth.pithonix.ai/terms</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://wealth.pithonix.ai/refund</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://wealth.pithonix.ai/contact</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
