@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Artha-IQ Technical Design Document</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1, h2, h3 { color: #2c3e50; }
+        ul { margin-bottom: 1rem; }
+        .mermaid-img { width: 100%; max-width: 900px; margin: 2rem 0; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<h1>Technical Design Document (TDD): Artha-IQ</h1>
+
+<h2>1. Product Overview</h2>
+<p><strong>Artha-IQ (WealthIQ)</strong> is an AI-powered personal financial intelligence platform designed for <strong>all salaried professionals across India</strong>, including GCC & MNC Employees, BFSI Professionals, Senior Management, and NRIs/Returning Professionals.</p>
+<ul>
+    <li><strong>Tax Optimizer:</strong> Comparison between Old vs. New Tax Regimes.</li>
+    <li><strong>Goals Planner:</strong> Inflation-adjusted SIP calculators.</li>
+    <li><strong>Smart Import:</strong> AI-powered extraction of financial data from salary slips, Form 16, and bank statements without manual entry.</li>
+    <li><strong>GOT AI Advisor:</strong> A Graph of Thoughts AI engine delivering a multi-layered financial strategy (investments, debt, tax, estate).</li>
+    <li><strong>Analytics & Dashboards:</strong> Identifies subscription waste (Money Leaks), benchmarking (Cost of Living Index across 20+ metros), and more.</li>
+</ul>
+
+<h2>2. Architecture & Tech Stack</h2>
+<h3>High-Level Architecture</h3>
+<p>The application follows a monolithic client-server architecture deployed as a containerized service.</p>
+<ul>
+    <li><strong>Frontend:</strong> Vanilla HTML/CSS/JS (SPA/MPA mix featuring interactive dashboards).</li>
+    <li><strong>Backend:</strong> Node.js with Express.</li>
+    <li><strong>Data Persistence:</strong> Supabase (PostgreSQL).</li>
+    <li><strong>AI/ML Services:</strong> Backend intelligence is powered by Google Gemini (2.5 Flash). <em>(Note: Marketing materials attribute AI capabilities as "Powered by Claude AI", but implementation relies on the Gemini API).</em></li>
+</ul>
+
+<h2>3. Architecture Chart</h2>
+<!-- Embedded direct image file instead of Mermaid JS rendering -->
+<img src="Mermaid Chart For Artha IQ.png" class="mermaid-img" alt="Architecture Diagram for Artha-IQ" />
+
+<h2>4. Core Modules & Data Flow</h2>
+<h3>4.1. Authentication (OTP / Token Based)</h3>
+<ul>
+    <li>Logic resides in backend endpoints like <code>api/_auth.js</code>, utilizing JWT-style tokens signed with an <code>AUTH_SECRET</code> (SHA-256 HMAC) for validation.</li>
+    <li>Stateless auth flow: User receives OTP, inputs it, and receives a Bearer token.</li>
+</ul>
+
+<h3>4.2. Data Persistence (Supabase)</h3>
+<ul>
+    <li><strong><code>wealthiq_users</code> Table:</strong> Stores base user records.</li>
+    <li><strong><code>wealthiq_profiles</code> Table:</strong> Stores extensive JSON blobs containing the user's financial profile.</li>
+</ul>
+
+<h3>4.3. Document Intelligence Extractor (<code>api/doc-extract.js</code>)</h3>
+<ul>
+    <li>Intake user bank statements, Form 16s, or salary slips and extract structured transaction data via Gemini Flash 2.5 <code>application/json</code> enforcement.</li>
+    <li>Automates correlation of city-level utilities for 20+ metros.</li>
+</ul>
+
+<h3>4.4. GOT Financial Reasoning Engine (<code>api/got-advice.js</code>)</h3>
+<ul>
+    <li>Formulates analysis across Tax Optimization, Goals Adequacy, Insurance Gaps, and Spending Behaviour based on Gemini-driven logic branches (GOT).</li>
+</ul>
+
+<h2>5. Security, AI Governance & DPDP Compliance</h2>
+<h3>5.1. AI Governance & Prompt Guardrails</h3>
+<ul>
+    <li><strong>Document Validation:</strong> The Document Intelligence Extractor (<code>doc-extract.js</code>) employs AI-driven guardrails to detect and reject non-financial, dummy, or invalid documents by validating the presence of actual financial data.</li>
+    <li><strong>Deterministic Output:</strong> The AI model is configured with strict constraints (enforced JSON schemas) to prevent prompt injection and ensure predictable, safe parsing of sensitive user data.</li>
+</ul>
+
+<h3>5.2. Digital Personal Data Protection (DPDP) Readiness</h3>
+<ul>
+    <li><strong>Data Minimization & PII Handling:</strong> Only essential financial data points are extracted. Any extracted PII or account numbers are scoped strictly for the user's isolated profile.</li>
+    <li><strong>Storage & Retention:</strong> All data is securely persisted in Supabase with row-level security (RLS). Future iterations will further enforce automatic data purging and explicit user consent mechanisms in alignment with India's DPDP Act.</li>
+    <li><strong>Secure Transmission:</strong> Token-based (Bearer) authentication utilizing SHA-256 HMAC tokens ensures all data transmission is authenticated and secure.</li>
+</ul>
+
+<h2>6. Deployment Framework</h2>
+<ul>
+    <li><strong>Hosting:</strong> Railway (Containerized Node.js Environment).</li>
+    <li><strong>Routing:</strong> <code>/api/...</code> proxies dynamic JS files, while static pages (<code>/app</code>, etc.) rewrite to HTML files.</li>
+</ul>
+
+</body>
+</html>
