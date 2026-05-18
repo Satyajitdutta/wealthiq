@@ -4718,6 +4718,13 @@ async function loadProfile() {
       const session = getSession();
       setAvatarUI(W.avatarUrl || null, W.displayName || null, session?.email || null);
       setTimeout(renderProfileSummaryPanel, 100);
+      // Re-apply vault data after server profile loads — vault is source of truth for doc-extracted fields
+      setTimeout(() => {
+        const vd = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+        Object.entries(vd).forEach(([type, ext]) => { if (ext) vaultEnrichProfile(type, ext); });
+        if (typeof onTaxInput === 'function') onTaxInput();
+        if (typeof renderTaxStrategyPlanner === 'function') renderTaxStrategyPlanner();
+      }, 200);
     } else {
       // No saved profile — clear any stale WRC data from previous test sessions
       try { localStorage.removeItem('wiq_wrc'); } catch(e) {}
@@ -10586,6 +10593,8 @@ function vaultEnrichProfile(docType, ext) {
         }
         // Also update W object so ELSS bar cross-validation sees it immediately
         if (typeof W !== 'undefined') W.ded80c = Math.min(150000, (W.ded80c || 0) + vaultMfElss);
+        // Re-render Tax Strategy Planner if already open so timeline + summary refresh
+        if (typeof renderTaxStrategyPlanner === 'function') setTimeout(renderTaxStrategyPlanner, 50);
       }
 
       // MF corpus → profile investments field
