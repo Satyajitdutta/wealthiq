@@ -416,13 +416,13 @@ nav.s{background:rgba(10,28,20,0.92);border-color:rgba(255,255,255,0.05);backdro
 .bt:hover{background:rgba(10,28,18,0.99)}
 .bt::after{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--gc,rgba(26,95,180,.09)) 0%,transparent 55%);
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--gc,rgba(102,252,241,.07)) 0%,transparent 55%);
   opacity:0;transition:opacity .3s;pointer-events:none;z-index:0;
 }
 .bt:hover::after{opacity:1}
 .bt::before{
   content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
-  background:var(--gline,linear-gradient(90deg,transparent,rgba(26,95,180,.5),transparent));
+  background:var(--gline,linear-gradient(90deg,transparent,rgba(102,252,241,.35),transparent));
   opacity:0;transition:opacity .3s;
 }
 .bt:hover::before{opacity:1}
@@ -963,7 +963,7 @@ footer{
       <div class="sct-lbl">Live intelligence</div>
       <h2 class="sct-h">Real numbers.<br><em>Your numbers.</em></h2>
       <p class="sct-p" style="margin-bottom:2rem">Everything is calculated from your profile "” not national averages. Change one number, everything updates instantly.</p>
-      <a class="btn-p" style="display:inline-block" href="#" onclick="openAuth();return false">See Your Score â†’</a>
+      <a class="btn-p" style="display:inline-block" href="#" onclick="openAuth();return false">See Your Score →</a>
     </div>
     <div class="demo-vis">
       <div class="phone-frame">
@@ -1104,7 +1104,7 @@ footer{
       <button class="am-link" onclick="amBack()">â† Change email</button>
     </div>
     <div id="am-s3" style="display:none;text-align:center;padding:2rem 0">
-      <div class="am-spin">âš™ï¸</div>
+      <div class="am-spin">⚙️</div>
       <div style="font-size:1rem;font-weight:700">Getting your profile ready"¦</div>
       <div style="font-size:.85rem;color:var(--t2);margin-top:.4rem">Redirecting in a moment</div>
     </div>
