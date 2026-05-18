@@ -5485,7 +5485,10 @@ function onTaxInput() {
   const epfAnnual   = (+($('ti-epf')?.value || 0)) * 12;
   const other80cAmt = +($('ti-80c-amt')?.value || 0);
   const other80cAnn = toAnnual(other80cAmt, $('ti-80c-freq')?.value || 'annual');
-  const total80c    = Math.min(epfAnnual + other80cAnn, 150000);
+  // Add ELSS from MF vault (separate source — not double-counted with ti-80c-amt)
+  const vaultMF = JSON.parse(localStorage.getItem('vault_docs') || '{}').mf;
+  const elssFromVault = (vaultMF?.summary?.elss_invested) || 0;
+  const total80c    = Math.min(epfAnnual + other80cAnn + elssFromVault, 150000);
   W.ded80c = total80c;
 
   const pct80c = Math.round(total80c / 150000 * 100);
@@ -10276,23 +10279,23 @@ async function mfInit() {
   // ELSS / 80C
   const elssInvested = s.elss_invested || folios.filter(f => mfGuessCategory(f.scheme_name) === 'elss').reduce((a, f) => a + (f.invested_value || 0), 0);
 
-  // Cross-validate: pull other 80C already entered in profile (EPF annual + LIC/PPF/other)
-  const epfMonthly  = +((document.getElementById('ti-epf')?.value)  || 0);
-  const other80cAmt = +((document.getElementById('ti-80c-amt')?.value) || 0);
+  // Cross-validate: ELSS (vault) + EPF monthly (ti-epf) + Other non-ELSS 80C (ti-80c-amt = PPF/LIC/manual)
+  const epfMonthly   = +((document.getElementById('ti-epf')?.value) || 0);
+  const epfAnnual80c = epfMonthly * 12;
+  const other80cAmt  = +((document.getElementById('ti-80c-amt')?.value) || 0);
   const other80cFreq = document.getElementById('ti-80c-freq')?.value || 'annual';
   const toAnn = (v, freq) => freq === 'monthly' ? v * 12 : freq === 'quarterly' ? v * 4 : v;
-  const profileOther80c = epfMonthly * 12 + toAnn(other80cAmt, other80cFreq);
-  // Also use W.ded80c if already computed by tax optimizer
-  const profileTotal80c = W && W.ded80c > 0 ? W.ded80c : profileOther80c;
-  const total80cUsed = Math.min(150000, elssInvested + profileTotal80c);
+  const manualOther80c = toAnn(other80cAmt, other80cFreq); // PPF/LIC/other — NOT ELSS (vault handles that)
+  const total80cUsed = Math.min(150000, elssInvested + epfAnnual80c + manualOther80c);
   const elssLimit = 150000;
   const remaining80c = Math.max(0, elssLimit - total80cUsed);
   const ellsPct = Math.min(100, (total80cUsed / elssLimit) * 100);
 
-  // Label shows ELSS portion + profile total
+  // Label: show each non-zero source
   const labelParts = [];
   if (elssInvested > 0) labelParts.push(`ELSS ${mfFmt(elssInvested)}`);
-  if (profileTotal80c > 0) labelParts.push(`Other 80C ${mfFmt(Math.min(profileTotal80c, 150000 - elssInvested))}`);
+  if (epfAnnual80c > 0) labelParts.push(`EPF ${mfFmt(epfAnnual80c)}`);
+  if (manualOther80c > 0) labelParts.push(`Other ${mfFmt(manualOther80c)}`);
   document.getElementById('mf-elss-invested').textContent = labelParts.length ? labelParts.join(' + ') : '₹0 invested';
   document.getElementById('mf-elss-limit').textContent = `${mfFmt(total80cUsed)} of ₹1,50,000 used`;
   setTimeout(() => { const f = document.getElementById('mf-elss-fill'); if (f) f.style.width = ellsPct + '%'; }, 100);
@@ -10302,11 +10305,12 @@ async function mfInit() {
     if (total80cUsed >= 150000) {
       noteEl.style.color = 'var(--green)';
       noteEl.textContent = '80C limit fully utilised ✓ — no additional ELSS needed';
-    } else if (profileTotal80c > 0) {
+    } else if (epfAnnual80c > 0 || manualOther80c > 0) {
       noteEl.style.color = '#fbbf24';
-      noteEl.textContent = `₹${Math.round(remaining80c/1000)}K gap remaining — considering EPF + other 80C already in your profile`;
+      noteEl.textContent = `₹${Math.round(remaining80c/1000)}K gap — after ELSS + EPF + other 80C in your profile`;
     } else {
-      noteEl.textContent = `₹${Math.round(remaining80c/1000)}K more to fully use 80C — add your EPF & LIC in profile for accurate picture`;
+      noteEl.style.color = '#fbbf24';
+      noteEl.textContent = `₹${Math.round(remaining80c/1000)}K gap — add EPF monthly & other 80C in Tax Optimizer for full picture`;
     }
   }
 
@@ -10601,21 +10605,9 @@ function vaultEnrichProfile(docType, ext) {
       const elssEl = document.getElementById('inp-elss');
       if (elssEl && !elssEl.value && s.elss_invested) elssEl.value = s.elss_invested;
 
-      // Sync ELSS → Tax Optimizer 80C field (only if not already manually filled)
+      // Trigger Tax Optimizer recompute — onTaxInput() reads ELSS directly from vault_docs
       if (s.elss_invested) {
-        const t80cEl  = document.getElementById('ti-80c-amt');
-        const t80cFreq = document.getElementById('ti-80c-freq');
-        const existing80c = +(t80cEl?.value || 0);
-        // Add ELSS on top of any existing manual 80C entry (don't double-count)
-        const vaultMfElss = s.elss_invested;
-        if (t80cEl && existing80c < vaultMfElss) {
-          t80cEl.value = vaultMfElss;
-          if (t80cFreq) t80cFreq.value = 'annual';
-          if (typeof onTaxInput === 'function') onTaxInput(); // recompute Tax Summary
-        }
-        // Also update W object so ELSS bar cross-validation sees it immediately
-        if (typeof W !== 'undefined') W.ded80c = Math.min(150000, (W.ded80c || 0) + vaultMfElss);
-        // Re-render Tax Strategy Planner if already open so timeline + summary refresh
+        if (typeof onTaxInput === 'function') onTaxInput();
         if (typeof renderTaxStrategyPlanner === 'function') setTimeout(renderTaxStrategyPlanner, 50);
       }
 
