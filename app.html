@@ -3643,20 +3643,43 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="doc-extracted-grid" id="vext-insurance" style="display:none"></div>
 </div>
 
-<!-- EPF Passbook -->
+<!-- EPF Balance (manual entry) -->
 <div class="doc-upload-card" id="vcard-epf">
   <div class="doc-card-hdr">
     <span class="doc-card-icon">🏢</span>
     <div>
-      <div class="doc-card-title">EPF Passbook</div>
-      <div class="doc-card-desc">EPFO UAN passbook — auto-reads your PF balance</div>
+      <div class="doc-card-title">EPF Balance</div>
+      <div class="doc-card-desc">Enter from EPFO portal — covers all employers automatically</div>
     </div>
     <span class="doc-card-badge doc-badge-idle" id="vbadge-epf">Pending</span>
   </div>
-  <label class="doc-upload-label">
-    ↑ Upload PDF or image
-    <input type="file" accept=".pdf,image/*" style="display:none" onchange="vaultUpload(event,'epf')">
-  </label>
+  <div style="margin-top:0.6rem">
+    <div style="font-size:0.72rem;color:var(--t3);margin-bottom:0.5rem">Find your <strong style="color:var(--t2)">Total Available Balance</strong> on the EPFO home screen → <a href="https://passbook.epfindia.gov.in/MemberPassBook/Login" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">passbook.epfindia.gov.in</a></div>
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem">
+      <span style="font-size:0.8rem;color:var(--t2);min-width:100px">Total Balance</span>
+      <div style="display:flex;align-items:center;gap:0.3rem;flex:1;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.4rem 0.6rem">
+        <span style="color:var(--t3);font-size:0.82rem">&#8377;</span>
+        <input type="number" id="epf-total" placeholder="e.g. 530378" min="0" style="background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;width:100%" oninput="epfManualSave()">
+      </div>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+      <div style="flex:1">
+        <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.25rem">Employee Share (optional)</div>
+        <div style="display:flex;align-items:center;gap:0.3rem;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.35rem 0.5rem">
+          <span style="color:var(--t3);font-size:0.75rem">&#8377;</span>
+          <input type="number" id="epf-emp" placeholder="0" min="0" style="background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;width:100%" oninput="epfManualSave()">
+        </div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.25rem">Employer Share (optional)</div>
+        <div style="display:flex;align-items:center;gap:0.3rem;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.35rem 0.5rem">
+          <span style="color:var(--t3);font-size:0.75rem">&#8377;</span>
+          <input type="number" id="epf-er" placeholder="0" min="0" style="background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;width:100%" oninput="epfManualSave()">
+        </div>
+      </div>
+    </div>
+    <button onclick="epfManualSave(true)" style="width:100%;background:linear-gradient(135deg,var(--teal),var(--blue));border:none;border-radius:8px;padding:0.6rem;color:#0A1C14;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer">Save EPF Balance</button>
+  </div>
   <div class="doc-extracted-grid" id="vext-epf" style="display:none"></div>
 </div>
 
@@ -4255,52 +4278,32 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <div id="vsi-extracted-insurance" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
       </div>
 
-      <!-- EPF Passbook -->
-      <div class="si-card" id="vsi-card-epf" onclick="vaultTrigger('epf')" role="button" tabindex="0" style="padding:0.65rem 0.875rem;cursor:pointer">
-        <div class="si-card-row">
-          <div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+      <!-- EPF Balance (manual entry) -->
+      <div class="si-card" id="vsi-card-epf" style="padding:0.65rem 0.875rem" onclick="event.stopPropagation()">
+        <div class="si-card-row" style="margin-bottom:0.5rem">
+          <div class="si-icon" style="background:linear-gradient(135deg,rgba(6,182,212,0.18),rgba(6,182,212,0.08));border:1px solid rgba(6,182,212,0.25)"><svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
           <div class="si-info">
-            <div class="si-name">EPF Passbook</div>
-            <div class="si-desc">EPFO UAN passbook — PF balance & history</div>
-            <div class="si-hint" id="vsi-hint-epf">Reads: balance, employer, pension eligibility</div>
+            <div class="si-name">EPF Balance</div>
+            <div class="si-desc">Enter <strong>Total Available Balance</strong> from EPFO portal</div>
           </div>
-          <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-epf">Upload</div></div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-epf">Enter</div></div>
         </div>
-        <div class="gi-toggle" onclick="event.stopPropagation();giToggle('epf')" id="gi-btn-epf">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Don't have it? Get it →
+        <div style="font-size:0.68rem;color:var(--t3);margin-bottom:0.4rem">Covers all employers &amp; member IDs automatically &middot; <a href="https://passbook.epfindia.gov.in/MemberPassBook/Login" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">Open EPFO &#8599;</a></div>
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--c3);border:1px solid var(--bd2);border-radius:8px;padding:0.45rem 0.65rem;margin-bottom:0.4rem">
+          <span style="color:var(--t3);font-size:0.82rem;font-weight:700">&#8377;</span>
+          <input type="number" id="si-epf-total" placeholder="Total Available Balance (e.g. 530378)" min="0" style="background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;width:100%" oninput="epfManualSave()">
         </div>
-        <div class="gi-panel" id="gi-panel-epf" onclick="event.stopPropagation()">
-          <div class="gi-label">Download your EPF passbook from</div>
-          <div class="gi-links">
-            <a class="gi-link" href="https://www.umang.gov.in/web/#/apps/details/EPFO" target="_blank" rel="noopener">
-              <div class="gi-link-icon" style="background:rgba(6,182,212,0.15)">📱</div>
-              <div class="gi-link-info">
-                <div class="gi-link-name">UMANG App</div>
-                <div class="gi-link-desc">EPFO → Passbook → View & Download PDF</div>
-              </div>
-              <div class="gi-link-arr">›</div>
-            </a>
-            <a class="gi-link" href="https://passbook.epfindia.gov.in/MemberPassBook/Login" target="_blank" rel="noopener">
-              <div class="gi-link-icon" style="background:rgba(6,182,212,0.15)">🏢</div>
-              <div class="gi-link-info">
-                <div class="gi-link-name">EPFO Passbook Portal</div>
-                <div class="gi-link-desc">Login with UAN + password → Download passbook</div>
-              </div>
-              <div class="gi-link-arr">›</div>
-            </a>
-            <a class="gi-link" href="https://www.digilocker.gov.in" target="_blank" rel="noopener">
-              <div class="gi-link-icon" style="background:rgba(59,130,246,0.15)">📂</div>
-              <div class="gi-link-info">
-                <div class="gi-link-name">DigiLocker</div>
-                <div class="gi-link-desc">Issued documents → EPFO → EPF Passbook</div>
-              </div>
-              <div class="gi-link-arr">›</div>
-            </a>
+        <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
+          <div style="flex:1;display:flex;align-items:center;gap:0.3rem;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.32rem 0.5rem">
+            <span style="font-size:0.65rem;color:var(--t3);white-space:nowrap">Emp &#8377;</span>
+            <input type="number" id="si-epf-emp" placeholder="Employee share" min="0" style="background:none;border:none;outline:none;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:0.75rem;width:100%" oninput="epfManualSave()">
           </div>
-          <div class="gi-note">💡 Don't know your UAN? Ask your HR or check your salary slip. EPFO also sends UAN to your registered mobile via SMS.</div>
+          <div style="flex:1;display:flex;align-items:center;gap:0.3rem;background:var(--c3);border:1px solid var(--bd2);border-radius:7px;padding:0.32rem 0.5rem">
+            <span style="font-size:0.65rem;color:var(--t3);white-space:nowrap">Er &#8377;</span>
+            <input type="number" id="si-epf-er" placeholder="Employer share" min="0" style="background:none;border:none;outline:none;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:0.75rem;width:100%" oninput="epfManualSave()">
+          </div>
         </div>
-        <input type="file" accept=".pdf,image/*" id="vsi-f-epf" style="display:none" onchange="vaultUploadFromSI(event,'epf')">
+        <button onclick="epfManualSave(true)" style="width:100%;background:linear-gradient(135deg,#45a29e,#66fcf1);border:none;border-radius:8px;padding:0.55rem;color:#0A1C14;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">Save EPF Balance &#10003;</button>
         <div id="vsi-extracted-epf" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
       </div>
 
@@ -10293,6 +10296,33 @@ function vaultTrigger(docType) {
   document.getElementById('vsi-f-' + docType)?.click();
 }
 
+function epfManualSave(showToast) {
+  const total = parseFloat(document.getElementById('si-epf-total')?.value || document.getElementById('epf-total')?.value || 0);
+  const emp   = parseFloat(document.getElementById('si-epf-emp')?.value  || document.getElementById('epf-emp')?.value  || 0);
+  const er    = parseFloat(document.getElementById('si-epf-er')?.value   || document.getElementById('epf-er')?.value   || 0);
+  if (!total) return;
+
+  const docs = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+  docs.epf = { totalBalance: total, employeeShare: emp || null, employerShare: er || null, source: 'manual', updatedAt: Date.now() };
+  localStorage.setItem('vault_docs', JSON.stringify(docs));
+
+  // Sync to profile PF field
+  const pfInput = document.getElementById('p-pf');
+  if (pfInput) { pfInput.value = total; W.pf = total; recalcAll(); }
+
+  // Update badges
+  ['vbadge-epf','vsi-pill-epf'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = el.className.replace('idle','done'); el.textContent = 'Saved ✓'; }
+  });
+
+  // Sync both input fields
+  const siEl = document.getElementById('si-epf-total'); if (siEl) siEl.value = total;
+  const vEl  = document.getElementById('epf-total');    if (vEl)  vEl.value  = total;
+
+  if (showToast) showToastMsg('EPF balance saved — ₹' + total.toLocaleString('en-IN'));
+}
+
 async function vaultUploadFromSI(event, docType) {
   const file = event.target.files[0];
   if (!file) return;
@@ -10384,6 +10414,19 @@ function vaultSIExtractedHTML(docType, ext) {
 // ── DOCUMENT VAULT ────────────────────────────────────────────────────────
 const VAULT_API = { insurance: '/api/doc-insurance', epf: '/api/doc-epf', mf: '/api/doc-mf' };
 const vaultDocs = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+
+// Restore saved EPF balance into input fields on load
+(function restoreEpf() {
+  const epf = vaultDocs.epf;
+  if (!epf || !epf.totalBalance) return;
+  ['si-epf-total','epf-total'].forEach(id => { const el = document.getElementById(id); if (el) el.value = epf.totalBalance; });
+  ['si-epf-emp','epf-emp'].forEach(id => { const el = document.getElementById(id); if (el && epf.employeeShare) el.value = epf.employeeShare; });
+  ['si-epf-er','epf-er'].forEach(id => { const el = document.getElementById(id); if (el && epf.employerShare) el.value = epf.employerShare; });
+  ['vbadge-epf','vsi-pill-epf'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = el.className.replace('idle','done'); el.textContent = 'Saved ✓'; }
+  });
+})();
 
 function vaultFmt(n) {
   if (!n) return '—';
