@@ -33,12 +33,36 @@
 <style>
 /* ── VARIABLES ─────────────────────────────────────────────────── */
 :root{
-  /* Pithonix.ai brand palette — deep space dark + electric indigo */
-  --bg:#06080f; --c1:#0a0d16; --c2:#0e1220; --c3:#131828; --c4:#1b2236;
-  --bd:rgba(255,255,255,0.065); --bd2:rgba(255,255,255,0.12);
-  --blue:#4f8ef7; --teal:#06b6d4; --green:#22c55e; --red:#ef4444;
-  --amber:#f59e0b; --purple:#8b5cf6; --pink:#ec4899; --indigo:#6366f1;
-  --text:#f0f4ff; --t2:#8fa3c8; --t3:#5a6e8f; --t4:#3d5070;
+  /* Pithonix.ai official design system */
+  --obs:#0A1C14;          /* obsidian base — dark forest green-black */
+  --char:#1f2833;         /* charcoal — card / surface level */
+  --silver:#c5c6c7;       /* primary text */
+  --cyan:#66fcf1;         /* primary accent */
+  --teal-px:#45a29e;      /* secondary accent */
+  --orange:#e8623a;       /* alert / warm accent */
+  --cobalt:#1a5fb4;       /* blue accent */
+  --purple-px:#a78bfa;    /* purple accent */
+
+  /* Mapped to app tokens */
+  --bg:var(--obs);
+  --c1:#0d2318;           /* obs + 1 stop lighter */
+  --c2:var(--char);
+  --c3:#2a3545;
+  --c4:#36455a;
+  --bd:rgba(102,252,241,0.07);   /* cyan-tinted borders */
+  --bd2:rgba(102,252,241,0.14);
+  --blue:var(--cobalt);
+  --teal:var(--cyan);
+  --green:#22c55e;
+  --red:#ef4444;
+  --amber:var(--orange);
+  --purple:var(--purple-px);
+  --pink:#ec4899;
+  --indigo:#6366f1;
+  --text:var(--silver);
+  --t2:#8fa3a1;
+  --t3:#5a7570;
+  --t4:#3d524e;
   --tab:60px; --hdr:52px; --r:14px; --r2:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -867,9 +891,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 /* Richer dark palette override */
 :root {
-  --bg:#06080f; --c1:#0a0d16; --c2:#0e1220; --c3:#131828; --c4:#1b2236;
-  --bd:rgba(255,255,255,0.065); --bd2:rgba(255,255,255,0.12);
-  --text:#f0f4ff; --t2:#8fa3c8; --t3:#5a6e8f; --t4:#3d5070;
+  --bg:#0A1C14; --c1:#0d2318; --c2:#1f2833; --c3:#2a3545; --c4:#36455a;
+  --bd:rgba(102,252,241,0.07); --bd2:rgba(102,252,241,0.14);
+  --text:#c5c6c7; --t2:#8fa3a1; --t3:#5a7570; --t4:#3d524e;
+  --teal:#66fcf1; --blue:#1a5fb4; --amber:#e8623a; --purple:#a78bfa;
   --gold:#d4a84b; --gold2:#f0c96a; --gold-glow:rgba(212,168,75,0.18);
 }
 
@@ -1323,9 +1348,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ── MUTUAL FUNDS SCREEN ────────────────────────────────────── */
 
 /* Hero */
-.mf-hero{position:relative;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#1e1b4b 100%);border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:1.25rem 1.15rem 1rem;margin-bottom:1rem;overflow:hidden}
-.mf-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none}
-.mf-hero-glow{position:absolute;width:220px;height:220px;background:radial-gradient(circle,rgba(99,102,241,0.35) 0%,transparent 70%);top:-60px;right:-40px;pointer-events:none}
+.mf-hero{position:relative;background:linear-gradient(135deg,#0d2318 0%,#0f3320 40%,#0d2318 100%);border:1px solid rgba(102,252,241,0.2);border-radius:20px;padding:1.25rem 1.15rem 1rem;margin-bottom:1rem;overflow:hidden}
+.mf-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(102,252,241,0.06) 0%,transparent 50%);pointer-events:none}
+.mf-hero-glow{position:absolute;width:220px;height:220px;background:radial-gradient(circle,rgba(102,252,241,0.2) 0%,transparent 70%);top:-60px;right:-40px;pointer-events:none}
 .mf-hero-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
 .mf-hero-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(165,180,252,0.75);margin-bottom:0.3rem}
 .mf-hero-value{font-size:2rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.5px}
@@ -1412,8 +1437,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .mf-empty-icon{margin-bottom:1.25rem;filter:drop-shadow(0 8px 24px rgba(99,102,241,0.4))}
 .mf-empty-title{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:0.5rem}
 .mf-empty-sub{font-size:0.78rem;color:var(--t2);line-height:1.6;max-width:280px;margin-bottom:1.5rem}
-.mf-empty-btn{display:flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:12px;padding:0.75rem 1.5rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;filter:drop-shadow(0 4px 14px rgba(99,102,241,0.45));transition:filter 0.2s}
-.mf-empty-btn:hover{filter:drop-shadow(0 6px 20px rgba(99,102,241,0.6))}
+.mf-empty-btn{display:flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,#45a29e,#66fcf1);border:none;border-radius:12px;padding:0.75rem 1.5rem;color:#0A1C14;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;filter:drop-shadow(0 4px 14px rgba(102,252,241,0.3));transition:filter 0.2s}
+.mf-empty-btn:hover{filter:drop-shadow(0 6px 20px rgba(102,252,241,0.5))}
 
 /* Funds tab glow */
 .tab-funds.active svg{filter:drop-shadow(0 0 6px rgba(99,102,241,0.8))}
