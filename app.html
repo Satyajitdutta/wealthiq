@@ -10561,29 +10561,61 @@ function vaultRenderExtracted(docType, ext) {
 }
 
 function vaultEnrichProfile(docType, ext) {
-  // Push extracted data into the profile fields so GOT analysis uses real numbers
+  // Push extracted data into profile + tax optimizer fields so all modules use real numbers
   try {
     if (docType === 'mf' && ext.summary) {
       const s = ext.summary;
+
+      // SIP & ELSS in profile investment fields
       const sipEl = document.getElementById('inp-sip');
       if (sipEl && !sipEl.value && s.total_sip_monthly) sipEl.value = s.total_sip_monthly;
       const elssEl = document.getElementById('inp-elss');
       if (elssEl && !elssEl.value && s.elss_invested) elssEl.value = s.elss_invested;
+
+      // Sync ELSS → Tax Optimizer 80C field (only if not already manually filled)
+      if (s.elss_invested) {
+        const t80cEl  = document.getElementById('ti-80c-amt');
+        const t80cFreq = document.getElementById('ti-80c-freq');
+        const existing80c = +(t80cEl?.value || 0);
+        // Add ELSS on top of any existing manual 80C entry (don't double-count)
+        const vaultMfElss = s.elss_invested;
+        if (t80cEl && existing80c < vaultMfElss) {
+          t80cEl.value = vaultMfElss;
+          if (t80cFreq) t80cFreq.value = 'annual';
+          if (typeof onTaxInput === 'function') onTaxInput(); // recompute Tax Summary
+        }
+        // Also update W object so ELSS bar cross-validation sees it immediately
+        if (typeof W !== 'undefined') W.ded80c = Math.min(150000, (W.ded80c || 0) + vaultMfElss);
+      }
+
+      // MF corpus → profile investments field
+      if (s.total_current_value) {
+        const mfEl = document.getElementById('p-mf');
+        if (mfEl && !mfEl.value) { mfEl.value = s.total_current_value; if (typeof W !== 'undefined') { W.mf = s.total_current_value; if (typeof recalcAll === 'function') recalcAll(); } }
+      }
     }
+
     if (docType === 'insurance' && ext.sum_assured) {
       const termEl = document.getElementById('inp-term');
       if (termEl && !termEl.value) termEl.value = ext.sum_assured;
     }
+
+    if (docType === 'epf' && ext.totalBalance) {
+      // Manual EPF balance → profile PF field + Tax Optimizer EPF/month field
+      const pfEl = document.getElementById('p-pf');
+      if (pfEl && !pfEl.value) { pfEl.value = ext.totalBalance; if (typeof W !== 'undefined') { W.pf = ext.totalBalance; if (typeof recalcAll === 'function') recalcAll(); } }
+    }
   } catch (_) {}
 }
 
-// Restore vault state on load
+// Restore vault state on load — re-enrich profile fields from saved vault data
 (function vaultRestore() {
   Object.entries(vaultDocs).forEach(([type, ext]) => {
     if (!ext) return;
     document.getElementById('vcard-' + type)?.classList.add('doc-done');
     vaultBadge(type, 'done', 'Saved ✓');
     vaultRenderExtracted(type, ext);
+    vaultEnrichProfile(type, ext); // sync into tax optimizer + profile fields
   });
 })();
 
