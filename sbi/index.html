@@ -1,0 +1,936 @@
+<!--
+  SBI Artha-IQ — AI Financial Intelligence
+  Powered by Artha-IQ by Pithonix AI
+  © 2026 PITHONIX AI INDIA PRIVATE LIMITED. All Rights Reserved.
+  Built for State Bank of India partnership.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#060e1f">
+<title>SBI Artha-IQ — AI Financial Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sbi:#00529A; --sbi-dark:#003d73; --sbi-light:#1a6eb5;
+  --gold:#F7941D; --gold-dark:#e07800;
+  --bg:#060e1f; --c1:#0a1628; --c2:#0d1f3a; --c3:#112548; --c4:#1a3060;
+  --bd:rgba(255,255,255,0.07); --bd2:rgba(255,255,255,0.13); --bd-sbi:rgba(0,82,154,0.35);
+  --text:#f1f5f9; --t2:#94a3b8; --t3:#64748b; --t4:#475569;
+  --green:#22c55e; --red:#ef4444; --amber:#f59e0b;
+  --tab:60px; --hdr:54px; --r:14px; --r2:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+
+/* ── LAYOUT ──────────────────────────────────────────────────────── */
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+#header{flex-shrink:0;height:var(--hdr);background:var(--c1);border-bottom:1px solid var(--bd-sbi);display:flex;align-items:center;padding:0 1rem;gap:0.75rem;position:relative}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab) + env(safe-area-inset-bottom))}
+#tabbar{flex-shrink:0;height:calc(var(--tab) + env(safe-area-inset-bottom));background:var(--c1);border-top:1px solid var(--bd-sbi);display:flex;align-items:flex-start;padding-top:0.5rem;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:0.25rem 0;opacity:0.5;transition:opacity 0.15s}
+.tab.active{opacity:1}
+.tab-icon{font-size:1.3rem;line-height:1}
+.tab-label{font-size:0.6rem;font-weight:600;letter-spacing:0.3px;color:var(--t2)}
+.tab.active .tab-label{color:var(--sbi)}
+
+/* ── HEADER ──────────────────────────────────────────────────────── */
+.hdr-logo{display:flex;align-items:center;gap:0.5rem}
+.hdr-sbi-badge{background:linear-gradient(135deg,var(--sbi),var(--sbi-dark));color:#fff;font-size:0.75rem;font-weight:800;padding:0.2rem 0.5rem;border-radius:5px;letter-spacing:0.5px}
+.hdr-divider{width:1px;height:20px;background:var(--bd2)}
+.hdr-product{font-size:0.8rem;font-weight:700;color:var(--text)}
+.hdr-sub{font-size:0.6rem;color:var(--t3);font-weight:500}
+.hdr-right{margin-left:auto;display:flex;gap:0.5rem;align-items:center}
+.hdr-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--sbi),var(--gold));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;cursor:pointer}
+
+/* ── SCREENS ─────────────────────────────────────────────────────── */
+.screen{display:none;padding:1rem}
+.screen.active{display:block}
+
+/* ── CARDS ───────────────────────────────────────────────────────── */
+.card{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;margin-bottom:0.75rem}
+.card-sbi{border-color:var(--bd-sbi);background:linear-gradient(135deg,var(--c2),rgba(0,82,154,0.08))}
+.card-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3);margin-bottom:0.6rem}
+.card-value{font-size:1.6rem;font-weight:800;color:var(--text)}
+.card-sub{font-size:0.72rem;color:var(--t2);margin-top:0.1rem}
+
+/* ── HOME SCREEN ─────────────────────────────────────────────────── */
+.score-ring{text-align:center;padding:1.5rem 0 1rem}
+.score-ring svg{width:140px;height:140px}
+.score-number{font-size:2.5rem;font-weight:800;fill:var(--text)}
+.score-label{font-size:0.65rem;fill:var(--t3);font-weight:600}
+.score-grade{font-size:0.9rem;font-weight:700;fill:var(--amber)}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem}
+.qcard{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);padding:0.75rem}
+.qcard-icon{font-size:1.2rem;margin-bottom:0.3rem}
+.qcard-label{font-size:0.62rem;color:var(--t3);font-weight:600;text-transform:uppercase}
+.qcard-value{font-size:1rem;font-weight:700;color:var(--text);margin-top:0.1rem}
+.qcard-status{font-size:0.62rem;margin-top:0.2rem;font-weight:600}
+.status-ok{color:var(--green)}
+.status-warn{color:var(--amber)}
+.status-danger{color:var(--red)}
+
+/* ── MARKET TICKER ───────────────────────────────────────────────── */
+.ticker-bar{background:var(--c1);border:1px solid var(--bd);border-radius:var(--r2);padding:0.5rem 0.75rem;margin-bottom:0.75rem;overflow:hidden}
+.ticker-scroll{display:flex;gap:1.5rem;animation:ticker 20s linear infinite;white-space:nowrap}
+.ticker-item{display:flex;gap:0.4rem;font-size:0.7rem;flex-shrink:0}
+.ticker-name{color:var(--t2);font-weight:600}
+.ticker-val{font-weight:700}
+.ticker-chg{font-weight:600}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── VAULT SCREEN ────────────────────────────────────────────────── */
+.vault-intro{font-size:0.82rem;color:var(--t2);line-height:1.6;margin-bottom:1rem;padding:0.75rem;background:rgba(0,82,154,0.08);border:1px solid var(--bd-sbi);border-radius:var(--r2)}
+.doc-card{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;margin-bottom:0.75rem;transition:border-color 0.2s}
+.doc-card.uploaded{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.04)}
+.doc-card.uploading{border-color:rgba(0,82,154,0.5)}
+.doc-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem}
+.doc-icon{font-size:1.4rem}
+.doc-title{font-size:0.9rem;font-weight:700}
+.doc-desc{font-size:0.7rem;color:var(--t2)}
+.doc-status{margin-left:auto;font-size:0.7rem;font-weight:600;padding:0.2rem 0.5rem;border-radius:20px}
+.doc-status.idle{background:rgba(255,255,255,0.06);color:var(--t3)}
+.doc-status.uploading{background:rgba(0,82,154,0.2);color:var(--sbi-light)}
+.doc-status.done{background:rgba(34,197,94,0.15);color:var(--green)}
+.doc-status.error{background:rgba(239,68,68,0.15);color:var(--red)}
+.doc-upload-btn{width:100%;background:rgba(0,82,154,0.12);border:1px dashed var(--bd-sbi);border-radius:var(--r2);padding:0.65rem;color:var(--sbi-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;margin-top:0.4rem}
+.doc-upload-btn:active{background:rgba(0,82,154,0.2)}
+.doc-upload-btn input{display:none}
+.doc-extracted{margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--bd)}
+.ext-row{display:flex;justify-content:space-between;align-items:center;padding:0.2rem 0}
+.ext-key{font-size:0.7rem;color:var(--t3)}
+.ext-val{font-size:0.75rem;font-weight:600;color:var(--text)}
+.ext-good{color:var(--green)}
+.ext-warn{color:var(--amber)}
+.ext-danger{color:var(--red)}
+
+/* ── COACH SCREEN ────────────────────────────────────────────────── */
+.coach-commands{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem}
+.cmd-pill{background:rgba(0,82,154,0.12);border:1px solid var(--bd-sbi);border-radius:20px;padding:0.3rem 0.65rem;font-size:0.7rem;font-weight:600;color:var(--sbi-light);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.3rem}
+.cmd-pill:active{background:rgba(0,82,154,0.25)}
+.cmd-pill-icon{font-size:0.85rem}
+
+.chat-messages{min-height:300px;display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem}
+.msg{padding:0.75rem;border-radius:var(--r2);max-width:90%;line-height:1.5}
+.msg-user{background:rgba(0,82,154,0.2);border:1px solid var(--bd-sbi);align-self:flex-end;font-size:0.82rem}
+.msg-ai{background:var(--c2);border:1px solid var(--bd);align-self:flex-start;font-size:0.82rem;width:100%;max-width:100%}
+.msg-ai-header{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.5rem}
+.msg-ai-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--sbi),var(--gold));display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;flex-shrink:0}
+.msg-ai-name{font-size:0.65rem;font-weight:700;color:var(--sbi-light)}
+
+.chat-input-wrap{display:flex;gap:0.5rem;align-items:flex-end}
+.chat-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--bd2);border-radius:var(--r2);padding:0.65rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;resize:none;min-height:44px;max-height:120px;overflow-y:auto;transition:border-color 0.2s}
+.chat-input:focus{outline:none;border-color:var(--sbi)}
+.chat-input::placeholder{color:var(--t4)}
+.chat-send{width:44px;height:44px;background:linear-gradient(135deg,var(--sbi),var(--sbi-light));border:none;border-radius:var(--r2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:opacity 0.15s}
+.chat-send:active{opacity:0.8}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed}
+
+.slash-suggest{background:var(--c2);border:1px solid var(--bd-sbi);border-radius:var(--r2);margin-bottom:0.5rem;overflow:hidden;display:none}
+.slash-item{padding:0.5rem 0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;transition:background 0.1s}
+.slash-item:hover,.slash-item:active{background:rgba(0,82,154,0.1)}
+.slash-cmd{color:var(--sbi-light);font-weight:700;font-family:monospace}
+.slash-desc{color:var(--t2)}
+
+/* ── GOT RESULT CARD ─────────────────────────────────────────────── */
+.got-card{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-top:0.5rem}
+.got-header{padding:0.75rem 1rem;background:rgba(0,82,154,0.08);border-bottom:1px solid var(--bd)}
+.got-score-row{display:flex;align-items:center;gap:0.75rem}
+.got-score-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;flex-shrink:0}
+.got-summary{font-size:0.78rem;color:var(--t2);line-height:1.5}
+.got-insight{font-size:0.75rem;color:var(--sbi-light);padding:0.5rem 1rem;border-bottom:1px solid var(--bd);font-style:italic}
+.got-dims{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd)}
+.got-dim{background:var(--c2);padding:0.65rem 0.75rem}
+.got-dim-header{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.3rem}
+.got-dim-icon{font-size:1rem}
+.got-dim-name{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--t3)}
+.got-dim-status{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.got-dim-status.ok{background:var(--green)}
+.got-dim-status.warning{background:var(--amber)}
+.got-dim-status.danger{background:var(--red)}
+.got-dim-headline{font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:0.2rem}
+.got-dim-action{font-size:0.65rem;color:var(--t2);line-height:1.4}
+.got-actions{padding:0.75rem 1rem}
+.got-actions-title{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3);margin-bottom:0.5rem}
+.got-action{display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--bd)}
+.got-action:last-child{border-bottom:none}
+.got-action-num{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--sbi),var(--gold));display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px}
+.got-action-body{flex:1}
+.got-action-text{font-size:0.75rem;font-weight:600;color:var(--text);line-height:1.4}
+.got-action-impact{font-size:0.68rem;color:var(--green);margin-top:0.1rem}
+.got-action-time{font-size:0.62rem;color:var(--t3)}
+
+/* ── SLASH RESPONSE (quick answer) ──────────────────────────────── */
+.slash-result{background:rgba(0,82,154,0.08);border:1px solid var(--bd-sbi);border-radius:var(--r2);padding:0.75rem;margin-top:0.5rem}
+.slash-headline{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.3rem}
+.slash-details{font-size:0.78rem;color:var(--t2);line-height:1.5;margin-bottom:0.4rem}
+.slash-next{font-size:0.75rem;color:var(--sbi-light);font-weight:600}
+
+/* ── LOADING ─────────────────────────────────────────────────────── */
+.thinking{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);font-size:0.78rem;color:var(--t2)}
+.dot-pulse{display:flex;gap:3px;align-items:center}
+.dp{width:5px;height:5px;border-radius:50%;background:var(--sbi);animation:dp 1.2s ease-in-out infinite}
+.dp:nth-child(2){animation-delay:0.2s}
+.dp:nth-child(3){animation-delay:0.4s}
+@keyframes dp{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+
+/* ── DISCLAIMER ──────────────────────────────────────────────────── */
+.disclaimer{font-size:0.62rem;color:var(--t4);line-height:1.5;padding:0.5rem 0.75rem;text-align:center}
+
+/* ── SCROLLBAR ───────────────────────────────────────────────────── */
+#content::-webkit-scrollbar{width:3px}
+#content::-webkit-scrollbar-track{background:transparent}
+#content::-webkit-scrollbar-thumb{background:rgba(0,82,154,0.3);border-radius:2px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div class="hdr-logo">
+      <div class="hdr-sbi-badge">SBI</div>
+      <div class="hdr-divider"></div>
+      <div>
+        <div class="hdr-product">Artha-IQ</div>
+        <div class="hdr-sub">AI Financial Intelligence</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div id="marketDot" title="Market status" style="width:7px;height:7px;border-radius:50%;background:var(--t4)"></div>
+      <div class="hdr-avatar" id="avatarBtn">JD</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- HOME SCREEN -->
+    <div class="screen active" id="screen-home">
+      <!-- Market Ticker -->
+      <div class="ticker-bar">
+        <div class="ticker-scroll" id="tickerScroll">
+          <div class="ticker-item"><span class="ticker-name">NIFTY 50</span><span class="ticker-val" id="t-nifty">—</span><span class="ticker-chg" id="tc-nifty">—</span></div>
+          <div class="ticker-item"><span class="ticker-name">BANK NIFTY</span><span class="ticker-val" id="t-bank">—</span><span class="ticker-chg" id="tc-bank">—</span></div>
+          <div class="ticker-item"><span class="ticker-name">MID CAP</span><span class="ticker-val" id="t-mid">—</span><span class="ticker-chg" id="tc-mid">—</span></div>
+          <div class="ticker-item"><span class="ticker-name">NIFTY 50</span><span class="ticker-val" id="t-nifty2">—</span><span class="ticker-chg" id="tc-nifty2">—</span></div>
+          <div class="ticker-item"><span class="ticker-name">BANK NIFTY</span><span class="ticker-val" id="t-bank2">—</span><span class="ticker-chg" id="tc-bank2">—</span></div>
+          <div class="ticker-item"><span class="ticker-name">MID CAP</span><span class="ticker-val" id="t-mid2">—</span><span class="ticker-chg" id="tc-mid2">—</span></div>
+        </div>
+      </div>
+
+      <!-- Score Ring -->
+      <div class="score-ring">
+        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="60" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+          <circle cx="70" cy="70" r="60" stroke="url(#scoreGrad)" stroke-width="12"
+            stroke-dasharray="377" id="scoreArc"
+            stroke-dashoffset="113" stroke-linecap="round"
+            transform="rotate(-90 70 70)"/>
+          <defs>
+            <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00529A"/>
+              <stop offset="100%" stop-color="#F7941D"/>
+            </linearGradient>
+          </defs>
+          <text x="70" y="63" text-anchor="middle" class="score-number" font-family="DM Sans" font-weight="800" font-size="28" fill="#f1f5f9" id="scoreNum">—</text>
+          <text x="70" y="78" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b" font-weight="600">FINANCIAL HEALTH</text>
+          <text x="70" y="92" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#f59e0b" font-weight="700" id="scoreGrade">Upload docs</text>
+        </svg>
+      </div>
+
+      <!-- Quick Stats Grid -->
+      <div class="quick-grid">
+        <div class="qcard">
+          <div class="qcard-icon">🛡️</div>
+          <div class="qcard-label">Life Cover</div>
+          <div class="qcard-value" id="qc-cover">—</div>
+          <div class="qcard-status" id="qc-cover-s">Upload policy</div>
+        </div>
+        <div class="qcard">
+          <div class="qcard-icon">🏢</div>
+          <div class="qcard-label">EPF Balance</div>
+          <div class="qcard-value" id="qc-epf">—</div>
+          <div class="qcard-status" id="qc-epf-s">Upload passbook</div>
+        </div>
+        <div class="qcard">
+          <div class="qcard-icon">📊</div>
+          <div class="qcard-label">MF Portfolio</div>
+          <div class="qcard-value" id="qc-mf">—</div>
+          <div class="qcard-status" id="qc-mf-s">Upload statement</div>
+        </div>
+        <div class="qcard">
+          <div class="qcard-icon">💰</div>
+          <div class="qcard-label">Monthly SIP</div>
+          <div class="qcard-value" id="qc-sip">—</div>
+          <div class="qcard-status" id="qc-sip-s">From MF statement</div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="card card-sbi" style="display:flex;gap:0.75rem;align-items:center;cursor:pointer" onclick="showScreen('vault')">
+        <div style="font-size:1.8rem">📁</div>
+        <div style="flex:1">
+          <div style="font-size:0.85rem;font-weight:700">Upload Your Documents</div>
+          <div style="font-size:0.72rem;color:var(--t2);margin-top:0.1rem">Insurance, EPF & MF statements auto-read by AI</div>
+        </div>
+        <div style="font-size:1rem;color:var(--sbi-light)">›</div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer">
+        SBI Artha-IQ provides financial information for educational purposes only.<br>
+        Not investment advice. Mutual fund investments subject to market risks.<br>
+        Powered by Artha-IQ · Pithonix AI
+      </div>
+    </div>
+
+    <!-- VAULT SCREEN -->
+    <div class="screen" id="screen-vault">
+      <div class="vault-intro">
+        Upload your financial documents below. Our AI reads them instantly — no manual entry needed. Your data stays on your device and is never stored on our servers.
+      </div>
+
+      <!-- Insurance Policy -->
+      <div class="doc-card" id="docCard-insurance">
+        <div class="doc-header">
+          <div class="doc-icon">🛡️</div>
+          <div>
+            <div class="doc-title">Insurance Policy</div>
+            <div class="doc-desc">LIC, SBI Life, ICICI Pru, HDFC Life, Bajaj & more</div>
+          </div>
+          <div class="doc-status idle" id="docStatus-insurance">Pending</div>
+        </div>
+        <label class="doc-upload-btn" id="docBtn-insurance">
+          ↑ Tap to upload PDF or image
+          <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'insurance')">
+        </label>
+        <div class="doc-extracted" id="docExtracted-insurance" style="display:none"></div>
+      </div>
+
+      <!-- EPF Passbook -->
+      <div class="doc-card" id="docCard-epf">
+        <div class="doc-header">
+          <div class="doc-icon">🏢</div>
+          <div>
+            <div class="doc-title">EPF Passbook</div>
+            <div class="doc-desc">EPFO UAN passbook — auto-reads your PF balance & history</div>
+          </div>
+          <div class="doc-status idle" id="docStatus-epf">Pending</div>
+        </div>
+        <label class="doc-upload-btn" id="docBtn-epf">
+          ↑ Tap to upload PDF or image
+          <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'epf')">
+        </label>
+        <div class="doc-extracted" id="docExtracted-epf" style="display:none"></div>
+      </div>
+
+      <!-- MF Statement -->
+      <div class="doc-card" id="docCard-mf">
+        <div class="doc-header">
+          <div class="doc-icon">📊</div>
+          <div>
+            <div class="doc-title">MF Statement (CAMS / KFin)</div>
+            <div class="doc-desc">Consolidated account statement — all funds in one upload</div>
+          </div>
+          <div class="doc-status idle" id="docStatus-mf">Pending</div>
+        </div>
+        <label class="doc-upload-btn" id="docBtn-mf">
+          ↑ Tap to upload PDF or image
+          <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'mf')">
+        </label>
+        <div class="doc-extracted" id="docExtracted-mf" style="display:none"></div>
+      </div>
+
+      <div class="disclaimer">
+        Documents are processed in-memory using AI vision. They are not stored or shared.<br>
+        © 2026 Pithonix AI India Pvt. Ltd.
+      </div>
+    </div>
+
+    <!-- COACH SCREEN -->
+    <div class="screen" id="screen-coach">
+      <!-- Slash Command Pills -->
+      <div class="coach-commands" id="cmdPills"></div>
+
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg msg-ai">
+          <div class="msg-ai-header">
+            <div class="msg-ai-avatar">AI</div>
+            <div class="msg-ai-name">SBI Artha-IQ</div>
+          </div>
+          Namaste! I'm your SBI AI Financial Coach. I can help you with tax optimisation, SIP planning, insurance gaps, retirement corpus, and more.<br><br>
+          Try a command like <strong>/tax</strong> or <strong>/sip 20 lakhs in 5 years</strong>, or just ask me anything about your finances.
+        </div>
+      </div>
+
+      <!-- Slash Suggestions -->
+      <div class="slash-suggest" id="slashSuggest"></div>
+
+      <!-- Input -->
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask anything or type / for commands..." rows="1" oninput="onChatInput()" onkeydown="onChatKeyDown(event)"></textarea>
+        <button class="chat-send" id="chatSend" onclick="sendMessage()" disabled>➤</button>
+      </div>
+      <div class="disclaimer" style="margin-top:0.4rem">
+        For educational purposes only. Not investment advice.
+      </div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div class="screen" id="screen-profile">
+      <div class="card card-sbi">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+          <div class="hdr-avatar" style="width:50px;height:50px;font-size:1rem" id="profileAvatar">JD</div>
+          <div>
+            <div style="font-size:1rem;font-weight:700" id="profileName">Your Profile</div>
+            <div style="font-size:0.72rem;color:var(--t2)" id="profileSub">Complete your profile for better insights</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          <label style="font-size:0.7rem;color:var(--t3);font-weight:600">Annual Income (₹)</label>
+          <input type="number" id="pIncome" placeholder="e.g. 1200000" style="background:rgba(255,255,255,0.04);border:1px solid var(--bd2);border-radius:8px;padding:0.6rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+
+          <label style="font-size:0.7rem;color:var(--t3);font-weight:600;margin-top:0.25rem">Age</label>
+          <input type="number" id="pAge" placeholder="e.g. 32" style="background:rgba(255,255,255,0.04);border:1px solid var(--bd2);border-radius:8px;padding:0.6rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+
+          <label style="font-size:0.7rem;color:var(--t3);font-weight:600;margin-top:0.25rem">Monthly Take-home (₹)</label>
+          <input type="number" id="pTakeHome" placeholder="e.g. 75000" style="background:rgba(255,255,255,0.04);border:1px solid var(--bd2);border-radius:8px;padding:0.6rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+
+          <label style="font-size:0.7rem;color:var(--t3);font-weight:600;margin-top:0.25rem">Tax Regime</label>
+          <select id="pRegime" style="background:rgba(255,255,255,0.04);border:1px solid var(--bd2);border-radius:8px;padding:0.6rem 0.75rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+            <option value="new">New Regime</option>
+            <option value="old">Old Regime</option>
+          </select>
+
+          <button onclick="saveProfile()" style="margin-top:0.75rem;background:linear-gradient(135deg,var(--sbi),var(--sbi-light));border:none;border-radius:var(--r2);padding:0.7rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer">
+            Save & Analyse
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:0.5rem">
+        <div class="card-title">Documents Uploaded</div>
+        <div id="profileDocList" style="font-size:0.78rem;color:var(--t2)">No documents uploaded yet.</div>
+      </div>
+    </div>
+
+  </div><!-- /#content -->
+
+  <!-- TAB BAR -->
+  <div id="tabbar">
+    <div class="tab active" onclick="showScreen('home')" id="tab-home">
+      <div class="tab-icon">🏠</div>
+      <div class="tab-label">Home</div>
+    </div>
+    <div class="tab" onclick="showScreen('vault')" id="tab-vault">
+      <div class="tab-icon">📁</div>
+      <div class="tab-label">Vault</div>
+    </div>
+    <div class="tab" onclick="showScreen('coach')" id="tab-coach">
+      <div class="tab-icon">🤖</div>
+      <div class="tab-label">Coach</div>
+    </div>
+    <div class="tab" onclick="showScreen('profile')" id="tab-profile">
+      <div class="tab-icon">👤</div>
+      <div class="tab-label">Profile</div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────
+const state = {
+  profile: JSON.parse(localStorage.getItem('sbi_profile') || '{}'),
+  docs: JSON.parse(localStorage.getItem('sbi_docs') || '{}'),
+  score: null
+};
+
+const SLASH_COMMANDS = [
+  { cmd: '/tax', label: 'Tax Optimiser', desc: 'Old vs new regime + 80C/NPS gaps', icon: '💰' },
+  { cmd: '/sip', label: 'SIP Calculator', desc: 'Monthly SIP for any goal', icon: '📈' },
+  { cmd: '/insurance', label: 'Insurance Audit', desc: 'Your cover gap in rupees', icon: '🛡️' },
+  { cmd: '/retire', label: 'Retirement Planner', desc: 'FIRE number + SIP needed', icon: '🎯' },
+  { cmd: '/goals', label: 'Goals Overview', desc: 'Status of all financial goals', icon: '✅' },
+  { cmd: '/health', label: 'Financial Health', desc: 'Your 6-dimension score', icon: '❤️' }
+];
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + name)?.classList.add('active');
+  document.getElementById('tab-' + name)?.classList.add('active');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+function init() {
+  renderCommandPills();
+  loadProfileForm();
+  updateHomeCards();
+  loadMarketData();
+}
+
+function renderCommandPills() {
+  const wrap = document.getElementById('cmdPills');
+  wrap.innerHTML = SLASH_COMMANDS.map(c =>
+    `<div class="cmd-pill" onclick="runSlashCommand('${c.cmd}')">
+      <span class="cmd-pill-icon">${c.icon}</span>
+      <span style="font-family:monospace;font-size:0.72rem">${c.cmd}</span>
+    </div>`
+  ).join('');
+}
+
+// ── MARKET DATA ───────────────────────────────────────────────────────────
+async function loadMarketData() {
+  try {
+    const res = await fetch('/api/mcp-nse?type=indices');
+    const data = await res.json();
+    if (!data.success || !data.indices) return;
+    const nifty = data.indices.find(i => i.name === 'NIFTY 50');
+    const bank = data.indices.find(i => i.name === 'NIFTY BANK');
+    const mid = data.indices.find(i => i.name === 'NIFTY MIDCAP 100');
+    if (nifty) setTicker('nifty', nifty);
+    if (bank) setTicker('bank', bank);
+    if (mid) setTicker('mid', mid);
+    document.getElementById('marketDot').style.background = '#22c55e';
+  } catch (_) {}
+}
+
+function setTicker(id, d) {
+  const isUp = d.pChange >= 0;
+  const chgStr = `${isUp ? '+' : ''}${d.pChange?.toFixed(2)}%`;
+  const color = isUp ? 'var(--green)' : 'var(--red)';
+  const valStr = d.last?.toLocaleString('en-IN');
+  ['', '2'].forEach(suffix => {
+    const el = document.getElementById(`t-${id}${suffix}`);
+    const elc = document.getElementById(`tc-${id}${suffix}`);
+    if (el) { el.textContent = valStr; el.style.color = color; }
+    if (elc) { elc.textContent = chgStr; elc.style.color = color; }
+  });
+}
+
+// ── DOCUMENT UPLOAD ───────────────────────────────────────────────────────
+const API_MAP = { insurance: '/api/doc-insurance', epf: '/api/doc-epf', mf: '/api/doc-mf' };
+
+async function handleDocUpload(event, docType) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  setDocStatus(docType, 'uploading', 'Reading...');
+  document.getElementById('docCard-' + docType).classList.add('uploading');
+
+  try {
+    const payload = await buildPayload(file);
+    const res = await fetch(API_MAP[docType], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.error || 'Extraction failed');
+
+    state.docs[docType] = data.extracted;
+    localStorage.setItem('sbi_docs', JSON.stringify(state.docs));
+
+    setDocStatus(docType, 'done', 'Read ✓');
+    document.getElementById('docCard-' + docType).classList.remove('uploading');
+    document.getElementById('docCard-' + docType).classList.add('uploaded');
+    renderExtracted(docType, data.extracted);
+    updateHomeCards();
+  } catch (e) {
+    setDocStatus(docType, 'error', 'Failed');
+    document.getElementById('docCard-' + docType).classList.remove('uploading');
+    console.error(`[${docType}]`, e.message);
+    alert(`Could not read document: ${e.message}`);
+  }
+}
+
+async function buildPayload(file) {
+  if (file.type === 'application/pdf') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const b64 = e.target.result.split(',')[1];
+        resolve({ mimeType: 'application/pdf', data: b64 });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  // Image
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const b64 = e.target.result.split(',')[1];
+      resolve({ images: [{ mimeType: file.type, data: b64 }] });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function setDocStatus(type, status, text) {
+  const el = document.getElementById('docStatus-' + type);
+  el.className = 'doc-status ' + status;
+  el.textContent = text;
+}
+
+function renderExtracted(docType, ext) {
+  const container = document.getElementById('docExtracted-' + docType);
+  container.style.display = 'block';
+  let html = '';
+
+  if (docType === 'insurance') {
+    const needed = (state.profile.annualIncome || 0) * 15;
+    const gap = needed - (ext.sum_assured || 0);
+    html = [
+      row('Insurer', ext.insurer || '—'),
+      row('Policy Type', ext.policy_type || '—'),
+      row('Sum Assured', fmt(ext.sum_assured)),
+      row('Annual Premium', fmt(ext.annual_premium)),
+      row('Policy End', ext.policy_end_date || '—'),
+      gap > 0 ? row('Cover Gap', fmt(gap), 'danger') : row('Cover', 'Adequate', 'good')
+    ].join('');
+    if (ext.gaps_identified?.length) {
+      html += `<div style="margin-top:0.4rem;font-size:0.68rem;color:var(--amber)">${ext.gaps_identified.join(' · ')}</div>`;
+    }
+  } else if (docType === 'epf') {
+    html = [
+      row('Member', ext.member_name || '—'),
+      row('UAN', ext.uan || '—'),
+      row('EPF Balance', fmt(ext.total_epf_balance), 'good'),
+      row('EPS Balance', fmt(ext.total_eps_balance)),
+      row('Total Balance', fmt(ext.grand_total_balance), 'good'),
+      row('Employer', ext.employer_name || '—'),
+      row('Eligible for Pension', ext.eligible_for_pension ? 'Yes ✓' : `No (${ext.years_of_service || 0} yrs)`, ext.eligible_for_pension ? 'good' : 'warn')
+    ].join('');
+  } else if (docType === 'mf') {
+    const s = ext.summary || {};
+    const xirr = s.overall_xirr || 0;
+    html = [
+      row('Investor', ext.investor_name || '—'),
+      row('Total Invested', fmt(s.total_invested)),
+      row('Current Value', fmt(s.total_current_value), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger'),
+      row('Gain / Loss', fmt(s.total_unrealised_gain_loss), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger'),
+      row('XIRR', `${xirr.toFixed(1)}%`, xirr >= 10 ? 'good' : xirr >= 6 ? 'warn' : 'danger'),
+      row('Monthly SIP', fmt(s.total_sip_monthly), 'good'),
+      row('ELSS Invested', fmt(s.elss_invested)),
+      row('Fund Houses', s.number_of_fund_houses || '—'),
+    ].join('');
+  }
+
+  container.innerHTML = html;
+}
+
+function row(k, v, cls = '') {
+  const colorClass = cls === 'good' ? 'ext-good' : cls === 'warn' ? 'ext-warn' : cls === 'danger' ? 'ext-danger' : '';
+  return `<div class="ext-row"><span class="ext-key">${k}</span><span class="ext-val ${colorClass}">${v}</span></div>`;
+}
+
+function fmt(n) {
+  if (n === undefined || n === null || n === 0) return '—';
+  if (Math.abs(n) >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
+  if (Math.abs(n) >= 1e5) return `₹${(n / 1e5).toFixed(2)} L`;
+  return `₹${Math.round(n).toLocaleString('en-IN')}`;
+}
+
+// ── HOME CARDS UPDATE ─────────────────────────────────────────────────────
+function updateHomeCards() {
+  const ins = state.docs.insurance;
+  const epf = state.docs.epf;
+  const mf = state.docs.mf;
+  const income = parseFloat(state.profile.annualIncome) || 0;
+
+  if (ins) {
+    document.getElementById('qc-cover').textContent = fmt(ins.sum_assured);
+    const needed = income * 15;
+    const gap = needed - (ins.sum_assured || 0);
+    const el = document.getElementById('qc-cover-s');
+    if (gap > 0) { el.textContent = `Gap: ${fmt(gap)}`; el.className = 'qcard-status status-danger'; }
+    else { el.textContent = 'Adequate ✓'; el.className = 'qcard-status status-ok'; }
+  }
+
+  if (epf) {
+    document.getElementById('qc-epf').textContent = fmt(epf.grand_total_balance);
+    document.getElementById('qc-epf-s').textContent = `${epf.years_of_service || 0} yrs service`;
+    document.getElementById('qc-epf-s').className = 'qcard-status status-ok';
+  }
+
+  if (mf?.summary) {
+    const s = mf.summary;
+    document.getElementById('qc-mf').textContent = fmt(s.total_current_value);
+    const xirr = s.overall_xirr || 0;
+    const el = document.getElementById('qc-mf-s');
+    el.textContent = `XIRR ${xirr.toFixed(1)}%`;
+    el.className = 'qcard-status ' + (xirr >= 10 ? 'status-ok' : xirr >= 6 ? 'status-warn' : 'status-danger');
+    document.getElementById('qc-sip').textContent = fmt(s.total_sip_monthly);
+    document.getElementById('qc-sip-s').textContent = `${s.number_of_folios || 0} folios`;
+    document.getElementById('qc-sip-s').className = 'qcard-status status-ok';
+  }
+
+  updateProfileDocList();
+}
+
+function updateProfileDocList() {
+  const el = document.getElementById('profileDocList');
+  const uploaded = Object.entries(state.docs).filter(([,v]) => v);
+  if (!uploaded.length) { el.textContent = 'No documents uploaded yet.'; return; }
+  const labels = { insurance: '🛡️ Insurance Policy', epf: '🏢 EPF Passbook', mf: '📊 MF Statement' };
+  el.innerHTML = uploaded.map(([k]) => `<div style="padding:0.2rem 0">${labels[k] || k} ✓</div>`).join('');
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────
+function loadProfileForm() {
+  const p = state.profile;
+  if (p.annualIncome) document.getElementById('pIncome').value = p.annualIncome;
+  if (p.age) document.getElementById('pAge').value = p.age;
+  if (p.takeHome) document.getElementById('pTakeHome').value = p.takeHome;
+  if (p.taxRegime) document.getElementById('pRegime').value = p.taxRegime;
+}
+
+function saveProfile() {
+  state.profile = {
+    annualIncome: parseFloat(document.getElementById('pIncome').value) || 0,
+    age: parseInt(document.getElementById('pAge').value) || 0,
+    takeHome: parseFloat(document.getElementById('pTakeHome').value) || 0,
+    taxRegime: document.getElementById('pRegime').value
+  };
+  localStorage.setItem('sbi_profile', JSON.stringify(state.profile));
+  updateHomeCards();
+  showScreen('coach');
+  setTimeout(() => sendOrchestratedQuery('/health'), 300);
+}
+
+// ── CHAT & SLASH COMMANDS ─────────────────────────────────────────────────
+function onChatInput() {
+  const input = document.getElementById('chatInput');
+  const val = input.value;
+  document.getElementById('chatSend').disabled = !val.trim();
+
+  // Auto-resize
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+
+  // Slash suggestions
+  const suggest = document.getElementById('slashSuggest');
+  if (val.startsWith('/') && val.length < 20) {
+    const q = val.toLowerCase();
+    const matches = SLASH_COMMANDS.filter(c => c.cmd.startsWith(q));
+    if (matches.length) {
+      suggest.style.display = 'block';
+      suggest.innerHTML = matches.map(c =>
+        `<div class="slash-item" onclick="pickSlash('${c.cmd}')">
+          <span>${c.icon}</span>
+          <span class="slash-cmd">${c.cmd}</span>
+          <span class="slash-desc">— ${c.desc}</span>
+        </div>`
+      ).join('');
+      return;
+    }
+  }
+  suggest.style.display = 'none';
+}
+
+function onChatKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function pickSlash(cmd) {
+  document.getElementById('chatInput').value = cmd + ' ';
+  document.getElementById('slashSuggest').style.display = 'none';
+  document.getElementById('chatSend').disabled = false;
+  document.getElementById('chatInput').focus();
+}
+
+function runSlashCommand(cmd) {
+  showScreen('coach');
+  document.getElementById('chatInput').value = cmd;
+  document.getElementById('chatSend').disabled = false;
+  sendMessage();
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chatSend').disabled = true;
+  document.getElementById('slashSuggest').style.display = 'none';
+  addUserMessage(query);
+  sendOrchestratedQuery(query);
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += `<div class="msg msg-user">${escHtml(text)}</div>`;
+  scrollToBottom();
+}
+
+function addThinking() {
+  const msgs = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.id = 'thinkingMsg';
+  el.className = 'thinking';
+  el.innerHTML = '<div class="dot-pulse"><div class="dp"></div><div class="dp"></div><div class="dp"></div></div><span>Artha-IQ is analysing...</span>';
+  msgs.appendChild(el);
+  scrollToBottom();
+  return el;
+}
+
+function removeThinking() {
+  document.getElementById('thinkingMsg')?.remove();
+}
+
+function scrollToBottom() {
+  const content = document.getElementById('content');
+  setTimeout(() => content.scrollTo({ top: content.scrollHeight, behavior: 'smooth' }), 50);
+}
+
+async function sendOrchestratedQuery(query) {
+  const thinking = addThinking();
+
+  try {
+    const res = await fetch('/api/got-orchestrator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query,
+        profile: buildProfilePayload(),
+        documents: state.docs,
+        bankConfig: { name: 'SBI Artha-IQ', bank: 'SBI' }
+      })
+    });
+    const data = await res.json();
+    removeThinking();
+
+    if (!data.success) throw new Error(data.error || 'Analysis failed');
+
+    renderAdviceMessage(data.advice, data.meta);
+  } catch (e) {
+    removeThinking();
+    addAIMessage(`I couldn't complete the analysis. ${e.message}. Please try again.`);
+  }
+}
+
+function buildProfilePayload() {
+  const p = state.profile;
+  const income = p.annualIncome || 0;
+  return {
+    annualSalary: income,
+    monthlyTakeHome: p.takeHome || Math.round(income * 0.75 / 12),
+    age: p.age || 30,
+    taxRegime: p.taxRegime || 'new',
+    lifeStage: p.age < 30 ? 'early_career' : p.age < 40 ? 'growth' : p.age < 50 ? 'accumulation' : 'pre_retirement',
+    // Enrich with doc data
+    totalMFValue: state.docs.mf?.summary?.total_current_value || 0,
+    totalSIPMonthly: state.docs.mf?.summary?.total_sip_monthly || 0,
+    elssInvested: state.docs.mf?.summary?.elss_invested || 0,
+    epfBalance: state.docs.epf?.grand_total_balance || 0,
+    yearsOfService: state.docs.epf?.years_of_service || 0,
+    lifeInsuranceCover: state.docs.insurance?.sum_assured || 0,
+    annualInsurancePremium: state.docs.insurance?.annual_premium || 0
+  };
+}
+
+function renderAdviceMessage(advice, meta) {
+  const msgs = document.getElementById('chatMessages');
+
+  // Quick slash response if intent is specific
+  const slash = advice.slash_response;
+  let slashHtml = '';
+  if (slash?.headline) {
+    slashHtml = `<div class="slash-result">
+      <div class="slash-headline">${escHtml(slash.headline)}</div>
+      <div class="slash-details">${escHtml(slash.details || '')}</div>
+      ${slash.next_step ? `<div class="slash-next">→ ${escHtml(slash.next_step)}</div>` : ''}
+    </div>`;
+  }
+
+  // Score circle colour
+  const score = advice.overallScore || 0;
+  const scoreColor = score >= 70 ? 'var(--green)' : score >= 40 ? 'var(--amber)' : 'var(--red)';
+
+  // Dimensions grid
+  const dims = (advice.dimensions || []).slice(0, 6).map(d => `
+    <div class="got-dim">
+      <div class="got-dim-header">
+        <span class="got-dim-icon">${d.icon || ''}</span>
+        <span class="got-dim-name">${escHtml(d.name)}</span>
+        <span class="got-dim-status ${d.status || 'ok'}"></span>
+      </div>
+      <div class="got-dim-headline">${escHtml(d.headline || '')}</div>
+      <div class="got-dim-action">${escHtml(d.action || '')}</div>
+    </div>`).join('');
+
+  // Actions
+  const actions = (advice.topActions || []).map(a => `
+    <div class="got-action">
+      <div class="got-action-num">${a.priority}</div>
+      <div class="got-action-body">
+        <div class="got-action-text">${escHtml(a.action || '')}</div>
+        <div class="got-action-impact">${escHtml(a.impact || '')}</div>
+        <div class="got-action-time">${escHtml(a.timeToAct || '')}</div>
+      </div>
+    </div>`).join('');
+
+  // Red flags badge
+  const flags = meta?.red_flags?.length
+    ? `<div style="font-size:0.68rem;color:var(--red);margin-top:0.4rem">⚠ ${meta.red_flags.slice(0,2).join(' · ')}</div>`
+    : '';
+
+  const msgEl = document.createElement('div');
+  msgEl.className = 'msg msg-ai';
+  msgEl.innerHTML = `
+    <div class="msg-ai-header">
+      <div class="msg-ai-avatar">AI</div>
+      <div class="msg-ai-name">SBI Artha-IQ</div>
+    </div>
+    ${slashHtml}
+    <div class="got-card" style="margin-top:${slashHtml ? '0.75rem' : '0'}">
+      <div class="got-header">
+        <div class="got-score-row">
+          <div class="got-score-circle" style="background:${scoreColor}22;border:2px solid ${scoreColor};color:${scoreColor}">${score}</div>
+          <div class="got-summary">${escHtml(advice.summary || '')}</div>
+        </div>
+        ${flags}
+      </div>
+      ${advice.crossNodeInsight ? `<div class="got-insight">💡 ${escHtml(advice.crossNodeInsight)}</div>` : ''}
+      ${dims ? `<div class="got-dims">${dims}</div>` : ''}
+      ${actions ? `<div class="got-actions"><div class="got-actions-title">Top 3 Actions</div>${actions}</div>` : ''}
+    </div>`;
+
+  msgs.appendChild(msgEl);
+  scrollToBottom();
+}
+
+function addAIMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += `<div class="msg msg-ai">
+    <div class="msg-ai-header">
+      <div class="msg-ai-avatar">AI</div>
+      <div class="msg-ai-name">SBI Artha-IQ</div>
+    </div>
+    ${escHtml(text)}
+  </div>`;
+  scrollToBottom();
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

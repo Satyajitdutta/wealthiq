@@ -1,0 +1,67 @@
+{
+  "id": "sbi",
+  "name": "SBI",
+  "fullName": "State Bank of India",
+  "tagline": "The Banker to Every Indian",
+  "productName": "SBI Artha-IQ",
+  "productTagline": "Your AI Financial Intelligence — Powered by Artha-IQ",
+  "poweredBy": "Artha-IQ by Pithonix AI",
+  "colors": {
+    "primary": "#00529A",
+    "primaryDark": "#003d73",
+    "primaryLight": "#1a6eb5",
+    "accent": "#F7941D",
+    "accentDark": "#e07800",
+    "bg": "#060e1f",
+    "c1": "#0a1628",
+    "c2": "#0d1f3a",
+    "c3": "#112548",
+    "c4": "#1a3060",
+    "text": "#f1f5f9",
+    "t2": "#94a3b8",
+    "t3": "#64748b",
+    "success": "#22c55e",
+    "warning": "#f59e0b",
+    "danger": "#ef4444"
+  },
+  "logo": {
+    "text": "SBI",
+    "subtext": "Artha-IQ",
+    "showPithonixBadge": true
+  },
+  "departments": [
+    { "id": "mutual_fund", "name": "Mutual Fund Department", "icon": "📈" },
+    { "id": "insurance", "name": "Life Insurance (SBI Life)", "icon": "🛡️" },
+    { "id": "health_insurance", "name": "General Insurance (SBI General)", "icon": "🏥" },
+    { "id": "home_loan", "name": "Home Loan Division", "icon": "🏠" },
+    { "id": "nri", "name": "NRI Services", "icon": "🌐" },
+    { "id": "wealth", "name": "SBI Wealth Management", "icon": "💎" },
+    { "id": "pension", "name": "Pension & NPS", "icon": "🎯" },
+    { "id": "general", "name": "Customer Service", "icon": "💬" }
+  ],
+  "features": {
+    "documentVault": true,
+    "departmentRouting": false,
+    "orchestratorGOT": true,
+    "slashCommands": true,
+    "liveMarketData": true
+  },
+  "supportedDocuments": [
+    { "id": "insurance", "label": "Insurance Policy", "icon": "🛡️", "api": "/api/doc-insurance", "desc": "LIC, SBI Life, ICICI Pru, HDFC Life, Bajaj & more" },
+    { "id": "epf", "label": "EPF Passbook", "icon": "🏢", "api": "/api/doc-epf", "desc": "EPFO UAN passbook — auto-reads your PF balance" },
+    { "id": "mf", "label": "MF Statement", "icon": "📊", "api": "/api/doc-mf", "desc": "CAMS or KFin consolidated account statement" }
+  ],
+  "slashCommands": [
+    { "cmd": "/tax", "label": "Tax Optimiser", "desc": "Old vs new regime + 80C/NPS gaps", "icon": "💰" },
+    { "cmd": "/sip", "label": "SIP Calculator", "desc": "How much SIP for your goal?", "icon": "📈", "args": "[goal] [amount] [years]" },
+    { "cmd": "/insurance", "label": "Insurance Audit", "desc": "Your cover gap in rupees", "icon": "🛡️" },
+    { "cmd": "/retire", "label": "Retirement Planner", "desc": "FIRE number + monthly SIP needed", "icon": "🎯" },
+    { "cmd": "/goals", "label": "Goals Overview", "desc": "Status of all your financial goals", "icon": "✅" },
+    { "cmd": "/health", "label": "Financial Health", "desc": "Your 6-dimension financial score", "icon": "❤️" }
+  ],
+  "compliance": {
+    "disclaimer": "This AI assistant provides financial information for educational purposes only. It does not constitute investment advice. Please consult a qualified financial advisor for investment decisions. Mutual fund investments are subject to market risks.",
+    "regulator": "SEBI/IRDAI/RBI",
+    "version": "1.0.0"
+  }
+}
