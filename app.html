@@ -10365,14 +10365,15 @@ async function vaultUploadFromSI(event, docType) {
     localStorage.setItem('vault_docs', JSON.stringify(stored));
 
     pill.className = 'si-pill si-p-done';
-    pill.textContent = 'Read ✓';
+    pill.textContent = 'Saved ✓';
 
     // Render extracted summary inside the card
     extEl.style.display = 'block';
-    extEl.innerHTML = vaultSIExtractedHTML(docType, data.extracted);
+    extEl.innerHTML = vaultSIExtractedHTML(docType, data.extracted)
+      + `<div style="margin-top:0.5rem;padding:0.4rem 0.6rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:7px;display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:var(--green);font-weight:600">&#10003; Saved to your profile &mdash; GOT advisor updated</div>`;
 
     const labels = { insurance: 'Insurance policy', epf: 'EPF passbook', mf: 'MF statement' };
-    showToast('📄', `${labels[docType]} read — GOT analysis updated`);
+    showToast('📄', `${labels[docType]} saved — GOT analysis updated`);
   } catch (e) {
     pill.className = 'si-pill';
     pill.textContent = 'Retry';
@@ -10406,7 +10407,7 @@ function vaultSIExtractedHTML(docType, ext) {
     if (!ext) return;
     const pill = document.getElementById('vsi-pill-' + type);
     const extEl = document.getElementById('vsi-extracted-' + type);
-    if (pill) { pill.className = 'si-pill si-p-done'; pill.textContent = 'Read ✓'; }
+    if (pill) { pill.className = 'si-pill si-p-done'; pill.textContent = 'Saved ✓'; }
     if (extEl) { extEl.style.display = 'block'; extEl.innerHTML = vaultSIExtractedHTML(type, ext); }
   });
 })();
@@ -10478,7 +10479,7 @@ async function vaultUpload(event, docType) {
 
     document.getElementById('vcard-' + docType).classList.remove('doc-busy');
     document.getElementById('vcard-' + docType).classList.add('doc-done');
-    vaultBadge(docType, 'done', 'Read ✓');
+    vaultBadge(docType, 'done', 'Saved ✓');
     vaultRenderExtracted(docType, data.extracted);
     vaultEnrichProfile(docType, data.extracted);
     showToast('📄', `${docType === 'insurance' ? 'Insurance policy' : docType === 'epf' ? 'EPF passbook' : 'MF statement'} read successfully`);
@@ -10528,6 +10529,7 @@ function vaultRenderExtracted(docType, ext) {
       + vaultRow('Fund Houses', s.number_of_fund_houses || '—');
   }
 
+  html += `<div style="width:100%;margin-top:0.4rem;padding:0.35rem 0.6rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:7px;display:flex;align-items:center;gap:0.4rem;font-size:0.68rem;color:var(--green);font-weight:600">&#10003; Saved &mdash; GOT advisor updated with your data</div>`;
   el.innerHTML = html;
 }
 
@@ -10553,7 +10555,7 @@ function vaultEnrichProfile(docType, ext) {
   Object.entries(vaultDocs).forEach(([type, ext]) => {
     if (!ext) return;
     document.getElementById('vcard-' + type)?.classList.add('doc-done');
-    vaultBadge(type, 'done', 'Read ✓');
+    vaultBadge(type, 'done', 'Saved ✓');
     vaultRenderExtracted(type, ext);
   });
 })();
