@@ -3839,6 +3839,58 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
     </div><!-- /si-cards -->
 
+    <!-- ── NEW: Insurance / EPF / MF section ──────────────────────── -->
+    <div style="margin:0.75rem 0 0.25rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3)">Also upload — enriches your GOT analysis</div>
+
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.5rem">
+
+      <!-- Insurance Policy -->
+      <div class="si-card" id="vsi-card-insurance" onclick="vaultTrigger('insurance')" role="button" tabindex="0" style="padding:0.65rem 0.875rem;cursor:pointer">
+        <div class="si-card-row">
+          <div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="si-info">
+            <div class="si-name">Insurance Policy</div>
+            <div class="si-desc">LIC · SBI Life · ICICI Pru · HDFC Life · Bajaj</div>
+            <div class="si-hint" id="vsi-hint-insurance">Reads: sum assured, premium, expiry, cover gap</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-insurance">Upload</div></div>
+        </div>
+        <input type="file" accept=".pdf,image/*" id="vsi-f-insurance" style="display:none" onchange="vaultUploadFromSI(event,'insurance')">
+        <div id="vsi-extracted-insurance" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
+      </div>
+
+      <!-- EPF Passbook -->
+      <div class="si-card" id="vsi-card-epf" onclick="vaultTrigger('epf')" role="button" tabindex="0" style="padding:0.65rem 0.875rem;cursor:pointer">
+        <div class="si-card-row">
+          <div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+          <div class="si-info">
+            <div class="si-name">EPF Passbook</div>
+            <div class="si-desc">EPFO UAN passbook — PF balance & history</div>
+            <div class="si-hint" id="vsi-hint-epf">Reads: balance, employer, pension eligibility</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-epf">Upload</div></div>
+        </div>
+        <input type="file" accept=".pdf,image/*" id="vsi-f-epf" style="display:none" onchange="vaultUploadFromSI(event,'epf')">
+        <div id="vsi-extracted-epf" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
+      </div>
+
+      <!-- CAMS / KFin MF Statement -->
+      <div class="si-card" id="vsi-card-mf" onclick="vaultTrigger('mf')" role="button" tabindex="0" style="padding:0.65rem 0.875rem;cursor:pointer">
+        <div class="si-card-row">
+          <div class="si-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="si-info">
+            <div class="si-name">MF Statement (CAMS / KFin)</div>
+            <div class="si-desc">Consolidated account statement</div>
+            <div class="si-hint" id="vsi-hint-mf">Reads: portfolio value, XIRR, SIP amounts, ELSS</div>
+          </div>
+          <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-mf">Upload</div></div>
+        </div>
+        <input type="file" accept=".pdf,image/*" id="vsi-f-mf" style="display:none" onchange="vaultUploadFromSI(event,'mf')">
+        <div id="vsi-extracted-mf" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
+      </div>
+
+    </div>
+
     <!-- Bank statement fallback: manual EMI entry (shown when PDF fails) -->
     <!-- Bank Statement Smart Recovery Panel -->
     <div id="si-bank-fallback" style="display:none;margin-bottom:0.85rem">
@@ -9540,6 +9592,99 @@ function siContinue() {
     showToast('✦', `${autoCount * 3}+ fields auto-filled from your document`);
   }
 }
+
+// ── VAULT CARDS INSIDE SMART IMPORT ──────────────────────────────────────
+function vaultTrigger(docType) {
+  document.getElementById('vsi-f-' + docType)?.click();
+}
+
+async function vaultUploadFromSI(event, docType) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const pill = document.getElementById('vsi-pill-' + docType);
+  const card = document.getElementById('vsi-card-' + docType);
+  const hint = document.getElementById('vsi-hint-' + docType);
+  const extEl = document.getElementById('vsi-extracted-' + docType);
+
+  pill.className = 'si-pill si-p-uploading';
+  pill.textContent = 'Reading…';
+  if (hint) hint.textContent = 'AI is reading your document…';
+
+  const API_MAP = { insurance: '/api/doc-insurance', epf: '/api/doc-epf', mf: '/api/doc-mf' };
+
+  try {
+    const payload = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const b64 = e.target.result.split(',')[1];
+        res(file.type === 'application/pdf'
+          ? { mimeType: 'application/pdf', data: b64 }
+          : { images: [{ mimeType: file.type, data: b64 }] });
+      };
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+
+    const r = await fetch(API_MAP[docType], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Extraction failed');
+
+    // Save to localStorage
+    const stored = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+    stored[docType] = data.extracted;
+    localStorage.setItem('vault_docs', JSON.stringify(stored));
+
+    pill.className = 'si-pill si-p-done';
+    pill.textContent = 'Read ✓';
+
+    // Render extracted summary inside the card
+    extEl.style.display = 'block';
+    extEl.innerHTML = vaultSIExtractedHTML(docType, data.extracted);
+
+    const labels = { insurance: 'Insurance policy', epf: 'EPF passbook', mf: 'MF statement' };
+    showToast('📄', `${labels[docType]} read — GOT analysis updated`);
+  } catch (e) {
+    pill.className = 'si-pill';
+    pill.textContent = 'Retry';
+    if (hint) hint.textContent = `Failed: ${e.message}`;
+    showToast('✕', `Could not read document`);
+  }
+}
+
+function vaultSIExtractedHTML(docType, ext) {
+  const r = (k, v, good) => `<div style="display:flex;justify-content:space-between;font-size:0.7rem;padding:0.1rem 0"><span style="color:var(--t3)">${k}</span><span style="font-weight:600;color:${good === true ? 'var(--green)' : good === false ? 'var(--red)' : 'var(--text)'}">${v}</span></div>`;
+  const f = n => { if (!n) return '—'; if (Math.abs(n) >= 1e7) return `₹${(n/1e7).toFixed(2)} Cr`; if (Math.abs(n) >= 1e5) return `₹${(n/1e5).toFixed(2)} L`; return `₹${Math.round(n).toLocaleString('en-IN')}`; };
+
+  if (docType === 'insurance') {
+    return r('Insurer', ext.insurer || '—') + r('Sum Assured', f(ext.sum_assured), true) + r('Annual Premium', f(ext.annual_premium)) + r('Expiry', ext.policy_end_date || '—');
+  }
+  if (docType === 'epf') {
+    return r('EPF Balance', f(ext.total_epf_balance), true) + r('EPS Balance', f(ext.total_eps_balance)) + r('Grand Total', f(ext.grand_total_balance), true) + r('Pension Eligible', ext.eligible_for_pension ? 'Yes ✓' : 'Not yet', ext.eligible_for_pension);
+  }
+  if (docType === 'mf') {
+    const s = ext.summary || {};
+    const xirr = s.overall_xirr || 0;
+    return r('Current Value', f(s.total_current_value), s.total_unrealised_gain_loss >= 0) + r('XIRR', `${xirr.toFixed(1)}%`, xirr >= 10) + r('Monthly SIP', f(s.total_sip_monthly), true) + r('ELSS Invested', f(s.elss_invested));
+  }
+  return '';
+}
+
+// Restore vault state inside SI cards on load
+(function restoreVaultSI() {
+  const stored = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+  Object.entries(stored).forEach(([type, ext]) => {
+    if (!ext) return;
+    const pill = document.getElementById('vsi-pill-' + type);
+    const extEl = document.getElementById('vsi-extracted-' + type);
+    if (pill) { pill.className = 'si-pill si-p-done'; pill.textContent = 'Read ✓'; }
+    if (extEl) { extEl.style.display = 'block'; extEl.innerHTML = vaultSIExtractedHTML(type, ext); }
+  });
+})();
 
 // ── DOCUMENT VAULT ────────────────────────────────────────────────────────
 const VAULT_API = { insurance: '/api/doc-insurance', epf: '/api/doc-epf', mf: '/api/doc-mf' };
