@@ -1318,6 +1318,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .si-sheet { position:relative;z-index:1;background:var(--c1);border-radius:22px 22px 0 0;padding:1.25rem 1.15rem calc(env(safe-area-inset-bottom,0px) + 1.75rem);max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;transform:translateY(100%);transition:transform 0.44s cubic-bezier(0.34,1.22,0.64,1);border-top:1px solid rgba(255,255,255,0.09) }
 .si-ov.open .si-sheet { transform:translateY(0) }
 
+/* Get-it panel */
+.gi-toggle { display:inline-flex;align-items:center;gap:0.3rem;font-size:0.63rem;font-weight:700;color:var(--blue);background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.22);border-radius:100px;padding:0.18rem 0.55rem;cursor:pointer;margin-top:0.45rem;user-select:none;transition:background 0.2s }
+.gi-toggle:hover { background:rgba(59,130,246,0.18) }
+.gi-panel { display:none;margin-top:0.5rem;padding:0.6rem 0.7rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px }
+.gi-panel.open { display:block }
+.gi-label { font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--t3);margin-bottom:0.45rem }
+.gi-links { display:flex;flex-direction:column;gap:0.35rem }
+.gi-link { display:flex;align-items:center;gap:0.55rem;text-decoration:none;padding:0.42rem 0.55rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;transition:background 0.18s }
+.gi-link:hover { background:rgba(255,255,255,0.09) }
+.gi-link-icon { width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.9rem }
+.gi-link-info { flex:1;min-width:0 }
+.gi-link-name { font-size:0.72rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+.gi-link-desc { font-size:0.6rem;color:var(--t2);margin-top:0.05rem }
+.gi-link-arr { font-size:0.75rem;color:var(--t3);flex-shrink:0 }
+.gi-note { font-size:0.6rem;color:var(--t3);margin-top:0.45rem;line-height:1.5;padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06) }
+
 /* Handle */
 .si-handle { width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 1.2rem }
 
@@ -3855,6 +3871,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           </div>
           <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-insurance">Upload</div></div>
         </div>
+        <div class="gi-toggle" onclick="event.stopPropagation();giToggle('insurance')" id="gi-btn-insurance">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Don't have it? Get it →
+        </div>
+        <div class="gi-panel" id="gi-panel-insurance" onclick="event.stopPropagation()">
+          <div class="gi-label">Download your policy document from</div>
+          <div class="gi-links">
+            <a class="gi-link" href="https://www.digilocker.gov.in" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(59,130,246,0.15)">📂</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">DigiLocker</div>
+                <div class="gi-link-desc">Issued documents → Insurance → download PDF</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://www.licindia.in/Customer-Services/Policy-Bond-Download" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(245,158,11,0.15)">🏛️</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">LIC e-Services</div>
+                <div class="gi-link-desc">Login → Policy Services → Download e-Policy</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://www.sbilife.co.in/en/customer-service/policy-services" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(0,82,154,0.2)">🛡️</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">SBI Life Portal</div>
+                <div class="gi-link-desc">My Account → Policy Documents → Download</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+          </div>
+          <div class="gi-note">💡 Check your email inbox too — insurers email the policy PDF when issued. Search "policy bond" or "policy schedule".</div>
+        </div>
         <input type="file" accept=".pdf,image/*" id="vsi-f-insurance" style="display:none" onchange="vaultUploadFromSI(event,'insurance')">
         <div id="vsi-extracted-insurance" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
       </div>
@@ -3870,6 +3920,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           </div>
           <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-epf">Upload</div></div>
         </div>
+        <div class="gi-toggle" onclick="event.stopPropagation();giToggle('epf')" id="gi-btn-epf">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Don't have it? Get it →
+        </div>
+        <div class="gi-panel" id="gi-panel-epf" onclick="event.stopPropagation()">
+          <div class="gi-label">Download your EPF passbook from</div>
+          <div class="gi-links">
+            <a class="gi-link" href="https://www.umang.gov.in/web/#/apps/details/EPFO" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(6,182,212,0.15)">📱</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">UMANG App</div>
+                <div class="gi-link-desc">EPFO → Passbook → View & Download PDF</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://passbook.epfindia.gov.in/MemberPassBook/Login" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(6,182,212,0.15)">🏢</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">EPFO Passbook Portal</div>
+                <div class="gi-link-desc">Login with UAN + password → Download passbook</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://www.digilocker.gov.in" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(59,130,246,0.15)">📂</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">DigiLocker</div>
+                <div class="gi-link-desc">Issued documents → EPFO → EPF Passbook</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+          </div>
+          <div class="gi-note">💡 Don't know your UAN? Ask your HR or check your salary slip. EPFO also sends UAN to your registered mobile via SMS.</div>
+        </div>
         <input type="file" accept=".pdf,image/*" id="vsi-f-epf" style="display:none" onchange="vaultUploadFromSI(event,'epf')">
         <div id="vsi-extracted-epf" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
       </div>
@@ -3884,6 +3968,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
             <div class="si-hint" id="vsi-hint-mf">Reads: portfolio value, XIRR, SIP amounts, ELSS</div>
           </div>
           <div class="si-st"><div class="si-pill si-p-idle" id="vsi-pill-mf">Upload</div></div>
+        </div>
+        <div class="gi-toggle" onclick="event.stopPropagation();giToggle('mf')" id="gi-btn-mf">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Don't have it? Get it →
+        </div>
+        <div class="gi-panel" id="gi-panel-mf" onclick="event.stopPropagation()">
+          <div class="gi-label">Get your mutual fund statement from</div>
+          <div class="gi-links">
+            <a class="gi-link" href="https://www.camsonline.com/Investors/Statements/Consolidated-Account-Statement" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(139,92,246,0.15)">📊</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">CAMS Online</div>
+                <div class="gi-link-desc">Free CAS — email delivery in ~2 min (no login needed)</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://mfs.kfintech.com/investor/general/consolidatedStatement" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(139,92,246,0.15)">📈</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">KFin (Karvy)</div>
+                <div class="gi-link-desc">KFin-held funds — statement via email</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+            <a class="gi-link" href="https://www.mfcentral.com" target="_blank" rel="noopener">
+              <div class="gi-link-icon" style="background:rgba(139,92,246,0.12)">🏦</div>
+              <div class="gi-link-info">
+                <div class="gi-link-name">MF Central</div>
+                <div class="gi-link-desc">SEBI-mandated portal — all funds in one CAS</div>
+              </div>
+              <div class="gi-link-arr">›</div>
+            </a>
+          </div>
+          <div class="gi-note">💡 CAMS is the fastest — enter your PAN + email, statement arrives in ~2 minutes. No account creation needed.</div>
         </div>
         <input type="file" accept=".pdf,image/*" id="vsi-f-mf" style="display:none" onchange="vaultUploadFromSI(event,'mf')">
         <div id="vsi-extracted-mf" style="display:none;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--bd)"></div>
@@ -9594,6 +9712,16 @@ function siContinue() {
 }
 
 // ── VAULT CARDS INSIDE SMART IMPORT ──────────────────────────────────────
+function giToggle(docType) {
+  const panel = document.getElementById('gi-panel-' + docType);
+  const btn = document.getElementById('gi-btn-' + docType);
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  btn.innerHTML = open
+    ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Close'
+    : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Don\'t have it? Get it →';
+}
+
 function vaultTrigger(docType) {
   document.getElementById('vsi-f-' + docType)?.click();
 }
