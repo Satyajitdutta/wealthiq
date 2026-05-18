@@ -46,6 +46,7 @@ async function mountRoutes() {
 // ── Page Rewrites (Mirroring vercel.json) ──────────────────────────
 const REWRITES = {
   '/app': '/app.html',
+  '/sbi': '/sbi/index.html',
   '/terms': '/terms.html',
   '/refund': '/refund.html',
   '/privacy': '/privacy.html',

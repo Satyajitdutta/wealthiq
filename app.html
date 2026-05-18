@@ -521,6 +521,30 @@ select option{background:#1e293b}
 .col-rent-cell .rc-type{font-size:0.6rem;color:var(--t3);font-weight:600}
 .col-rent-cell .rc-val{font-size:0.72rem;font-weight:800;color:var(--text);margin-top:0.1rem}
 
+/* ── DOCUMENT VAULT ──────────────────────────────────────────── */
+.vault-intro{font-size:0.82rem;color:var(--t2);line-height:1.6;margin-bottom:1rem;padding:0.75rem;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);border-radius:10px}
+.doc-upload-card{background:var(--c1);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;margin-bottom:0.75rem;transition:border-color 0.2s}
+.doc-upload-card.doc-done{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.03)}
+.doc-upload-card.doc-busy{border-color:rgba(59,130,246,0.4)}
+.doc-card-hdr{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem}
+.doc-card-icon{font-size:1.35rem}
+.doc-card-title{font-size:0.9rem;font-weight:700}
+.doc-card-desc{font-size:0.7rem;color:var(--t2)}
+.doc-card-badge{margin-left:auto;font-size:0.65rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:20px;flex-shrink:0}
+.doc-badge-idle{background:rgba(255,255,255,0.06);color:var(--t3)}
+.doc-badge-busy{background:rgba(59,130,246,0.15);color:var(--blue)}
+.doc-badge-done{background:rgba(34,197,94,0.15);color:var(--green)}
+.doc-badge-err{background:rgba(239,68,68,0.15);color:var(--red)}
+.doc-upload-label{display:block;width:100%;background:rgba(59,130,246,0.06);border:1px dashed rgba(59,130,246,0.3);border-radius:10px;padding:0.6rem;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;text-align:center;margin-top:0.4rem;transition:background 0.15s}
+.doc-upload-label:active{background:rgba(59,130,246,0.12)}
+.doc-extracted-grid{margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:0.15rem}
+.doc-ext-row{display:flex;justify-content:space-between;align-items:center;padding:0.15rem 0}
+.doc-ext-key{font-size:0.7rem;color:var(--t3)}
+.doc-ext-val{font-size:0.73rem;font-weight:600;color:var(--text)}
+.doc-ext-good{color:var(--green)}
+.doc-ext-warn{color:var(--amber)}
+.doc-ext-danger{color:var(--red)}
+
 /* ── MODULE 5-7: GROW SCREEN ─────────────────────────────────── */
 .gw-percentile-wrap{position:relative;height:44px;margin:0.75rem 0 0.25rem}
 .gw-pct-track{height:12px;border-radius:6px;overflow:hidden;display:flex;margin-top:16px}
@@ -3246,6 +3270,70 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 </div><!-- /screen-pricing -->
 
+<!-- ── SCREEN: DOCUMENT VAULT ─────────────────────────────── -->
+<div class="screen" id="screen-vault">
+
+<div class="vault-intro">
+  Upload your financial documents — AI reads them instantly and enriches your entire analysis with real numbers. No manual entry needed.
+</div>
+
+<!-- Insurance Policy -->
+<div class="doc-upload-card" id="vcard-insurance">
+  <div class="doc-card-hdr">
+    <span class="doc-card-icon">🛡️</span>
+    <div>
+      <div class="doc-card-title">Insurance Policy</div>
+      <div class="doc-card-desc">LIC, SBI Life, ICICI Pru, HDFC Life, Bajaj & more</div>
+    </div>
+    <span class="doc-card-badge doc-badge-idle" id="vbadge-insurance">Pending</span>
+  </div>
+  <label class="doc-upload-label">
+    ↑ Upload PDF or image
+    <input type="file" accept=".pdf,image/*" style="display:none" onchange="vaultUpload(event,'insurance')">
+  </label>
+  <div class="doc-extracted-grid" id="vext-insurance" style="display:none"></div>
+</div>
+
+<!-- EPF Passbook -->
+<div class="doc-upload-card" id="vcard-epf">
+  <div class="doc-card-hdr">
+    <span class="doc-card-icon">🏢</span>
+    <div>
+      <div class="doc-card-title">EPF Passbook</div>
+      <div class="doc-card-desc">EPFO UAN passbook — auto-reads your PF balance</div>
+    </div>
+    <span class="doc-card-badge doc-badge-idle" id="vbadge-epf">Pending</span>
+  </div>
+  <label class="doc-upload-label">
+    ↑ Upload PDF or image
+    <input type="file" accept=".pdf,image/*" style="display:none" onchange="vaultUpload(event,'epf')">
+  </label>
+  <div class="doc-extracted-grid" id="vext-epf" style="display:none"></div>
+</div>
+
+<!-- CAMS / KFin MF Statement -->
+<div class="doc-upload-card" id="vcard-mf">
+  <div class="doc-card-hdr">
+    <span class="doc-card-icon">📊</span>
+    <div>
+      <div class="doc-card-title">MF Statement (CAMS / KFin)</div>
+      <div class="doc-card-desc">Consolidated account statement — all funds in one go</div>
+    </div>
+    <span class="doc-card-badge doc-badge-idle" id="vbadge-mf">Pending</span>
+  </div>
+  <label class="doc-upload-label">
+    ↑ Upload PDF or image
+    <input type="file" accept=".pdf,image/*" style="display:none" onchange="vaultUpload(event,'mf')">
+  </label>
+  <div class="doc-extracted-grid" id="vext-mf" style="display:none"></div>
+</div>
+
+<div style="font-size:0.65rem;color:var(--t4);text-align:center;line-height:1.6;padding:0 0.5rem 1rem">
+  Documents are processed in-memory using AI vision.<br>They are not stored or shared by Artha-IQ.
+</div>
+
+</div><!-- /screen-vault -->
+
 </div><!-- /screens -->
 
 <!-- ── MODULE 9: CAN I AFFORD THIS — FAB ─────────────────────── -->
@@ -3333,6 +3421,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <button class="tab" id="tab-grow" onclick="switchTab('grow','Grow')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
     Grow
+  </button>
+  <button class="tab" id="tab-vault" onclick="switchTab('vault','My Documents')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    Vault
   </button>
   <button class="tab" id="tab-pricing" onclick="switchTab('pricing','Plans & Pricing')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
@@ -9448,6 +9540,140 @@ function siContinue() {
     showToast('✦', `${autoCount * 3}+ fields auto-filled from your document`);
   }
 }
+
+// ── DOCUMENT VAULT ────────────────────────────────────────────────────────
+const VAULT_API = { insurance: '/api/doc-insurance', epf: '/api/doc-epf', mf: '/api/doc-mf' };
+const vaultDocs = JSON.parse(localStorage.getItem('vault_docs') || '{}');
+
+function vaultFmt(n) {
+  if (!n) return '—';
+  if (Math.abs(n) >= 1e7) return `₹${(n/1e7).toFixed(2)} Cr`;
+  if (Math.abs(n) >= 1e5) return `₹${(n/1e5).toFixed(2)} L`;
+  return `₹${Math.round(n).toLocaleString('en-IN')}`;
+}
+
+function vaultRow(k, v, cls) {
+  const c = cls === 'good' ? 'doc-ext-good' : cls === 'warn' ? 'doc-ext-warn' : cls === 'danger' ? 'doc-ext-danger' : '';
+  return `<div class="doc-ext-row"><span class="doc-ext-key">${k}</span><span class="doc-ext-val ${c}">${v}</span></div>`;
+}
+
+function vaultBadge(id, status, text) {
+  const el = document.getElementById('vbadge-' + id);
+  el.className = 'doc-card-badge doc-badge-' + status;
+  el.textContent = text;
+}
+
+async function vaultUpload(event, docType) {
+  const file = event.target.files[0];
+  if (!file) return;
+  document.getElementById('vcard-' + docType).classList.add('doc-busy');
+  vaultBadge(docType, 'busy', 'Reading…');
+
+  try {
+    const payload = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const b64 = e.target.result.split(',')[1];
+        res(file.type === 'application/pdf'
+          ? { mimeType: 'application/pdf', data: b64 }
+          : { images: [{ mimeType: file.type, data: b64 }] });
+      };
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+
+    const r = await fetch(VAULT_API[docType], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error(data.error || 'Extraction failed');
+
+    vaultDocs[docType] = data.extracted;
+    localStorage.setItem('vault_docs', JSON.stringify(vaultDocs));
+
+    document.getElementById('vcard-' + docType).classList.remove('doc-busy');
+    document.getElementById('vcard-' + docType).classList.add('doc-done');
+    vaultBadge(docType, 'done', 'Read ✓');
+    vaultRenderExtracted(docType, data.extracted);
+    vaultEnrichProfile(docType, data.extracted);
+    showToast('📄', `${docType === 'insurance' ? 'Insurance policy' : docType === 'epf' ? 'EPF passbook' : 'MF statement'} read successfully`);
+  } catch (e) {
+    document.getElementById('vcard-' + docType).classList.remove('doc-busy');
+    vaultBadge(docType, 'err', 'Failed');
+    showToast('✕', `Could not read document: ${e.message}`);
+  }
+}
+
+function vaultRenderExtracted(docType, ext) {
+  const el = document.getElementById('vext-' + docType);
+  el.style.display = 'flex';
+  let html = '';
+
+  if (docType === 'insurance') {
+    const profile = getProfile ? getProfile() : {};
+    const income = profile.annualSalary || 0;
+    const needed = income * 15;
+    const gap = needed - (ext.sum_assured || 0);
+    html = vaultRow('Insurer', ext.insurer || '—')
+      + vaultRow('Type', ext.policy_type || '—')
+      + vaultRow('Sum Assured', vaultFmt(ext.sum_assured))
+      + vaultRow('Annual Premium', vaultFmt(ext.annual_premium))
+      + vaultRow('Policy End', ext.policy_end_date || '—')
+      + (gap > 0 ? vaultRow('Cover Gap', vaultFmt(gap), 'danger') : vaultRow('Coverage', 'Adequate ✓', 'good'));
+    if (ext.gaps_identified?.length)
+      html += `<div style="font-size:0.67rem;color:var(--amber);margin-top:0.3rem">${ext.gaps_identified.join(' · ')}</div>`;
+  } else if (docType === 'epf') {
+    html = vaultRow('Member', ext.member_name || '—')
+      + vaultRow('UAN', ext.uan || '—')
+      + vaultRow('EPF Balance', vaultFmt(ext.total_epf_balance), 'good')
+      + vaultRow('EPS Balance', vaultFmt(ext.total_eps_balance))
+      + vaultRow('Grand Total', vaultFmt(ext.grand_total_balance), 'good')
+      + vaultRow('Employer', ext.employer_name || '—')
+      + vaultRow('Pension Eligible', ext.eligible_for_pension ? 'Yes ✓' : `Not yet (${ext.years_of_service || 0} yrs)`, ext.eligible_for_pension ? 'good' : 'warn');
+  } else if (docType === 'mf') {
+    const s = ext.summary || {};
+    const xirr = s.overall_xirr || 0;
+    html = vaultRow('Investor', ext.investor_name || '—')
+      + vaultRow('Total Invested', vaultFmt(s.total_invested))
+      + vaultRow('Current Value', vaultFmt(s.total_current_value), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger')
+      + vaultRow('Gain / Loss', vaultFmt(s.total_unrealised_gain_loss), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger')
+      + vaultRow('XIRR', `${xirr.toFixed(1)}%`, xirr >= 10 ? 'good' : xirr >= 6 ? 'warn' : 'danger')
+      + vaultRow('Monthly SIP', vaultFmt(s.total_sip_monthly), 'good')
+      + vaultRow('ELSS Invested', vaultFmt(s.elss_invested))
+      + vaultRow('Fund Houses', s.number_of_fund_houses || '—');
+  }
+
+  el.innerHTML = html;
+}
+
+function vaultEnrichProfile(docType, ext) {
+  // Push extracted data into the profile fields so GOT analysis uses real numbers
+  try {
+    if (docType === 'mf' && ext.summary) {
+      const s = ext.summary;
+      const sipEl = document.getElementById('inp-sip');
+      if (sipEl && !sipEl.value && s.total_sip_monthly) sipEl.value = s.total_sip_monthly;
+      const elssEl = document.getElementById('inp-elss');
+      if (elssEl && !elssEl.value && s.elss_invested) elssEl.value = s.elss_invested;
+    }
+    if (docType === 'insurance' && ext.sum_assured) {
+      const termEl = document.getElementById('inp-term');
+      if (termEl && !termEl.value) termEl.value = ext.sum_assured;
+    }
+  } catch (_) {}
+}
+
+// Restore vault state on load
+(function vaultRestore() {
+  Object.entries(vaultDocs).forEach(([type, ext]) => {
+    if (!ext) return;
+    document.getElementById('vcard-' + type)?.classList.add('doc-done');
+    vaultBadge(type, 'done', 'Read ✓');
+    vaultRenderExtracted(type, ext);
+  });
+})();
 
 </script>
 </body>
