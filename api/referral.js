@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
 
-  const user = getAuth(req);
+  const user = await getAuth(req);
   if (!user) { res.status(401).json({ error: 'Unauthorized' }); return; }
 
   const base = SUPABASE_URL();

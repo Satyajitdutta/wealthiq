@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'POST') { res.status(405).json({ error: 'POST only' }); return; }
 
-  const user = getAuth(req);
+  const user = await getAuth(req);
   if (!user) { res.status(401).json({ error: 'Unauthorized' }); return; }
 
   let body;

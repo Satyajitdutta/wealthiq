@@ -1,5 +1,6 @@
 // WealthIQ — Verify OTP and return session token
 import { createHmac } from 'crypto';
+import { sbHeaders, SUPABASE_URL } from './_auth.js';
 
 function getOTP(secret, email, bucket) {
   const h = createHmac('sha256', secret).update(`${email}:${bucket}`).digest('hex');
@@ -46,5 +47,22 @@ export default async function handler(req, res) {
   if (!valid) { res.status(401).json({ error: 'Invalid or expired code. Try again.' }); return; }
 
   const token = makeToken(secret, email);
+
+  // Store session in DB so it can be revoked via /api/auth-logout
+  try {
+    const b64 = token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+    const { jti, expiry } = JSON.parse(Buffer.from(b64, 'base64').toString());
+    const base = SUPABASE_URL();
+    if (base && jti) {
+      await fetch(`${base}/rest/v1/auth_sessions`, {
+        method: 'POST',
+        headers: { ...sbHeaders(), Prefer: 'return=minimal' },
+        body: JSON.stringify({ jti, email, expires_at: new Date(expiry).toISOString() })
+      });
+    }
+  } catch (e) {
+    console.error('[auth-verify] session store failed (token still issued):', e.message);
+  }
+
   res.status(200).json({ success: true, token, email });
 }

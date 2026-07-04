@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'GET') { res.status(405).json({ error: 'GET only' }); return; }
 
-  const user = getAuth(req);
+  const user = await getAuth(req);
   if (!user) { res.status(401).json({ error: 'Unauthorized' }); return; }
 
   const base = SUPABASE_URL();
