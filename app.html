@@ -4516,7 +4516,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     if (bridge) {
       const d = JSON.parse(bridge);
       if (d && d.t && d.e) {
-        const sess = JSON.stringify({token:d.t, email:d.e, expiresAt: Date.now()+30*24*60*60*1000});
+        const sess = JSON.stringify({token:d.t, email:d.e, expiresAt: Date.now()+7*24*60*60*1000});
         localStorage.setItem('wealthiq_session', sess);
         sessionStorage.removeItem('wealthiq_bridge');
         return; // session saved, proceed to app
@@ -4559,7 +4559,7 @@ function isAdmin(email){
 
 function saveSession(token, email) {
   localStorage.setItem('wealthiq_session', JSON.stringify({
-    token, email, expiresAt: Date.now() + 30*24*60*60*1000
+    token, email, expiresAt: Date.now() + 7*24*60*60*1000
   }));
 }
 
@@ -4800,8 +4800,18 @@ function bumpSessionCount() {
   return n;
 }
 
-function logOut() {
+async function logOut() {
   if (!confirm('Sign out of Artha-IQ?')) return;
+  try {
+    const raw = localStorage.getItem('wealthiq_session');
+    const s = raw ? JSON.parse(raw) : null;
+    if (s?.token) {
+      await fetch('/api/auth-logout', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${s.token}` }
+      });
+    }
+  } catch (e) { /* revocation best-effort — clear locally regardless */ }
   localStorage.removeItem('wealthiq_session');
   localStorage.removeItem('wiq_sc');
   localStorage.removeItem('wiq_fp');
@@ -10178,7 +10188,18 @@ function mfFundCardHTML(folio, idx) {
   const invested = folio.invested_value || folio.cost_value || 0;
   const gain = val - invested;
   const gainPct = invested > 0 ? ((gain / invested) * 100).toFixed(1) : null;
-  const xirr = folio.xirr;
+  const rawXirr = folio.xirr;
+  let xirr = rawXirr || null;
+  let xirrLabel = 'XIRR';
+  if (!xirr) {
+    const cost = folio.cost_value || folio.invested_value;
+    const cur  = folio.current_value;
+    const dt   = folio.first_investment_date;
+    if (cost && cur && dt) {
+      const yrs = (Date.now() - new Date(dt).getTime()) / (365.25 * 24 * 3600 * 1000);
+      if (yrs >= 0.25) { xirr = (Math.pow(cur / cost, 1 / yrs) - 1) * 100; xirrLabel = 'CAGR'; }
+    }
+  }
   const nav = folio.nav;
   const units = folio.units;
   const sip = folio.sip_amount;
@@ -10201,7 +10222,7 @@ function mfFundCardHTML(folio, idx) {
     <div class="mf-fund-bottom">
       <div class="mf-fund-stat"><div class="mf-fund-stat-label">NAV</div><div class="mf-fund-stat-val">${nav ? '₹' + Number(nav).toFixed(2) : '—'}</div></div>
       <div class="mf-fund-stat"><div class="mf-fund-stat-label">Units</div><div class="mf-fund-stat-val">${units ? Number(units).toFixed(3) : '—'}</div></div>
-      <div class="mf-fund-stat"><div class="mf-fund-stat-label">XIRR</div><div class="mf-fund-stat-val" style="color:${xirr > 12 ? '#4ade80' : xirr > 7 ? '#fbbf24' : '#f87171'}">${xirr ? xirr.toFixed(1) + '%' : '—'}</div></div>
+      <div class="mf-fund-stat"><div class="mf-fund-stat-label">${xirrLabel}</div><div class="mf-fund-stat-val" style="color:${xirr > 12 ? '#4ade80' : xirr > 7 ? '#fbbf24' : '#f87171'}">${xirr ? xirr.toFixed(1) + '%' : '—'}</div></div>
     </div>
     ${sip ? `<div class="mf-fund-sip-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> ₹${Number(sip).toLocaleString('en-IN')}/mo SIP active</div>` : ''}
   </div>`;
@@ -10265,15 +10286,28 @@ async function mfInit() {
   document.getElementById('mf-total-value').textContent = mfFmt(totalVal);
   document.getElementById('mf-invested').textContent = mfFmt(totalInv);
   document.getElementById('mf-returns').textContent = (gain >= 0 ? '+' : '') + mfFmt(gain);
-  document.getElementById('mf-xirr').textContent = s.overall_xirr ? s.overall_xirr.toFixed(1) + '%' : '—';
+  // Portfolio CAGR fallback when AI didn't extract XIRR
+  let portXirr = s.overall_xirr || null;
+  let portXirrLabel = 'XIRR';
+  if (!portXirr && totalInv > 0 && totalVal > 0) {
+    // Use earliest folio date as approximation
+    const dates = folios.map(f => f.first_investment_date).filter(Boolean).map(d => new Date(d).getTime());
+    if (dates.length) {
+      const earliest = Math.min(...dates);
+      const yrs = (Date.now() - earliest) / (365.25 * 24 * 3600 * 1000);
+      if (yrs >= 0.25) { portXirr = (Math.pow(totalVal / totalInv, 1 / yrs) - 1) * 100; portXirrLabel = 'CAGR'; }
+    }
+  }
+  const xirrEl = document.getElementById('mf-xirr');
+  if (xirrEl) { xirrEl.textContent = portXirr ? portXirr.toFixed(1) + '%' : '—'; xirrEl.title = portXirrLabel === 'CAGR' ? 'Approximated from cost vs current value' : ''; }
   document.getElementById('mf-sip').textContent = s.total_sip_monthly ? mfFmt(s.total_sip_monthly) : '—';
   const gainEl = document.getElementById('mf-total-gain');
   if (gainEl) { gainEl.textContent = `${gain >= 0 ? '+' : ''}${mfFmt(gain)} (${gain >= 0 ? '+' : ''}${gainPct}%)`; gainEl.style.color = gain >= 0 ? '#86efac' : '#f87171'; }
 
   // Benchmarks
-  if (s.overall_xirr) {
+  if (portXirr) {
     const bEl = document.getElementById('mf-b-portfolio');
-    if (bEl) { bEl.textContent = s.overall_xirr.toFixed(1) + '%'; bEl.className = 'mf-bench-val ' + (s.overall_xirr > 13 ? 'mf-green' : s.overall_xirr > 7 ? 'mf-amber' : 'mf-red'); }
+    if (bEl) { bEl.textContent = portXirr.toFixed(1) + '%'; bEl.className = 'mf-bench-val ' + (portXirr > 13 ? 'mf-green' : portXirr > 7 ? 'mf-amber' : 'mf-red'); }
   }
 
   // ELSS / 80C
@@ -10454,8 +10488,15 @@ function vaultSIExtractedHTML(docType, ext) {
   }
   if (docType === 'mf') {
     const s = ext.summary || {};
-    const xirr = s.overall_xirr || 0;
-    return r('Current Value', f(s.total_current_value), s.total_unrealised_gain_loss >= 0) + r('XIRR', `${xirr.toFixed(1)}%`, xirr >= 10) + r('Monthly SIP', f(s.total_sip_monthly), true) + r('ELSS Invested', f(s.elss_invested));
+    let xirr = s.overall_xirr || 0;
+    let xirrTag = 'XIRR';
+    if (!xirr && s.total_invested && s.total_current_value && s.total_invested > 0) {
+      // CAGR approximation — assume avg 3yr holding when no date available
+      const yrs = 3;
+      xirr = (Math.pow(s.total_current_value / s.total_invested, 1 / yrs) - 1) * 100;
+      xirrTag = 'CAGR~';
+    }
+    return r('Current Value', f(s.total_current_value), s.total_unrealised_gain_loss >= 0) + r(xirrTag, `${xirr.toFixed(1)}%`, xirr >= 10) + r('Monthly SIP', f(s.total_sip_monthly), true) + r('ELSS Invested', f(s.elss_invested));
   }
   return '';
 }
@@ -10578,12 +10619,18 @@ function vaultRenderExtracted(docType, ext) {
       + vaultRow('Pension Eligible', ext.eligible_for_pension ? 'Yes ✓' : `Not yet (${ext.years_of_service || 0} yrs)`, ext.eligible_for_pension ? 'good' : 'warn');
   } else if (docType === 'mf') {
     const s = ext.summary || {};
-    const xirr = s.overall_xirr || 0;
+    let xirr = s.overall_xirr || 0;
+    let xirrTag = 'XIRR';
+    if (!xirr && s.total_invested && s.total_current_value && s.total_invested > 0) {
+      const yrs = 3;
+      xirr = (Math.pow(s.total_current_value / s.total_invested, 1 / yrs) - 1) * 100;
+      xirrTag = 'CAGR~';
+    }
     html = vaultRow('Investor', ext.investor_name || '—')
       + vaultRow('Total Invested', vaultFmt(s.total_invested))
       + vaultRow('Current Value', vaultFmt(s.total_current_value), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger')
       + vaultRow('Gain / Loss', vaultFmt(s.total_unrealised_gain_loss), s.total_unrealised_gain_loss >= 0 ? 'good' : 'danger')
-      + vaultRow('XIRR', `${xirr.toFixed(1)}%`, xirr >= 10 ? 'good' : xirr >= 6 ? 'warn' : 'danger')
+      + vaultRow(xirrTag, `${xirr.toFixed(1)}%`, xirr >= 10 ? 'good' : xirr >= 6 ? 'warn' : 'danger')
       + vaultRow('Monthly SIP', vaultFmt(s.total_sip_monthly), 'good')
       + vaultRow('ELSS Invested', vaultFmt(s.elss_invested))
       + vaultRow('Fund Houses', s.number_of_fund_houses || '—');
