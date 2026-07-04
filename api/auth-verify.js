@@ -7,8 +7,9 @@ function getOTP(secret, email, bucket) {
 }
 
 function makeToken(secret, email) {
-  const expiry = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 days
-  const payload = Buffer.from(JSON.stringify({ email, expiry })).toString('base64url');
+  const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days (was 30)
+  const jti = createHmac('sha256', secret).update(`${email}:${expiry}:${Math.random()}`).digest('hex').slice(0, 16);
+  const payload = Buffer.from(JSON.stringify({ email, expiry, jti })).toString('base64url');
   const sig = createHmac('sha256', secret).update(payload).digest('hex');
   return `${payload}.${sig}`;
 }
