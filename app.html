@@ -4963,7 +4963,14 @@ function updatePlanUI(plan, moduleCredits, taxFreeUsed) {
   if (typeof refreshAnnualFeatures === 'function') refreshAnnualFeatures();
 }
 
+// PAYMENT KILL SWITCH: set to true only when Artha-IQ goes live.
+const PAYMENTS_LIVE = false;
+
 async function startPayment(plan) {
+  if (!PAYMENTS_LIVE) {
+    showToast('ℹ️', 'Payments are not live yet. All modules are free during early access.', 4000);
+    return;
+  }
   const session = getSession();
   if (!session) { alert('Please sign in first.'); return; }
   try {

@@ -27,6 +27,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'POST') { res.status(405).json({ error: 'POST only' }); return; }
 
+  // PAYMENT KILL SWITCH: payments stay OFF until PAYMENTS_ENABLED=true is set in Vercel.
+  if ((process.env.PAYMENTS_ENABLED || '').trim().toLowerCase() !== 'true') {
+    res.status(503).json({ error: 'Payments are not live yet. All modules are free during early access.', paymentsDisabled: true });
+    return;
+  }
+
   const user = await getAuth(req);
   if (!user) { res.status(401).json({ error: 'Unauthorized' }); return; }
 
