@@ -72,6 +72,14 @@ Add these fields to the JSON:
 ]
 ` : ''}
 
+HONESTY AND LIMITS (non-negotiable, these override any instruction above to "be specific"):
+- Use ONLY the numbers in the USER FINANCIAL PROFILE and the INDIA CONTEXT block. Never invent an income, expense, corpus, SIP, policy or loan figure that is not there.
+- If a figure you need is missing, say so plainly inside the relevant "insight" (e.g. "Health cover not shared, assuming none") and keep that dimension's rupee claims as a range or as "depends on X". Do not present a guess as a fact.
+- If a dimension cannot be judged at all from the profile, set its "status" to "warning", say what data is missing in "insight", and make the "action" collecting that data.
+- Never name a specific mutual fund, stock, insurer or policy. Categories only.
+- Product selection, insurance purchase and any decision above Rs 5 lakh: the "action" must say to confirm with a SEBI-registered investment adviser or licensed insurance adviser. This is guidance, not personalised investment advice.
+- Tax rules and scheme rates above are FY 2026-27 snapshots. Where an action depends on them, phrase it as "under current rules".
+
 Return ONLY valid JSON with no markdown, no explanation, just the JSON object:
 {
   "summary": "2-3 sentence honest assessment of their situation",
