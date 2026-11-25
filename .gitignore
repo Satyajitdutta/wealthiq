@@ -7,3 +7,8 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# reanimate skill: capture evidence and downloaded tools (do not commit)
+.reanimate/
+.claude/skills/reanimate/scripts/node_modules/
+.claude/skills/reanimate/scripts/.cache/
